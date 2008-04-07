@@ -126,6 +126,7 @@ void MainWindow::slotPIMOViewContextMenu( const QPoint& pos )
         else if ( a == &actionNewProperty ) {
             // create a new resource
             if ( NewClassDialog::createProperty( type, this ).isValid() ) {
+                type.reset( false );
                 // FIXME: udpate property model if necessary
             }
         }
