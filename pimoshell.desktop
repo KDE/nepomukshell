@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Nepomuk PIMO Shell
+Comment=The simple Nepomuk PIMO Shell
+Icon=nepomuk
+Exec=pimoshell
+Type=Application
