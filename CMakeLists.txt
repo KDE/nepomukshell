@@ -34,7 +34,6 @@ target_link_libraries(pimoshell
   ${NEPOMUK_LIBRARIES}
   ${QT_QTGUI_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
-  ${KDE4_KDECORE_LIBS}
   ${KDE4_KDEUI_LIBS}
   ${KDE4_KIO_LIBS}
 )
