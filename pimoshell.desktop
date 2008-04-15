@@ -1,7 +1,9 @@
 [Desktop Entry]
 Name=Nepomuk PIMO Shell
+Name[et]=Nepomuki PIMO shell
 Name[sv]=Nepomuk PIMO-skal
 Comment=The simple Nepomuk PIMO Shell
+Comment[et]=Nepomuki lihtne PIMO shell
 Comment[sv]=Nepomuks enkla PIMO-skal
 Icon=nepomuk
 Exec=pimoshell
