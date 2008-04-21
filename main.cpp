@@ -19,7 +19,6 @@
 #include <KApplication>
 #include <KCmdLineArgs>
 #include <KAboutData>
-#include <KIcon>
 
 #include "mainwindow.h"
 
@@ -34,6 +33,7 @@ int main( int argc, char *argv[] )
                           KLocalizedString(),
                           "http://nepomuk.kde.org" );
     aboutData.addAuthor(ki18n("Sebastian Trüg"),ki18n("Maintainer"), "trueg@kde.org");
+    aboutData.setProgramIconName( "nepomuk" );
 
     KCmdLineArgs::init( argc, argv, &aboutData );
 
@@ -41,7 +41,6 @@ int main( int argc, char *argv[] )
     KCmdLineArgs::addCmdLineOptions( options );
 
     KApplication app;
-    QApplication::setWindowIcon( KIcon("nepomuk") );
 
     MainWindow* mainWin = new MainWindow();
     mainWin->show();
