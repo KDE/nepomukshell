@@ -78,7 +78,7 @@ Nepomuk::Types::Class NewClassDialog::createClass( Nepomuk::Types::Class parentC
         QString icon = dlg.m_buttonClassIcon->icon();
 
         Soprano::NRLModel nrlModel( Nepomuk::ResourceManager::instance()->mainModel() );
-        nrlModel.setBaseNamespace( QUrl( "http://nepomuk.kde.org/data#" ) ); // FIXME: Use the PIMO NS
+        nrlModel.setBaseNamespace( QUrl( "nepomuk:/classes" ) ); // FIXME: Use the PIMO NS
         return nrlModel.createClass( parentClass.uri(),
                                      name,
                                      comment,
@@ -115,7 +115,7 @@ Nepomuk::Types::Property NewClassDialog::createProperty( Nepomuk::Types::Class p
         QString icon = dlg.m_buttonClassIcon->icon();
 
         Soprano::NRLModel nrlModel( Nepomuk::ResourceManager::instance()->mainModel() );
-        nrlModel.setBaseNamespace( QUrl( "http://nepomuk.kde.org/data#" ) ); // FIXME: Use the PIMO NS
+        nrlModel.setBaseNamespace( QUrl( "nepomuk:/properties" ) ); // FIXME: Use the PIMO NS
         return nrlModel.createProperty( parentClass.uri(),
                                         dlg.m_propertyRangeCombo->itemData( dlg.m_propertyRangeCombo->currentIndex() ).toUrl(),
                                         name,
@@ -146,7 +146,7 @@ Nepomuk::Resource NewClassDialog::createResource( Nepomuk::Types::Class type, QW
         QString icon = dlg.m_buttonClassIcon->icon();
 
         Soprano::NRLModel nrlModel( Nepomuk::ResourceManager::instance()->mainModel() );
-        nrlModel.setBaseNamespace( QUrl( "http://nepomuk.kde.org/data#" ) ); // FIXME: Use the PIMO NS
+        nrlModel.setBaseNamespace( QUrl( "nepomuk:/instances" ) ); // FIXME: Use the PIMO NS
         return nrlModel.createResource( type.uri(),
                                         name,
                                         comment,
