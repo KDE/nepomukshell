@@ -68,11 +68,10 @@ QUrl Soprano::NRLModel::Private::createUniqueUri( QString name )
         s.setFragment( KRandom::randomString( 20 ) );
     }
     while( 1 ) {
-        if( !q->containsContext( s ) &&
-            !q->containsAnyStatement( s, Soprano::Node(), Soprano::Node() ) &&
-            !q->containsAnyStatement( Soprano::Node(), s, Soprano::Node() ) &&
-            !q->containsAnyStatement( Soprano::Node(), Soprano::Node(), s ) )
+        if ( !q->executeQuery( QString("ask where { { <%1> ?p1 ?o1 . } UNION { ?r2 <%1> ?o2 . } UNION { ?r3 ?p3 <%1> . } }")
+                               .arg( QString::fromAscii( s.toEncoded() ) ), Soprano::Query::QueryLanguageSparql ).boolValue() ) {
             return s;
+        }
         s.setFragment( name + KRandom::randomString( 20 ) );
     }
 }
