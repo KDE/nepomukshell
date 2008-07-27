@@ -44,7 +44,7 @@ Nepomuk::ResourcePropertyDelegate::~ResourcePropertyDelegate()
 
 QWidget * Nepomuk::ResourcePropertyDelegate::createEditor( QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index ) const
 {
-    kDebug() << parent << option << index;
+//    kDebug() << parent << option << index;
     QVariant v = index.data( ResourcePropertyEditModel::PropertyRole );
     if ( v.isValid() ) {
         Types::Property property = v.value<Types::Property>();
