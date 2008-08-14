@@ -20,7 +20,6 @@
  */
 
 #include "nrlmodel.h"
-#include "knx.h"
 
 #include <soprano/error.h>
 #include <soprano/nrl.h>
@@ -300,7 +299,8 @@ QUrl Soprano::NRLModel::createClass( const QUrl& parentClass,
         sl << Statement( classUri, Vocabulary::RDFS::comment(), LiteralValue( comment ) );
     }
     if ( !icon.isEmpty() ) {
-        sl << Statement( classUri, Nepomuk::Vocabulary::KNX::hasIcon(), LiteralValue( icon ) );
+        // FIXME: create a proper Symbol object, if possible maybe a subclass DesktopIcon if its a standard icon
+        sl << Statement( classUri, Soprano::Vocabulary::NAO::hasSymbol(), LiteralValue( icon ) );
     }
 
     QUrl graph = addStatements( sl, Vocabulary::NRL::Ontology() );
@@ -347,7 +347,8 @@ QUrl Soprano::NRLModel::createProperty ( const QUrl& domain,
         sl << Statement( propertyUri, Vocabulary::RDFS::comment(), LiteralValue( comment ) );
     }
     if ( !icon.isEmpty() ) {
-        sl << Statement( propertyUri, Nepomuk::Vocabulary::KNX::hasIcon(), LiteralValue( icon ) );
+        // FIXME: create a proper Symbol object, if possible maybe a subclass DesktopIcon if its a standard icon
+        sl << Statement( propertyUri, Soprano::Vocabulary::NAO::hasSymbol(), LiteralValue( icon ) );
     }
 
     QUrl graph = addStatements( sl, Vocabulary::NRL::Ontology() );
@@ -387,7 +388,8 @@ QUrl Soprano::NRLModel::createResource( const QUrl& type,
         sl << Statement( resourceUri, Vocabulary::RDFS::comment(), LiteralValue( comment ) );
     }
     if ( !icon.isEmpty() ) {
-        sl << Statement( resourceUri, Nepomuk::Vocabulary::KNX::hasIcon(), LiteralValue( icon ) );
+        // FIXME: create a proper Symbol object, if possible maybe a subclass DesktopIcon if its a standard icon
+        sl << Statement( resourceUri, Soprano::Vocabulary::NAO::hasSymbol(), LiteralValue( icon ) );
     }
 
     QUrl graph = addStatements( sl, Vocabulary::NRL::InstanceBase() );

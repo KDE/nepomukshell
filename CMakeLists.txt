@@ -21,7 +21,6 @@ set( pimoshell_BIN_SRCS
   completion.cpp
   completionitem.cpp
   completionmodel.cpp
-  knx.cpp
 )
 
 kde4_add_ui_files(pimoshell_BIN_SRCS mainwindow.ui)
