@@ -20,7 +20,7 @@
 #include "completionmodel.h"
 
 
-Q_DECLARE_METATYPE( Nepomuk::CompletionItem );
+Q_DECLARE_METATYPE( Nepomuk::CompletionItem )
 
 
 class Nepomuk::Completion::Private
