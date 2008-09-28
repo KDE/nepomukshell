@@ -1,23 +1,23 @@
 /*
-   Copyright (C) 2008 by Sebastian Trueg <trueg at kde.org>
+  Copyright (C) 2008 by Sebastian Trueg <trueg at kde.org>
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2, or (at your option)
+  any later version.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- */
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
 
 #include "newclassdialog.h"
-#include "nrlmodel.h"
+#include "pimomodel.h"
 #include "pimoitemmodel.h"
 
 #include <nepomuk/class.h>
@@ -77,12 +77,11 @@ Nepomuk::Types::Class NewClassDialog::createClass( Nepomuk::Types::Class parentC
         QString comment = dlg.m_editClassComment->text();
         QString icon = dlg.m_buttonClassIcon->icon();
 
-        Soprano::NRLModel nrlModel( Nepomuk::ResourceManager::instance()->mainModel() );
-        nrlModel.setBaseNamespace( QUrl( "nepomuk:/classes" ) ); // FIXME: Use the PIMO NS
-        return nrlModel.createClass( parentClass.uri(),
-                                     name,
-                                     comment,
-                                     icon != "unknown" ? icon : QString() );
+        Nepomuk::PimoModel pimoModel( Nepomuk::ResourceManager::instance()->mainModel() );
+        return pimoModel.createClass( parentClass.uri(),
+                                      name,
+                                      comment,
+                                      icon != "unknown" ? icon : QString() );
     }
     else {
         return Nepomuk::Types::Class();
@@ -114,13 +113,12 @@ Nepomuk::Types::Property NewClassDialog::createProperty( Nepomuk::Types::Class p
         QString comment = dlg.m_editClassComment->text();
         QString icon = dlg.m_buttonClassIcon->icon();
 
-        Soprano::NRLModel nrlModel( Nepomuk::ResourceManager::instance()->mainModel() );
-        nrlModel.setBaseNamespace( QUrl( "nepomuk:/properties" ) ); // FIXME: Use the PIMO NS
-        return nrlModel.createProperty( parentClass.uri(),
-                                        dlg.m_propertyRangeCombo->itemData( dlg.m_propertyRangeCombo->currentIndex() ).toUrl(),
-                                        name,
-                                        comment,
-                                        icon != "unknown" ? icon : QString() );
+        Nepomuk::PimoModel pimoModel( Nepomuk::ResourceManager::instance()->mainModel() );
+        return pimoModel.createProperty( parentClass.uri(),
+                                         dlg.m_propertyRangeCombo->itemData( dlg.m_propertyRangeCombo->currentIndex() ).toUrl(),
+                                         name,
+                                         comment,
+                                         icon != "unknown" ? icon : QString() );
     }
     else {
         return Nepomuk::Types::Property();
@@ -145,12 +143,11 @@ Nepomuk::Resource NewClassDialog::createResource( Nepomuk::Types::Class type, QW
         QString comment = dlg.m_editClassComment->text();
         QString icon = dlg.m_buttonClassIcon->icon();
 
-        Soprano::NRLModel nrlModel( Nepomuk::ResourceManager::instance()->mainModel() );
-        nrlModel.setBaseNamespace( QUrl( "nepomuk:/instances" ) ); // FIXME: Use the PIMO NS
-        return nrlModel.createResource( type.uri(),
-                                        name,
-                                        comment,
-                                        icon != "unknown" ? icon : QString() );
+        Nepomuk::PimoModel pimoModel( Nepomuk::ResourceManager::instance()->mainModel() );
+        return pimoModel.createThing( type.uri(),
+                                      name,
+                                      comment,
+                                      icon != "unknown" ? icon : QString() );
     }
     else {
         return Nepomuk::Resource();

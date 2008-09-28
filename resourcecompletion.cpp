@@ -69,6 +69,14 @@ void Nepomuk::ResourceCompletion::makeCompletion( const QString& string )
 
     if ( string.length() > 2 ) {
         Soprano::QueryResultIterator it
+//             = ResourceManager::instance()->mainModel()->executeQuery( QString( "select distinct ?r where { "
+//                                                                                "?r a <%1> . "
+//                                                                                "?r ?p ?o . "
+//                                                                                "FILTER(REGEX(STR(?o),'^%2','i')) . "
+//                                                                                "FILTER(isLiteral(?o)) . }" )
+//                                                                       .arg( QString::fromAscii( d->type.uri().toEncoded() ) )
+//                                                                      .arg( string ) );
+
             = ResourceManager::instance()->mainModel()->executeQuery( string + "*",
                                                                       Soprano::Query::QueryLanguageUser,
                                                                       "lucene" );

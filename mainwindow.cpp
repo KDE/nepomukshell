@@ -22,8 +22,8 @@
 #include "newclassdialog.h"
 #include "resourcepropertymodel.h"
 #include "resourcepropertydelegate.h"
-#include "../resource-visualization/simpleresourcemodel.h"
-#include "../resource-visualization/resourcedelegate.h"
+#include "simpleresourcemodel.h"
+#include "resourcedelegate.h"
 
 #include <QtGui/QTreeView>
 #include <QtGui/QListView>
