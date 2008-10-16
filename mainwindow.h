@@ -24,6 +24,7 @@
 
 class QTreeView;
 class QListView;
+class QSortFilterProxyModel;
 namespace Nepomuk {
     class PIMOItemModel;
     class SimpleResourceModel;
@@ -46,6 +47,7 @@ private Q_SLOTS:
 
 private:
     Nepomuk::PIMOItemModel* m_pimoModel;
+    QSortFilterProxyModel* m_pimoSortModel;
     Nepomuk::SimpleResourceModel* m_resourceModel;
     Nepomuk::ResourcePropertyEditModel* m_propertyModel;
 };

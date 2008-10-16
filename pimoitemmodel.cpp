@@ -145,7 +145,7 @@ QVariant Nepomuk::PIMOItemModel::data( const QModelIndex& index, int role ) cons
         switch( role ) {
         case Qt::DisplayRole:
             if ( index.column() == 0 ) {
-                return( node->type.label().isEmpty() ? node->type.name() : node->type.label() );
+                return node->type.label();
             }
             else {
                 return node->type.comment();

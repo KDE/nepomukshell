@@ -32,6 +32,7 @@
 #include <QtGui/QHeaderView>
 #include <QtGui/QComboBox>
 #include <QtGui/QItemSelectionModel>
+#include <QtGui/QSortFilterProxyModel>
 
 #include <nepomuk/class.h>
 #include <nepomuk/property.h>
@@ -55,8 +56,12 @@ MainWindow::MainWindow()
 
     m_pimoModel = new Nepomuk::PIMOItemModel( m_pimoView );
     m_pimoModel->setParentClass( Nepomuk::Vocabulary::PIMO::Thing() );
-    m_pimoView->setModel( m_pimoModel );
+    m_pimoSortModel = new QSortFilterProxyModel( m_pimoView );
+    m_pimoSortModel->setSourceModel( m_pimoModel );
+    m_pimoSortModel->setSortCaseSensitivity( Qt::CaseInsensitive );
+    m_pimoView->setModel( m_pimoSortModel );
     m_pimoView->setContextMenuPolicy( Qt::CustomContextMenu );
+    m_pimoView->setSortingEnabled( true );
 
     m_resourceModel = new Nepomuk::SimpleResourceModel( m_resourceView );
     m_resourceView->setModel( m_resourceModel );
