@@ -65,6 +65,13 @@ namespace Nepomuk {
         int rowCount( const QModelIndex& parent = QModelIndex() ) const;
         Qt::ItemFlags flags( const QModelIndex& index ) const;
 
+        Qt::DropActions supportedDropActions() const;
+        QMimeData* mimeData( const QModelIndexList& indexes ) const;
+        bool dropMimeData( const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent );
+        QStringList mimeTypes() const;
+
+        Types::Class classForIndex( const QModelIndex& index ) const;
+
     private:
         class Private;
         Private* const d;

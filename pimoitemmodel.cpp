@@ -18,11 +18,18 @@
 
 #include "pimoitemmodel.h"
 #include "pimo.h"
+#include "pimomodel.h"
 
 #include <nepomuk/ontology.h>
+#include <nepomuk/resourcemanager.h>
 
 #include <KIcon>
 #include <KDebug>
+#include <KUrl>
+
+#include <QtCore/QMimeData>
+
+#include <Soprano/Vocabulary/NAO>
 
 
 class ClassNode
@@ -130,7 +137,7 @@ void Nepomuk::PIMOItemModel::setParentClass( const Types::Class& type )
 }
 
 
-int Nepomuk::PIMOItemModel::columnCount( const QModelIndex& parent ) const
+int Nepomuk::PIMOItemModel::columnCount( const QModelIndex& ) const
 {
     return 1;
 }
@@ -231,8 +238,77 @@ int Nepomuk::PIMOItemModel::rowCount( const QModelIndex& parent ) const
 
 Qt::ItemFlags Nepomuk::PIMOItemModel::flags( const QModelIndex& index ) const
 {
-    // FIXME: we can only decide based on the graph the classes are stored in whether they are fixed or not. :(
-    return QAbstractItemModel::flags( index );
+    if ( index.isValid() ) {
+        Qt::ItemFlags f = Qt::ItemIsSelectable|Qt::ItemIsDropEnabled|Qt::ItemIsEnabled;
+        ClassNode* node = ( ClassNode* )index.internalPointer();
+        Q_ASSERT( node );
+        // user-created classes have a nao:created date.
+        if ( ResourceManager::instance()->mainModel()->containsAnyStatement( node->type.uri(), Soprano::Vocabulary::NAO::created(), Soprano::Node() ) ) {
+            f |= Qt::ItemIsDragEnabled|Qt::ItemIsEditable;
+        }
+        return f;
+    }
+    else {
+        return QAbstractItemModel::flags( index );
+    }
+}
+
+
+Qt::DropActions Nepomuk::PIMOItemModel::supportedDropActions() const
+{
+    return Qt::CopyAction | Qt::MoveAction;
+}
+
+
+QStringList Nepomuk::PIMOItemModel::mimeTypes() const
+{
+    return KUrl::List::mimeDataTypes();
+}
+
+
+QMimeData* Nepomuk::PIMOItemModel::mimeData( const QModelIndexList& indexes ) const
+{
+    KUrl::List classUris;
+    foreach ( const QModelIndex& index, indexes ) {
+        if (index.isValid()) {
+            classUris << classForIndex( index ).uri();
+        }
+    }
+
+    QMimeData* mimeData = new QMimeData();
+    classUris.populateMimeData( mimeData );
+
+    return mimeData;
+}
+
+
+bool Nepomuk::PIMOItemModel::dropMimeData( const QMimeData* data, Qt::DropAction action, int row, int, const QModelIndex& parent )
+{
+    ClassNode* parentNode = 0;
+    if ( parent.isValid() ) {
+        parentNode = ( ClassNode* )parent.internalPointer();
+    }
+    else {
+        parentNode = d->baseClassNode;
+    }
+
+    if ( !parentNode )
+        return false;
+    if ( parentNode->children.count() <= row )
+        return false;
+
+    if ( row >= 0 )
+        parentNode = parentNode->children[row];
+
+    PimoModel pimoModel( ResourceManager::instance()->mainModel() );
+    KUrl::List classUris = KUrl::List::fromMimeData( data );
+    foreach( const KUrl& uri, classUris ) {
+        if ( !pimoModel.createSubClassRelation( uri, parentNode->type.uri(), action == Qt::MoveAction ) )
+            return false;
+        updateClass( uri );
+    }
+    updateClass( parentNode->type );
+    return true;
 }
 
 
@@ -259,6 +335,19 @@ void Nepomuk::PIMOItemModel::updateClass( Types::Class type )
         }
 
         node->updating = false;
+    }
+}
+
+
+Nepomuk::Types::Class Nepomuk::PIMOItemModel::classForIndex( const QModelIndex& index ) const
+{
+    if ( index.isValid() ) {
+        ClassNode* node = ( ClassNode* )index.internalPointer();
+        Q_ASSERT( node );
+        return node->type;
+    }
+    else {
+        return Types::Class();
     }
 }
 

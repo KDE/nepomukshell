@@ -62,6 +62,9 @@ MainWindow::MainWindow()
     m_pimoView->setModel( m_pimoSortModel );
     m_pimoView->setContextMenuPolicy( Qt::CustomContextMenu );
     m_pimoView->setSortingEnabled( true );
+    m_pimoView->setDragEnabled(true);
+    m_pimoView->setAcceptDrops(true);
+    m_pimoView->setDropIndicatorShown(true);
 
     m_resourceModel = new Nepomuk::SimpleResourceModel( m_resourceView );
     m_resourceView->setModel( m_resourceModel );
