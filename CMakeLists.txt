@@ -3,6 +3,7 @@ project(pimoshell)
 include_directories(
   ${QT_INCLUDES}
   ${KDE4_INCLUDES}
+  ${SOPRANO_INCLUDE_DIR}
   ${NEPOMUK_INCLUDE_DIR}
   ${NEPOMUK_INCLUDE_DIR}/nepomuk
   ${pimolib_SOURCE_DIR}
