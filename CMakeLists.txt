@@ -10,6 +10,7 @@ include_directories(
   ${pimolib_BINARY_DIR}
   ${nepomuk_visualization_SOURCE_DIR}
   ${kcompleter_SOURCE_DIR}
+  ${nepomukcompletion_SOURCE_DIR}
 )
 
 set( pimoshell_BIN_SRCS
@@ -17,11 +18,9 @@ set( pimoshell_BIN_SRCS
   mainwindow.cpp
   newclassdialog.cpp
   resourcepropertymodel.cpp
-  resourcecompletion.cpp
   resourceinputwidget.cpp
   resourcepropertydelegate.cpp
   pimosavedialog.cpp
-  typecompletion.cpp
   pimoitemmodel.cpp
 )
 
@@ -33,12 +32,13 @@ kde4_add_executable(pimoshell ${pimoshell_BIN_SRCS})
 target_link_libraries(pimoshell
   nepomukvisualization
   pimo
-  kcompleter
+  nepomukcompletion
   ${NEPOMUK_LIBRARIES}
   ${QT_QTGUI_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
   ${KDE4_KDEUI_LIBS}
   ${KDE4_KIO_LIBS}
+  ${SOPRANO_INDEX_LIBRARIES}
 )
 
 install(TARGETS pimoshell DESTINATION ${BIN_INSTALL_DIR})
