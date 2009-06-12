@@ -18,6 +18,7 @@
 
 #include "resourceinputwidget.h"
 #include "resourcecompletion.h"
+#include "kcompletionitem.h"
 
 #include <Nepomuk/Resource>
 #include <Nepomuk/Types/Class>
@@ -47,8 +48,8 @@ Nepomuk::ResourceInputWidget::ResourceInputWidget( QWidget* parent )
 
     connect( this, SIGNAL( textEdited( QString ) ),
              this, SLOT( slotTextChanged( QString ) ) );
-    connect( d->completion, SIGNAL( activated( Nepomuk::CompletionItem ) ),
-             this, SLOT( slotActivated( Nepomuk::CompletionItem ) ) );
+    connect( d->completion, SIGNAL( activated( KCompletionItem ) ),
+             this, SLOT( slotActivated( KCompletionItem ) ) );
 }
 
 
@@ -90,7 +91,7 @@ void Nepomuk::ResourceInputWidget::slotTextChanged( const QString& s )
 }
 
 
-void Nepomuk::ResourceInputWidget::slotActivated( const CompletionItem& item )
+void Nepomuk::ResourceInputWidget::slotActivated( const KCompletionItem& item )
 {
     kDebug() << "selected resource" << item.userData().toUrl();
     d->selectedResource = item.userData().toUrl();

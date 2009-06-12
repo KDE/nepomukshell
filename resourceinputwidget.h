@@ -21,10 +21,11 @@
 
 #include <KLineEdit>
 
+class KCompletionItem;
+
 namespace Nepomuk {
 
     class Resource;
-    class CompletionItem;
 
     namespace Types {
         class Class;
@@ -50,7 +51,7 @@ namespace Nepomuk {
 
     private Q_SLOTS:
         void slotTextChanged( const QString& s );
-        void slotActivated( const Nepomuk::CompletionItem& item );
+        void slotActivated( const KCompletionItem& item );
 
     private:
         class Private;

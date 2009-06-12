@@ -19,14 +19,14 @@
 #ifndef _NEPOMUK_RESOURCE_COMPLETION_H_
 #define _NEPOMUK_RESOURCE_COMPLETION_H_
 
-#include "completion.h"
+#include "kcompleter.h"
 
 namespace Nepomuk {
     namespace Types {
         class Class;
     }
 
-    class ResourceCompletion : public Completion
+    class ResourceCompletion : public KCompleter
     {
         Q_OBJECT
 

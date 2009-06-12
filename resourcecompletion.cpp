@@ -44,7 +44,7 @@ public:
 
 
 Nepomuk::ResourceCompletion::ResourceCompletion( QObject* parent )
-    : Completion(),
+    : KCompleter(),
       d( new Private() )
 {
     setParent( parent );
@@ -92,11 +92,11 @@ void Nepomuk::ResourceCompletion::makeCompletion( const QString& string )
                 if ( m.isEmpty() ) {
                     m = res.resourceUri().toString();
                 }
-                addCompletion( CompletionItem( res.genericLabel(),
-                                               QString( "%1 (%2)" ).arg( res.genericLabel() ).arg( Types::Class( res.type() ).label() ),
-                                               res.genericDescription(),
-                                               KIcon( res.genericIcon() ),
-                                               res.resourceUri() ) );
+                addCompletion( KCompletionItem( res.genericLabel(),
+                                                QString( "%1 (%2)" ).arg( res.genericLabel() ).arg( Types::Class( res.type() ).label() ),
+                                                res.genericDescription(),
+                                                KIcon( res.genericIcon() ),
+                                                res.resourceUri() ) );
 
                 if ( ++cnt >= 10 ) {
                     kDebug() << "Stopping at" << cnt << "results";

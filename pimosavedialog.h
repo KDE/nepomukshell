@@ -71,7 +71,7 @@ namespace Nepomuk {
         class Private;
         Private* const d;
 
-        Q_PRIVATE_SLOT( d, void _k_typeActivated( const Nepomuk::CompletionItem& ) )
+        Q_PRIVATE_SLOT( d, void _k_typeActivated( const KCompletionItem& ) )
         Q_PRIVATE_SLOT( d, void _k_dialogFinished() )
     };
 }

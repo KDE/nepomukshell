@@ -19,6 +19,7 @@
 #include "pimosavedialog.h"
 #include "pimo.h"
 #include "typecompletion.h"
+#include "kcompletionitem.h"
 
 #include <Nepomuk/Types/Class>
 #include <Nepomuk/Resource>
@@ -69,7 +70,7 @@ public:
     QStandardItemModel* typeModel;
 
     QStandardItem* createItem( Nepomuk::Types::Class type );
-    void _k_typeActivated( const Nepomuk::CompletionItem& );
+    void _k_typeActivated( const KCompletionItem& );
     void _k_dialogFinished();
     QList<QUrl> types() const;
     KUrl createUniqueUrl() const;
@@ -86,7 +87,7 @@ QStandardItem* Nepomuk::FileDialog::Private::createItem( Nepomuk::Types::Class t
 }
 
 
-void Nepomuk::FileDialog::Private::_k_typeActivated( const Nepomuk::CompletionItem& item )
+void Nepomuk::FileDialog::Private::_k_typeActivated( const KCompletionItem& item )
 {
     QUrl ru = item.userData().toUrl();
     typeModel->appendRow( createItem( Types::Class( ru ) ) );
@@ -162,8 +163,8 @@ Nepomuk::FileDialog::FileDialog( QWidget* parent )
     d->typeModel = new QStandardItemModel( d->typesView );
     d->typesView->setModel( d->typeModel );
 
-    connect( d->editType->completer(), SIGNAL( activated( Nepomuk::CompletionItem ) ),
-             this, SLOT( _k_typeActivated( Nepomuk::CompletionItem ) ) );
+    connect( d->editType->completer(), SIGNAL( activated( KCompletionItem ) ),
+             this, SLOT( _k_typeActivated( KCompletionItem ) ) );
 
     connect( this, SIGNAL( finished() ),
              this, SLOT( _k_dialogFinished() ) );
