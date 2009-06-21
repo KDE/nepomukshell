@@ -68,6 +68,7 @@ MainWindow::MainWindow()
 
     m_resourceModel = new Nepomuk::SimpleResourceModel( m_resourceView );
     m_resourceView->setModel( m_resourceModel );
+    m_resourceView->setContextMenuPolicy( Qt::CustomContextMenu );
     Nepomuk::ResourceDelegate* delegate = new Nepomuk::ResourceDelegate( this );
     delegate->setDisplayMode( Nepomuk::AbstractResourceGuiItem::DisplayFull );
     m_resourceView->setItemDelegateForColumn( 0, delegate );
@@ -85,6 +86,8 @@ MainWindow::MainWindow()
 
     connect( m_pimoView, SIGNAL( customContextMenuRequested( const QPoint& ) ),
              this, SLOT( slotPIMOViewContextMenu( const QPoint& ) ) );
+    connect( m_resourceView, SIGNAL( customContextMenuRequested( const QPoint& ) ),
+             this, SLOT( slotResourceViewContextMenu( const QPoint& ) ) );
     connect( m_pimoView->selectionModel(), SIGNAL( currentChanged( const QModelIndex&, const QModelIndex& ) ),
              this, SLOT( slotCurrentPIMOClassChanged( const QModelIndex&, const QModelIndex& ) ) );
     connect( m_resourceView->selectionModel(), SIGNAL( selectionChanged( const QItemSelection&, const QItemSelection& ) ),
@@ -141,6 +144,23 @@ void MainWindow::slotPIMOViewContextMenu( const QPoint& pos )
     }
 }
 
+
+void MainWindow::slotResourceViewContextMenu( const QPoint& pos )
+{
+    kDebug();
+    QModelIndex index = m_resourceView->indexAt( pos );
+    if ( index.isValid() ) {
+        Nepomuk::Resource res( index.data( Nepomuk::ResourceModel::ResourceUriRole ).value<QUrl>() );
+        kDebug() << "Have valid resource" << res.resourceUri();
+        QAction actionRemove( KIcon( "edit-delete" ), i18n( "Remove resource '%1'", res.genericLabel() ), this );
+        QAction* a = QMenu::exec( QList<QAction*>()
+                                  << &actionRemove,
+                                  m_resourceView->viewport()->mapToGlobal( pos ) );
+        if( a == &actionRemove )
+            res.remove();
+    }
+ }
+ 
 
 void MainWindow::slotCurrentPIMOClassChanged( const QModelIndex& current, const QModelIndex& )
 {

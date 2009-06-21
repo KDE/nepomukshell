@@ -41,6 +41,7 @@ public:
 
 private Q_SLOTS:
     void slotPIMOViewContextMenu( const QPoint& pos );
+    void slotResourceViewContextMenu( const QPoint& pos );
     void slotCurrentPIMOClassChanged( const QModelIndex& current, const QModelIndex& );
     void slotCurrentResourceChanged( const QItemSelection& current, const QItemSelection& );
     void slotBaseClassChanged( int index );
