@@ -21,7 +21,6 @@ set( pimoshell_BIN_SRCS
   resourceinputwidget.cpp
   resourcepropertydelegate.cpp
   pimosavedialog.cpp
-  pimoitemmodel.cpp
 )
 
 kde4_add_ui_files(pimoshell_BIN_SRCS mainwindow.ui)
