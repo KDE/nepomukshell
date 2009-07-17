@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2008 by Sebastian Trueg <trueg at kde.org>
+   Copyright (C) 2008-2009 by Sebastian Trueg <trueg at kde.org>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 #include "newclassdialog.h"
 #include "resourcepropertymodel.h"
 #include "resourcepropertydelegate.h"
-#include "simpleresourcemodel.h"
+#include "asyncloadingresourcemodel.h"
 #include "resourcedelegate.h"
 
 #include <QtGui/QTreeView>
@@ -40,16 +40,22 @@
 
 #include <KIcon>
 #include <KDebug>
+#include <KAction>
+#include <KStandardAction>
+#include <KActionCollection>
+#include <KApplication>
 
 #include <Soprano/Vocabulary/RDFS>
 
 
 MainWindow::MainWindow()
-    : KMainWindow( 0 )
+    : KXmlGuiWindow( 0 )
 {
     QWidget* w = new QWidget( this );
     setCentralWidget( w );
     setupUi( w );
+
+    setupActions();
 
     m_pimoView->header()->hide();
     m_pimoView->setSelectionMode( QAbstractItemView::SingleSelection );
@@ -66,7 +72,7 @@ MainWindow::MainWindow()
     m_pimoView->setAcceptDrops(true);
     m_pimoView->setDropIndicatorShown(true);
 
-    m_resourceModel = new Nepomuk::SimpleResourceModel( m_resourceView );
+    m_resourceModel = new Nepomuk::AsyncLoadingResourceModel( m_resourceView );
     m_resourceView->setModel( m_resourceModel );
     m_resourceView->setContextMenuPolicy( Qt::CustomContextMenu );
     Nepomuk::ResourceDelegate* delegate = new Nepomuk::ResourceDelegate( this );
@@ -104,6 +110,26 @@ MainWindow::~MainWindow()
 }
 
 
+void MainWindow::setupActions()
+{
+    m_actionNewSubClass = new KAction( KIcon( "document-new" ), i18n( "Create Subclass" ), actionCollection() );
+    m_actionNewProperty = new KAction( KIcon( "document-new" ), i18n( "Create Property" ), actionCollection() );
+    m_actionNewResource = new KAction( KIcon( "document-new" ), i18n( "Create Resource" ), actionCollection() );
+
+    connect( m_actionNewSubClass, SIGNAL(triggered(bool)), this, SLOT(slotCreateClass()) );
+    connect( m_actionNewProperty, SIGNAL(triggered(bool)), this, SLOT(slotCreateProperty()) );
+    connect( m_actionNewResource, SIGNAL(triggered(bool)), this, SLOT(slotCreateResource()) );
+
+    actionCollection()->addAction( "create_class", m_actionNewSubClass );
+    actionCollection()->addAction( "create_property", m_actionNewProperty );
+    actionCollection()->addAction( "create_resource", m_actionNewResource );
+
+    KStandardAction::quit( kapp, SLOT( quit() ), actionCollection() );
+
+    setupGUI();
+}
+
+
 void MainWindow::slotPIMOViewContextMenu( const QPoint& pos )
 {
     QModelIndex index = m_pimoView->indexAt( pos );
@@ -114,33 +140,11 @@ void MainWindow::slotPIMOViewContextMenu( const QPoint& pos )
         QAction actionNewProperty( KIcon( "document-new" ), i18n( "Create Property" ), this );
         QAction actionNewResource( KIcon( "document-new" ), i18n( "Create Resource" ), this );
 
-        QAction* a = QMenu::exec( QList<QAction*>()
-                                  << &actionNewSubClass
-                                  << &actionNewProperty
-                                  << &actionNewResource,
-                                  m_pimoView->viewport()->mapToGlobal( pos ) );
-
-        if ( a == &actionNewSubClass ) {
-            Nepomuk::Types::Class newClass = NewClassDialog::createClass( type, this );
-            if ( newClass.isValid() ) {
-                // update the model
-                m_pimoModel->updateClass( type );
-            }
-        }
-        else if ( a == &actionNewResource ) {
-            // create a new resource
-            if ( NewClassDialog::createResource( type, this ).isValid() ) {
-                // update
-                m_resourceModel->setResources( Nepomuk::ResourceManager::instance()->allResourcesOfType( type.uri() ) );
-            }
-        }
-        else if ( a == &actionNewProperty ) {
-            // create a new resource
-            if ( NewClassDialog::createProperty( type, this ).isValid() ) {
-                type.reset( false );
-                // FIXME: udpate property model if necessary
-            }
-        }
+        QMenu::exec( QList<QAction*>()
+                     << m_actionNewSubClass
+                     << m_actionNewProperty
+                     << m_actionNewResource,
+                     m_pimoView->viewport()->mapToGlobal( pos ) );
     }
 }
 
@@ -160,14 +164,14 @@ void MainWindow::slotResourceViewContextMenu( const QPoint& pos )
             res.remove();
     }
  }
- 
+
 
 void MainWindow::slotCurrentPIMOClassChanged( const QModelIndex& current, const QModelIndex& )
 {
     if ( current.isValid() ) {
         Nepomuk::Types::Class type = current.data( Nepomuk::PIMOItemModel::TypeRole ).value<Nepomuk::Types::Class>();
         kDebug() << "Selection changed:" << type.label();
-        m_resourceModel->setResources( Nepomuk::ResourceManager::instance()->allResourcesOfType( type.uri() ) );
+        m_resourceModel->loadResourcesOfType( type );
     }
 }
 
@@ -187,6 +191,47 @@ void MainWindow::slotCurrentResourceChanged( const QItemSelection& current, cons
 void MainWindow::slotBaseClassChanged( int index )
 {
     m_pimoModel->setParentClass( m_baseClassCombo->itemData( index ).toUrl() );
+}
+
+
+Nepomuk::Types::Class MainWindow::selectedClass() const
+{
+    QModelIndex current = m_pimoView->selectionModel()->currentIndex();
+    if ( current.isValid() )
+        return current.data( Nepomuk::PIMOItemModel::TypeRole ).value<Nepomuk::Types::Class>();
+    else
+        return m_pimoModel->parentClass();
+}
+
+
+void MainWindow::slotCreateClass()
+{
+    Nepomuk::Types::Class newClass = NewClassDialog::createClass( selectedClass(), this );
+    if ( newClass.isValid() ) {
+        // update the model
+        m_pimoModel->updateClass( selectedClass() );
+    }
+}
+
+
+void MainWindow::slotCreateProperty()
+{
+    // create a new resource
+    if ( NewClassDialog::createProperty( selectedClass(), this ).isValid() ) {
+        selectedClass().reset( false );
+        // FIXME: udpate property model if necessary
+    }
+}
+
+
+void MainWindow::slotCreateResource()
+{
+    // create a new resource
+    Nepomuk::Resource res = NewClassDialog::createResource( selectedClass(), this );
+    if ( res.isValid() ) {
+        // update
+        m_resourceModel->addResource( res );
+    }
 }
 
 #include "mainwindow.moc"

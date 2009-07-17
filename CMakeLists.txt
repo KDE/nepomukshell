@@ -1,9 +1,10 @@
-project(pimoshell)
+project(nepomukshell)
 
 include_directories(
   ${QT_INCLUDES}
   ${KDE4_INCLUDES}
   ${SOPRANO_INCLUDE_DIR}
+  ${SOPRANO_INCLUDE_DIR}/soprano
   ${NEPOMUK_INCLUDE_DIR}
   ${NEPOMUK_INCLUDE_DIR}/nepomuk
   ${pimolib_SOURCE_DIR}
@@ -13,21 +14,23 @@ include_directories(
   ${nepomukcompletion_SOURCE_DIR}
 )
 
-set( pimoshell_BIN_SRCS
+set( nepomukshell_BIN_SRCS
   main.cpp
   mainwindow.cpp
   newclassdialog.cpp
   resourcepropertymodel.cpp
   resourceinputwidget.cpp
   resourcepropertydelegate.cpp
+  asyncquery.cpp
+  asyncloadingresourcemodel.cpp
 )
 
-kde4_add_ui_files(pimoshell_BIN_SRCS mainwindow.ui)
-kde4_add_ui_files(pimoshell_BIN_SRCS newclassdialog.ui)
+kde4_add_ui_files(nepomukshell_BIN_SRCS mainwindow.ui)
+kde4_add_ui_files(nepomukshell_BIN_SRCS newclassdialog.ui)
 
-kde4_add_executable(pimoshell ${pimoshell_BIN_SRCS})
+kde4_add_executable(nepomukshell ${nepomukshell_BIN_SRCS})
 
-target_link_libraries(pimoshell
+target_link_libraries(nepomukshell
   nepomukvisualization
   pimo
   nepomukcompletion
@@ -41,7 +44,8 @@ target_link_libraries(pimoshell
   ${SOPRANO_INDEX_LIBRARIES}
 )
 
-install(TARGETS pimoshell DESTINATION ${BIN_INSTALL_DIR})
-install(FILES pimoshell.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
+install(TARGETS nepomukshell DESTINATION ${BIN_INSTALL_DIR})
+install(FILES nepomukshell.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
+install(FILES nepomukshellui.rc DESTINATION  ${DATA_INSTALL_DIR}/nepomukshell)
 
 #add_subdirectory(test)
