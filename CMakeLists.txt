@@ -12,6 +12,9 @@ include_directories(
   ${nepomuk_visualization_SOURCE_DIR}
   ${kcompleter_SOURCE_DIR}
   ${nepomukcompletion_SOURCE_DIR}
+  ${nepomuk_kde_SOURCE_DIR}/misc
+  ${nepomuk_kde_SOURCE_DIR}/usercontext/lib
+  ${nepomuk_kde_BINARY_DIR}/usercontext/lib
 )
 
 set( nepomukshell_BIN_SRCS
@@ -23,6 +26,8 @@ set( nepomukshell_BIN_SRCS
   resourcepropertydelegate.cpp
   asyncquery.cpp
   asyncloadingresourcemodel.cpp
+  ${nepomuk_kde_SOURCE_DIR}/misc/kpixmapsequence.cpp
+  ${nepomuk_kde_SOURCE_DIR}/misc/kpixmapsequenceoverlaypainter.cpp
 )
 
 kde4_add_ui_files(nepomukshell_BIN_SRCS mainwindow.ui)
@@ -35,6 +40,7 @@ target_link_libraries(nepomukshell
   pimo
   nepomukcompletion
   kcompleter
+  nepomukcontext
   ${NEPOMUK_LIBRARIES}
   ${QT_QTGUI_LIBRARY}
   ${QT_QTDBUS_LIBRARY}

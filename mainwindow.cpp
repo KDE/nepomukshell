@@ -24,6 +24,8 @@
 #include "resourcepropertydelegate.h"
 #include "asyncloadingresourcemodel.h"
 #include "resourcedelegate.h"
+#include "kpixmapsequenceoverlaypainter.h"
+#include "nepomukcontext.h"
 
 #include <QtGui/QTreeView>
 #include <QtGui/QListView>
@@ -136,10 +138,6 @@ void MainWindow::slotPIMOViewContextMenu( const QPoint& pos )
     if ( index.isValid() ) {
         Nepomuk::Types::Class type = index.data( Nepomuk::PIMOItemModel::TypeRole ).value<Nepomuk::Types::Class>();
 
-        QAction actionNewSubClass( KIcon( "document-new" ), i18n( "Create Subclass" ), this );
-        QAction actionNewProperty( KIcon( "document-new" ), i18n( "Create Property" ), this );
-        QAction actionNewResource( KIcon( "document-new" ), i18n( "Create Resource" ), this );
-
         QMenu::exec( QList<QAction*>()
                      << m_actionNewSubClass
                      << m_actionNewProperty
@@ -156,12 +154,28 @@ void MainWindow::slotResourceViewContextMenu( const QPoint& pos )
     if ( index.isValid() ) {
         Nepomuk::Resource res( index.data( Nepomuk::ResourceModel::ResourceUriRole ).value<QUrl>() );
         kDebug() << "Have valid resource" << res.resourceUri();
+
+        QList<QAction*> actions;
+
+        QAction sep( this );
+        sep.setSeparator( true );
+        QAction actionSetContext( KIcon( "nepomuk" ), i18n( "Set as current context" ), this );
+
+        if ( Nepomuk::ContextServiceInterface::isAvailable() ) {
+            actions << &sep << &actionSetContext;
+        }
+
         QAction actionRemove( KIcon( "edit-delete" ), i18n( "Remove resource '%1'", res.genericLabel() ), this );
-        QAction* a = QMenu::exec( QList<QAction*>()
+
+        QAction* a = QMenu::exec( actions
                                   << &actionRemove,
                                   m_resourceView->viewport()->mapToGlobal( pos ) );
-        if( a == &actionRemove )
+        if( a == &actionRemove ) {
             res.remove();
+        }
+        else if ( a == &actionSetContext ) {
+            Nepomuk::ContextServiceInterface::instance()->setCurrentContext( res.resourceUri() );
+        }
     }
  }
 
@@ -171,6 +185,13 @@ void MainWindow::slotCurrentPIMOClassChanged( const QModelIndex& current, const 
     if ( current.isValid() ) {
         Nepomuk::Types::Class type = current.data( Nepomuk::PIMOItemModel::TypeRole ).value<Nepomuk::Types::Class>();
         kDebug() << "Selection changed:" << type.label();
+
+        KPixmapSequenceOverlayPainter* op = new KPixmapSequenceOverlayPainter( this );
+        op->setWidget( m_resourceView->viewport() );
+        op->setPosition( Qt::AlignCenter );
+        connect( m_resourceModel, SIGNAL( finishedLoading() ), op, SLOT( deleteLater() ) );
+        op->start();
+
         m_resourceModel->loadResourcesOfType( type );
     }
 }
