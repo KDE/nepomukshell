@@ -26,5 +26,5 @@ Comment[sv]=Nepomuks enkla PIMO-skal
 Comment[uk]=Проста оболонка PIMO для Nepomuk
 Comment[x-test]=xxThe simple Nepomuk PIMO Shellxx
 Icon=nepomuk
-Exec=pimoshell
+Exec=nepomukshell
 Type=Application

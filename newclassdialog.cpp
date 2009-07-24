@@ -46,6 +46,8 @@ NewClassDialog::NewClassDialog( QWidget* parent )
 
     connect( m_editClassLabel, SIGNAL( textChanged(const QString&) ),
              this, SLOT( slotLabelChanged(const QString&) ) );
+
+    m_editClassLabel->setFocus();
 }
 
 

@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>NewClassDialog</class>
- <widget class="QWidget" name="NewClassDialog" >
-  <property name="geometry" >
+ <widget class="QWidget" name="NewClassDialog">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,23 +10,23 @@
     <height>226</height>
    </rect>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2" >
+  <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="KTitleWidget" name="m_labelTitle" />
+    <widget class="KTitleWidget" name="m_labelTitle"/>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" >
+    <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout" >
+      <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <spacer name="verticalSpacer_2" >
-         <property name="orientation" >
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
-         <property name="sizeType" >
+         <property name="sizeType">
           <enum>QSizePolicy::Fixed</enum>
          </property>
-         <property name="sizeHint" stdset="0" >
+         <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
            <height>5</height>
@@ -34,26 +35,26 @@
         </spacer>
        </item>
        <item>
-        <widget class="QLabel" name="label_2" >
-         <property name="text" >
+        <widget class="QLabel" name="label_2">
+         <property name="text">
           <string>Name:</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="KLineEdit" name="m_editClassLabel" />
+        <widget class="KLineEdit" name="m_editClassLabel"/>
        </item>
       </layout>
      </item>
      <item>
-      <widget class="KIconButton" name="m_buttonClassIcon" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+      <widget class="KIconButton" name="m_buttonClassIcon">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="icon" >
+       <property name="icon">
         <string>unknown</string>
        </property>
       </widget>
@@ -61,14 +62,14 @@
     </layout>
    </item>
    <item>
-    <spacer name="verticalSpacer" >
-     <property name="orientation" >
+    <spacer name="verticalSpacer">
+     <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
-     <property name="sizeType" >
+     <property name="sizeType">
       <enum>QSizePolicy::Fixed</enum>
      </property>
-     <property name="sizeHint" stdset="0" >
+     <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
        <height>10</height>
@@ -77,24 +78,24 @@
     </spacer>
    </item>
    <item>
-    <widget class="QLabel" name="label" >
-     <property name="text" >
+    <widget class="QLabel" name="label">
+     <property name="text">
       <string>Detailed Description (optional):</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="KLineEdit" name="m_editClassComment" />
+    <widget class="KLineEdit" name="m_editClassComment"/>
    </item>
    <item>
-    <spacer name="verticalSpacer_3" >
-     <property name="orientation" >
+    <spacer name="verticalSpacer_3">
+     <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
-     <property name="sizeType" >
+     <property name="sizeType">
       <enum>QSizePolicy::Fixed</enum>
      </property>
-     <property name="sizeHint" stdset="0" >
+     <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
        <height>10</height>
@@ -103,28 +104,28 @@
     </spacer>
    </item>
    <item>
-    <widget class="QWidget" native="1" name="m_rangeWidget" >
-     <layout class="QHBoxLayout" name="horizontalLayout_2" >
-      <property name="topMargin" >
+    <widget class="QWidget" name="m_rangeWidget" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="topMargin">
        <number>0</number>
       </property>
-      <property name="rightMargin" >
+      <property name="rightMargin">
        <number>0</number>
       </property>
-      <property name="bottomMargin" >
+      <property name="bottomMargin">
        <number>0</number>
       </property>
       <item>
-       <widget class="QLabel" name="label_3" >
-        <property name="text" >
+       <widget class="QLabel" name="label_3">
+        <property name="text">
          <string>Property Range:</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="m_propertyRangeCombo" >
-        <property name="sizePolicy" >
-         <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+       <widget class="QComboBox" name="m_propertyRangeCombo">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>1</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -145,16 +146,22 @@
    <header>kicondialog.h</header>
   </customwidget>
   <customwidget>
-   <class>KLineEdit</class>
-   <extends>QLineEdit</extends>
-   <header>klineedit.h</header>
-  </customwidget>
-  <customwidget>
    <class>KTitleWidget</class>
    <extends>QWidget</extends>
    <header>ktitlewidget.h</header>
   </customwidget>
+  <customwidget>
+   <class>KLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>klineedit.h</header>
+  </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>m_editClassLabel</tabstop>
+  <tabstop>m_editClassComment</tabstop>
+  <tabstop>m_buttonClassIcon</tabstop>
+  <tabstop>m_propertyRangeCombo</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
