@@ -19,6 +19,7 @@
 #include "newclassdialog.h"
 #include "pimomodel.h"
 #include "pimoitemmodel.h"
+#include "pimo.h"
 
 #include <nepomuk/class.h>
 #include <nepomuk/property.h>
@@ -104,11 +105,12 @@ Nepomuk::Types::Property NewClassDialog::createProperty( Nepomuk::Types::Class p
 
     // FIXME: hopefully at some point QComboBox will support QTreeView
     // we can then use the PIMOItemModel.
-    Nepomuk::Types::Class base( Soprano::Vocabulary::RDFS::Resource() );
+    Nepomuk::Types::Class base( Nepomuk::Vocabulary::PIMO::Thing() );
     dlg.m_propertyRangeCombo->addItem( base.label(), base.uri() );
     foreach( Nepomuk::Types::Class c, base.allSubClasses() ) {
         dlg.m_propertyRangeCombo->addItem( c.label(), c.uri() );
     }
+    // FIXME: add literal ranges: string, int, double, datetime
 
     if ( dlg.exec() ) {
         QString name = dlg.m_editClassLabel->text();
