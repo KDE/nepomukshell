@@ -10,7 +10,6 @@ include_directories(
   ${pimolib_SOURCE_DIR}
   ${pimolib_BINARY_DIR}
   ${nepomuk_visualization_SOURCE_DIR}
-  ${kcompleter_SOURCE_DIR}
   ${nepomukcompletion_SOURCE_DIR}
   ${nepomuk_kde_SOURCE_DIR}/misc
   ${nepomuk_kde_SOURCE_DIR}/usercontext/lib
@@ -39,7 +38,6 @@ target_link_libraries(nepomukshell
   nepomukvisualization
   pimo
   nepomukcompletion
-  kcompleter
   nepomukcontext
   ${NEPOMUK_LIBRARIES}
   ${QT_QTGUI_LIBRARY}
