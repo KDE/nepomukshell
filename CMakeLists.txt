@@ -7,8 +7,6 @@ include_directories(
   ${SOPRANO_INCLUDE_DIR}/soprano
   ${NEPOMUK_INCLUDE_DIR}
   ${NEPOMUK_INCLUDE_DIR}/nepomuk
-  ${pimolib_SOURCE_DIR}
-  ${pimolib_BINARY_DIR}
   ${nepomuk_visualization_SOURCE_DIR}
   ${nepomukutils_SOURCE_DIR}
   ${nepomuk_kde_SOURCE_DIR}/misc
