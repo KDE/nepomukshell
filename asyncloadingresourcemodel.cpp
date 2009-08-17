@@ -48,7 +48,6 @@ public:
     Types::Class m_type;
 
     void query();
-    void _k_queryReady( Soprano::Util::AsyncQuery* );
     void _k_queryNextReady( Soprano::Util::AsyncQuery* );
     void _k_queryFinished( Soprano::Util::AsyncQuery* );
 };
@@ -63,18 +62,10 @@ void Nepomuk::AsyncLoadingResourceModel::Private::query()
                                                               .arg( m_lastOffset )
                                                               .arg( s_queryLimit ),
                                                               Soprano::Query::QueryLanguageSparql );
-    q->connect( m_currentQuery, SIGNAL( queryReady( Soprano::Util::AsyncQuery* ) ),
-                SLOT( _k_queryReady( Soprano::Util::AsyncQuery* ) ) );
     q->connect( m_currentQuery, SIGNAL( nextReady( Soprano::Util::AsyncQuery* ) ),
                 SLOT( _k_queryNextReady( Soprano::Util::AsyncQuery* ) ) );
     q->connect( m_currentQuery, SIGNAL( finished( Soprano::Util::AsyncQuery* ) ),
                 SLOT( _k_queryFinished( Soprano::Util::AsyncQuery* ) ) );
-}
-
-
-void Nepomuk::AsyncLoadingResourceModel::Private::_k_queryReady( Soprano::Util::AsyncQuery* query )
-{
-    query->next();
 }
 
 

@@ -44,7 +44,6 @@ namespace Nepomuk {
         class Private;
         Private* const d;
 
-        Q_PRIVATE_SLOT( d, void _k_queryReady( Soprano::Util::AsyncQuery* ) )
         Q_PRIVATE_SLOT( d, void _k_queryNextReady( Soprano::Util::AsyncQuery* ) )
         Q_PRIVATE_SLOT( d, void _k_queryFinished( Soprano::Util::AsyncQuery* ) )
     };
