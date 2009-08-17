@@ -22,10 +22,10 @@
 #include "newclassdialog.h"
 #include "resourcepropertymodel.h"
 #include "resourcepropertydelegate.h"
-#include "asyncloadingresourcemodel.h"
-#include "resourcedelegate.h"
-#include "kpixmapsequenceoverlaypainter.h"
 #include "nepomukcontext.h"
+#include "resourceeditor.h"
+#include "resourceview.h"
+#include "resourcemodel.h"
 
 #include <QtGui/QTreeView>
 #include <QtGui/QListView>
@@ -74,15 +74,6 @@ MainWindow::MainWindow()
     m_pimoView->setAcceptDrops(true);
     m_pimoView->setDropIndicatorShown(true);
 
-    m_resourceModel = new Nepomuk::AsyncLoadingResourceModel( m_resourceView );
-    m_resourceView->setModel( m_resourceModel );
-    m_resourceView->setContextMenuPolicy( Qt::CustomContextMenu );
-    Nepomuk::ResourceDelegate* delegate = new Nepomuk::ResourceDelegate( this );
-    delegate->setDisplayMode( Nepomuk::AbstractResourceGuiItem::DisplayFull );
-    m_resourceView->setItemDelegateForColumn( 0, delegate );
-    m_resourceView->setIconSize( QSize( 48, 48 ) );
-    m_resourceView->setSpacing( KDialog::spacingHint() );
-
     m_propertyModel = new Nepomuk::ResourcePropertyEditModel( m_propertyView );
     m_propertyView->setModel( m_propertyModel );
     m_propertyView->header()->hide();
@@ -100,10 +91,10 @@ MainWindow::MainWindow()
              this, SLOT( slotCurrentPIMOClassChanged( const QModelIndex&, const QModelIndex& ) ) );
     connect( m_resourceView->selectionModel(), SIGNAL( selectionChanged( const QItemSelection&, const QItemSelection& ) ),
              this, SLOT( slotCurrentResourceChanged( const QItemSelection&, const QItemSelection& ) ) );
-    connect( m_resourceModel, SIGNAL( modelReset() ),
-             m_propertyModel, SLOT( clear() ) );
     connect( m_baseClassCombo, SIGNAL( activated( int ) ),
              this, SLOT( slotBaseClassChanged( int ) ) );
+
+    m_resourceEditor->hide();
 }
 
 
@@ -185,15 +176,11 @@ void MainWindow::slotCurrentPIMOClassChanged( const QModelIndex& current, const 
     if ( current.isValid() ) {
         Nepomuk::Types::Class type = current.data( Nepomuk::PIMOItemModel::TypeRole ).value<Nepomuk::Types::Class>();
         kDebug() << "Selection changed:" << type.label();
-
-        KPixmapSequenceOverlayPainter* op = new KPixmapSequenceOverlayPainter( this );
-        op->setWidget( m_resourceView->viewport() );
-        op->setPosition( Qt::AlignCenter );
-        connect( m_resourceModel, SIGNAL( finishedLoading() ), op, SLOT( deleteLater() ) );
-        op->start();
-
-        m_resourceModel->loadResourcesOfType( type );
+        m_resourceView->setType( type );
     }
+
+    m_resourceEditor->hide();
+    m_propertyModel->clear();
 }
 
 
@@ -201,10 +188,14 @@ void MainWindow::slotCurrentResourceChanged( const QItemSelection& current, cons
 {
     kDebug();
     if ( !current.indexes().isEmpty() ) {
-        m_propertyModel->setResource( current.indexes().first().data( Nepomuk::ResourceModel::ResourceUriRole ).value<QUrl>() );
+        QUrl res = current.indexes().first().data( Nepomuk::ResourceModel::ResourceUriRole ).value<QUrl>();
+        m_propertyModel->setResource( res );
+        m_resourceEditor->setResource( res );
+        m_resourceEditor->show();
     }
     else {
         m_propertyModel->clear();
+        m_resourceEditor->hide();
     }
 }
 
@@ -251,7 +242,7 @@ void MainWindow::slotCreateResource()
     Nepomuk::Resource res = NewClassDialog::createResource( selectedClass(), this );
     if ( res.isValid() ) {
         // update
-        m_resourceModel->addResource( res );
+        m_resourceView->addResource( res );
     }
 }
 

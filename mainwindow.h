@@ -30,7 +30,6 @@ class QSortFilterProxyModel;
 class KAction;
 namespace Nepomuk {
     class PIMOItemModel;
-    class AsyncLoadingResourceModel;
     class ResourcePropertyEditModel;
 }
 
@@ -60,7 +59,6 @@ private:
 
     Nepomuk::PIMOItemModel* m_pimoModel;
     QSortFilterProxyModel* m_pimoSortModel;
-    Nepomuk::AsyncLoadingResourceModel* m_resourceModel;
     Nepomuk::ResourcePropertyEditModel* m_propertyModel;
 
     KAction* m_actionNewSubClass;

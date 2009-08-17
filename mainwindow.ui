@@ -1,62 +1,79 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>MainWindow</class>
- <widget class="QWidget" name="MainWindow" >
-  <property name="geometry" >
+ <widget class="QWidget" name="MainWindow">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>596</width>
-    <height>547</height>
+    <width>849</width>
+    <height>621</height>
    </rect>
   </property>
-  <layout class="QVBoxLayout" >
-   <item>
-    <layout class="QGridLayout" >
-     <item row="0" column="0" >
-      <layout class="QHBoxLayout" >
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <layout class="QGridLayout">
+     <item row="0" column="0">
+      <layout class="QHBoxLayout">
        <item>
-        <widget class="QLabel" name="label" >
-         <property name="text" >
+        <widget class="QLabel" name="label">
+         <property name="text">
           <string>Classes:</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="m_baseClassCombo" />
+        <widget class="QComboBox" name="m_baseClassCombo"/>
        </item>
       </layout>
      </item>
-     <item row="0" column="1" >
-      <widget class="QLabel" name="m_labelResourceViewTitle" >
-       <property name="text" >
+     <item row="0" column="1">
+      <widget class="QLabel" name="m_labelResourceViewTitle">
+       <property name="text">
         <string>All Resources</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="0" >
-      <widget class="QTreeView" name="m_pimoView" />
+     <item row="1" column="0">
+      <widget class="QTreeView" name="m_pimoView"/>
      </item>
-     <item row="1" column="1" >
-      <widget class="QListView" name="m_resourceView" />
+     <item row="1" column="1">
+      <widget class="ResourceView" name="m_resourceView"/>
      </item>
     </layout>
    </item>
-   <item>
-    <layout class="QVBoxLayout" >
+   <item row="0" column="1" rowspan="2">
+    <widget class="Nepomuk::ResourceEditor" name="m_resourceEditor" native="true"/>
+   </item>
+   <item row="1" column="0">
+    <layout class="QVBoxLayout">
      <item>
-      <widget class="QLabel" name="label_2" >
-       <property name="text" >
+      <widget class="QLabel" name="label_2">
+       <property name="text">
         <string>Properties:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QTreeView" name="m_propertyView" />
+      <widget class="QTreeView" name="m_propertyView"/>
      </item>
     </layout>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Nepomuk::ResourceEditor</class>
+   <extends>QWidget</extends>
+   <header>resourceeditor.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ResourceView</class>
+   <extends>QListView</extends>
+   <header>resourceview.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -25,6 +25,7 @@ set( nepomukshell_BIN_SRCS
   resourcepropertydelegate.cpp
   asyncquery.cpp
   asyncloadingresourcemodel.cpp
+  resourceview.cpp
   ${nepomuk_kde_SOURCE_DIR}/misc/kpixmapsequence.cpp
   ${nepomuk_kde_SOURCE_DIR}/misc/kpixmapsequenceoverlaypainter.cpp
 )
@@ -39,6 +40,7 @@ target_link_libraries(nepomukshell
   pimo
   nepomukcompletion
   nepomukcontext
+  nepomukannotation
   ${NEPOMUK_LIBRARIES}
   ${QT_QTGUI_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
