@@ -10,7 +10,7 @@ include_directories(
   ${pimolib_SOURCE_DIR}
   ${pimolib_BINARY_DIR}
   ${nepomuk_visualization_SOURCE_DIR}
-  ${nepomukcompletion_SOURCE_DIR}
+  ${nepomukutils_SOURCE_DIR}
   ${nepomuk_kde_SOURCE_DIR}/misc
   ${nepomuk_kde_SOURCE_DIR}/usercontext/lib
   ${nepomuk_kde_BINARY_DIR}/usercontext/lib
@@ -37,8 +37,7 @@ kde4_add_executable(nepomukshell ${nepomukshell_BIN_SRCS})
 
 target_link_libraries(nepomukshell
   nepomukvisualization
-  pimo
-  nepomukcompletion
+  nepomukutils
   nepomukcontext
   nepomukannotation
   ${NEPOMUK_LIBRARIES}
