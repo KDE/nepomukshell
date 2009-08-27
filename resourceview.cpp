@@ -62,7 +62,6 @@ void ResourceView::setType( const Nepomuk::Types::Class& type )
 {
     KPixmapSequenceOverlayPainter* op = new KPixmapSequenceOverlayPainter( this );
     op->setWidget( viewport() );
-    op->setPosition( Qt::AlignCenter );
     connect( m_resourceModel, SIGNAL( finishedLoading() ), op, SLOT( deleteLater() ) );
     op->start();
 
