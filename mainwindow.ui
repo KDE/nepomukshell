@@ -10,54 +10,73 @@
     <height>621</height>
    </rect>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <layout class="QGridLayout">
-     <item row="0" column="0">
-      <layout class="QHBoxLayout">
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Classes:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="m_baseClassCombo"/>
-       </item>
-      </layout>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="m_labelResourceViewTitle">
-       <property name="text">
-        <string>All Resources</string>
+  <layout class="QVBoxLayout" name="verticalLayout_3">
+   <item>
+    <widget class="QSplitter" name="splitter_3">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QSplitter" name="splitter_2">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <widget class="QSplitter" name="splitter">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
+       <widget class="QWidget" name="">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <layout class="QHBoxLayout">
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Classes:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="m_baseClassCombo"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QTreeView" name="m_pimoView"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="">
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QLabel" name="m_labelResourceViewTitle">
+           <property name="text">
+            <string>All Resources</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="ResourceView" name="m_resourceView"/>
+         </item>
+        </layout>
+       </widget>
       </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QTreeView" name="m_pimoView"/>
-     </item>
-     <item row="1" column="1">
-      <widget class="ResourceView" name="m_resourceView"/>
-     </item>
-    </layout>
-   </item>
-   <item row="0" column="1" rowspan="2">
-    <widget class="Nepomuk::ResourceEditor" name="m_resourceEditor" native="true"/>
-   </item>
-   <item row="1" column="0">
-    <layout class="QVBoxLayout">
-     <item>
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Properties:</string>
-       </property>
+      <widget class="QWidget" name="">
+       <layout class="QVBoxLayout">
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Properties:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTreeView" name="m_propertyView"/>
+        </item>
+       </layout>
       </widget>
-     </item>
-     <item>
-      <widget class="QTreeView" name="m_propertyView"/>
-     </item>
-    </layout>
+     </widget>
+     <widget class="Nepomuk::ResourceEditor" name="m_resourceEditor" native="true"/>
+    </widget>
    </item>
   </layout>
  </widget>
