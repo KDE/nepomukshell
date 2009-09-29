@@ -71,6 +71,7 @@ void Nepomuk::AsyncLoadingResourceModel::Private::query()
 
 void Nepomuk::AsyncLoadingResourceModel::Private::_k_queryNextReady( Soprano::Util::AsyncQuery* query )
 {
+    ++m_lastCount;
     Soprano::Node r = query->binding( "r" );
     q->addResource( r.uri() );
     query->next();
