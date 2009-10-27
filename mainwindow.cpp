@@ -67,9 +67,11 @@ MainWindow::MainWindow()
     m_pimoSortModel = new QSortFilterProxyModel( m_pimoView );
     m_pimoSortModel->setSourceModel( m_pimoModel );
     m_pimoSortModel->setSortCaseSensitivity( Qt::CaseInsensitive );
+    m_pimoSortModel->setDynamicSortFilter( true );
     m_pimoView->setModel( m_pimoSortModel );
     m_pimoView->setContextMenuPolicy( Qt::CustomContextMenu );
     m_pimoView->setSortingEnabled( true );
+    m_pimoView->sortByColumn( 0, Qt::AscendingOrder );
     m_pimoView->setDragEnabled(true);
     m_pimoView->setAcceptDrops(true);
     m_pimoView->setDropIndicatorShown(true);
@@ -141,30 +143,33 @@ void MainWindow::slotPIMOViewContextMenu( const QPoint& pos )
 void MainWindow::slotResourceViewContextMenu( const QPoint& pos )
 {
     kDebug();
-    QModelIndex index = m_resourceView->indexAt( pos );
-    if ( index.isValid() ) {
-        Nepomuk::Resource res( index.data( Nepomuk::ResourceModel::ResourceUriRole ).value<QUrl>() );
-        kDebug() << "Have valid resource" << res.resourceUri();
+    QModelIndexList selection = m_resourceView->selectionModel()->selectedIndexes();
 
+    if ( !selection.isEmpty() ) {
         QList<QAction*> actions;
 
         QAction sep( this );
         sep.setSeparator( true );
         QAction actionSetContext( KIcon( "nepomuk" ), i18n( "Set as current context" ), this );
 
-        if ( Nepomuk::ContextServiceInterface::isAvailable() ) {
+        if ( selection.count() == 1 &&
+             Nepomuk::ContextServiceInterface::isAvailable() ) {
             actions << &sep << &actionSetContext;
         }
 
-        QAction actionRemove( KIcon( "edit-delete" ), i18n( "Remove resource '%1'", res.genericLabel() ), this );
+        QAction actionRemove( KIcon( "edit-delete" ), i18n( "Remove resources" ), this );
 
         QAction* a = QMenu::exec( actions
                                   << &actionRemove,
                                   m_resourceView->viewport()->mapToGlobal( pos ) );
         if( a == &actionRemove ) {
-            res.remove();
+            foreach( const QModelIndex& index, selection ) {
+                Nepomuk::Resource res( index.data( Nepomuk::ResourceModel::ResourceUriRole ).value<QUrl>() );
+                res.remove();
+            }
         }
         else if ( a == &actionSetContext ) {
+            Nepomuk::Resource res( selection.first().data( Nepomuk::ResourceModel::ResourceUriRole ).value<QUrl>() );
             Nepomuk::ContextServiceInterface::instance()->setCurrentContext( res.resourceUri() );
         }
     }
@@ -184,17 +189,24 @@ void MainWindow::slotCurrentPIMOClassChanged( const QModelIndex& current, const 
 }
 
 
-void MainWindow::slotCurrentResourceChanged( const QItemSelection& current, const QItemSelection& )
+void MainWindow::slotCurrentResourceChanged( const QItemSelection&, const QItemSelection& )
 {
     kDebug();
-    if ( !current.indexes().isEmpty() ) {
-        QUrl res = current.indexes().first().data( Nepomuk::ResourceModel::ResourceUriRole ).value<QUrl>();
+    QModelIndexList selection = m_resourceView->selectionModel()->selectedIndexes();
+    if ( !selection.isEmpty() ) {
+        QUrl res = selection.first().data( Nepomuk::ResourceModel::ResourceUriRole ).value<QUrl>();
         m_propertyModel->setResource( res );
+    }
+    else {
+        m_propertyModel->clear();
+    }
+
+    if ( selection.count() == 1 ) {
+        QUrl res = selection.first().data( Nepomuk::ResourceModel::ResourceUriRole ).value<QUrl>();
         m_resourceEditor->setResource( res );
         m_resourceEditor->show();
     }
     else {
-        m_propertyModel->clear();
         m_resourceEditor->hide();
     }
 }
