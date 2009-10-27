@@ -50,6 +50,7 @@ ResourceView::ResourceView( QWidget* parent )
     setSpacing( KDialog::spacingHint() );
     setDragEnabled(true);
     setAcceptDrops(true);
+    setSelectionMode( QAbstractItemView::ExtendedSelection );
 }
 
 
