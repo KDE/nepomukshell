@@ -17,13 +17,13 @@
  */
 
 #include "asyncloadingresourcemodel.h"
-#include "asyncquery.h"
 
 #include <Nepomuk/ResourceManager>
 #include <Nepomuk/Types/Class>
 
 #include <Soprano/Model>
 #include <Soprano/Vocabulary/RDFS>
+#include <Soprano/Util/AsyncQuery>
 
 #include <KDebug>
 

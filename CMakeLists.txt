@@ -21,7 +21,6 @@ set( nepomukshell_BIN_SRCS
   resourcepropertymodel.cpp
   resourceinputwidget.cpp
   resourcepropertydelegate.cpp
-  asyncquery.cpp
   asyncloadingresourcemodel.cpp
   resourceview.cpp
   ${nepomuk_kde_SOURCE_DIR}/misc/kpixmapsequence.cpp
