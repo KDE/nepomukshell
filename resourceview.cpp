@@ -20,7 +20,7 @@
 #include "asyncloadingresourcemodel.h"
 
 #include "resourcedelegate.h"
-#include "kpixmapsequenceoverlaypainter.h"
+#include <kpixmasequenceoverlaypainter.h>
 #include "pimo.h"
 
 #include <Nepomuk/Thing>

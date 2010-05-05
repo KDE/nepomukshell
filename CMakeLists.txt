@@ -23,8 +23,6 @@ set( nepomukshell_BIN_SRCS
   resourcepropertydelegate.cpp
   asyncloadingresourcemodel.cpp
   resourceview.cpp
-  ${nepomuk_kde_SOURCE_DIR}/misc/kpixmapsequence.cpp
-  ${nepomuk_kde_SOURCE_DIR}/misc/kpixmapsequenceoverlaypainter.cpp
 )
 
 kde4_add_ui_files(nepomukshell_BIN_SRCS mainwindow.ui)
