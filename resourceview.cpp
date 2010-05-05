@@ -20,13 +20,13 @@
 #include "asyncloadingresourcemodel.h"
 
 #include "resourcedelegate.h"
-#include <kpixmasequenceoverlaypainter.h>
 #include "pimo.h"
 
 #include <Nepomuk/Thing>
 #include <Nepomuk/Variant>
 #include <Nepomuk/Types/Class>
 
+#include <kpixmapsequenceoverlaypainter.h>
 #include <KDialog>
 #include <KUrl>
 #include <KDebug>
