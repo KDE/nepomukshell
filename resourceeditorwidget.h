@@ -42,11 +42,15 @@ public:
 
     Nepomuk::Resource resource() const { return m_resource; }
 
+Q_SIGNALS:
+    void resourceActivated( const Nepomuk::Resource& res );
+
 public Q_SLOTS:
     void setResource( const Nepomuk::Resource& res );
 
 private Q_SLOTS:
     void slotPropertyContextMenu( const QPoint& pos );
+    void slotNodeActivated( const QModelIndex& index );
 
 private:
     Nepomuk::ResourcePropertyEditModel* m_propertyModel;

@@ -66,9 +66,12 @@ MainWindow::MainWindow()
 
     connect( m_resourceBrowser, SIGNAL(resourcesSelected(QList<Nepomuk::Resource>)),
              this, SLOT(slotResourcesSelected(QList<Nepomuk::Resource>)) );
+
     connect( m_resourceBrowser, SIGNAL(resourceActivated(Nepomuk::Resource)),
              this, SLOT(slotResourceActivated(Nepomuk::Resource)) );
     connect( m_resourceQueryWidget, SIGNAL(resourceActivated(Nepomuk::Resource)),
+             this, SLOT(slotResourceActivated(Nepomuk::Resource)) );
+    connect( m_resourceEditor, SIGNAL(resourceActivated(Nepomuk::Resource)),
              this, SLOT(slotResourceActivated(Nepomuk::Resource)) );
 
     // init
@@ -194,6 +197,7 @@ void MainWindow::slotResourceActivated( const Nepomuk::Resource& res )
     m_resourceEditor->setResource( res );
     m_actionModeEdit->setChecked( true );
     m_mainStack->setCurrentWidget( m_resourceEditor );
+    slotResourcesSelected( selectedResources() );
 }
 
 

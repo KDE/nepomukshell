@@ -235,6 +235,24 @@ bool Nepomuk::ResourcePropertyEditModel::setData( const QModelIndex& index, cons
 }
 
 
+Soprano::Node Nepomuk::ResourcePropertyEditModel::nodeForIndex( const QModelIndex& index ) const
+{
+    if( index.isValid() &&
+        index.row() < d->m_properties.count() ) {
+        switch( index.column() ) {
+        case 0:
+            return d->m_properties[index.row()].first.predicate();
+        case 1:
+            return d->m_properties[index.row()].first.object();
+        case 2:
+            return Soprano::LiteralValue( d->m_properties[index.row()].second );
+        }
+    }
+
+    return Soprano::Node();
+}
+
+
 QModelIndex Nepomuk::ResourcePropertyEditModel::parent( const QModelIndex& index ) const
 {
     return QModelIndex();

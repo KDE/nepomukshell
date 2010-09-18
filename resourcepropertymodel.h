@@ -23,6 +23,7 @@
 #include <QtCore/QList>
 
 #include <Soprano/Statement>
+#include <Soprano/Node>
 
 
 class QUrl;
@@ -56,6 +57,8 @@ namespace Nepomuk {
 
         bool removeRows( int row, int count, const QModelIndex& parent = QModelIndex() );
         bool setData( const QModelIndex& index, const QVariant& value, int role );
+
+        Soprano::Node nodeForIndex( const QModelIndex& index ) const;
 
     public Q_SLOTS:
         /**

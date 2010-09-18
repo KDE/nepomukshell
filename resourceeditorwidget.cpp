@@ -41,6 +41,8 @@ ResourceEditorWidget::ResourceEditorWidget( QWidget* parent )
 
     connect( m_propertyView, SIGNAL( customContextMenuRequested( const QPoint& ) ),
              this, SLOT( slotPropertyContextMenu( const QPoint& ) ) );
+    connect( m_propertyView, SIGNAL(doubleClicked(QModelIndex)),
+             this, SLOT(slotNodeActivated(QModelIndex)) );
 }
 
 
@@ -79,6 +81,18 @@ void ResourceEditorWidget::slotPropertyContextMenu( const QPoint& pos )
         }
     }
 
+}
+
+
+void ResourceEditorWidget::slotNodeActivated( const QModelIndex& index )
+{
+    Soprano::Node node = m_propertyModel->nodeForIndex( index );
+    if ( node.isValid() && node.isResource() ) {
+        Nepomuk::Resource res( node.uri() );
+        if( res.exists() ) {
+            emit resourceActivated( res );
+        }
+    }
 }
 
 #include "resourceeditorwidget.moc"
