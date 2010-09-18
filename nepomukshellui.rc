@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gui name="nepomukshell"
-     version="1"
+     version="2"
      xmlns="http://www.kde.org/standards/kxmlgui/1.0"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xsi:schemaLocation="http://www.kde.org/standards/kxmlgui/1.0
@@ -14,6 +14,15 @@
       <Separator />
       <Action name="quit" />
     </Menu>
+    <Menu name="view" >
+      <Action name="mode_browse" />
+      <Action name="mode_query" />
+      <Action name="mode_edit" />
+    </Menu>
+    <Menu name="resource" >
+     <text>Resource</text>
+     <Action name="resource_delete" />
+    </Menu>
   </MenuBar>
 
   <ToolBar name="mainToolBar" >
@@ -21,6 +30,12 @@
     <Action name="create_class" />
     <Action name="create_property" />
     <Action name="create_resource" />
+    <Separator />
+    <Action name="mode_browse" />
+    <Action name="mode_query" />
+    <Action name="mode_edit" />
+    <Separator />
+    <Action name="resource_delete" />
   </ToolBar>
 
 </gui>

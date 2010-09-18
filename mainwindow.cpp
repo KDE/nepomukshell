@@ -19,22 +19,17 @@
 #include "mainwindow.h"
 #include "pimoitemmodel.h"
 #include "pimo.h"
-#include "newclassdialog.h"
 #include "resourcepropertymodel.h"
 #include "resourcepropertydelegate.h"
 #include "nepomukcontext.h"
 #include "resourceeditor.h"
 #include "resourceview.h"
 #include "resourcemodel.h"
+#include "resourcebrowserwidget.h"
+#include "resourceeditorwidget.h"
+#include "resourcequerywidget.h"
 
-#include <QtGui/QTreeView>
-#include <QtGui/QListView>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QMenu>
-#include <QtGui/QHeaderView>
-#include <QtGui/QComboBox>
-#include <QtGui/QItemSelectionModel>
-#include <QtGui/QSortFilterProxyModel>
+#include <QtGui/QStackedWidget>
 
 #include <nepomuk/class.h>
 #include <nepomuk/property.h>
@@ -46,6 +41,8 @@
 #include <KStandardAction>
 #include <KActionCollection>
 #include <KApplication>
+#include <KToggleAction>
+#include <KMessageBox>
 
 #include <Soprano/Vocabulary/RDFS>
 
@@ -53,50 +50,31 @@
 MainWindow::MainWindow()
     : KXmlGuiWindow( 0 )
 {
-    QWidget* w = new QWidget( this );
-    setCentralWidget( w );
-    setupUi( w );
+    m_mainStack = new QStackedWidget( this );
+    setCentralWidget( m_mainStack );
+
+    m_resourceBrowser = new ResourceBrowserWidget( actionCollection(), m_mainStack );
+    m_mainStack->addWidget( m_resourceBrowser );
+
+    m_resourceQueryWidget = new ResourceQueryWidget( m_mainStack );
+    m_mainStack->addWidget( m_resourceQueryWidget );
+
+    m_resourceEditor = new ResourceEditorWidget( m_mainStack );
+    m_mainStack->addWidget( m_resourceEditor );
 
     setupActions();
 
-    m_pimoView->header()->hide();
-    m_pimoView->setSelectionMode( QAbstractItemView::SingleSelection );
+    connect( m_resourceBrowser, SIGNAL(resourcesSelected(QList<Nepomuk::Resource>)),
+             this, SLOT(slotResourcesSelected(QList<Nepomuk::Resource>)) );
+    connect( m_resourceBrowser, SIGNAL(resourceActivated(Nepomuk::Resource)),
+             this, SLOT(slotResourceActivated(Nepomuk::Resource)) );
+    connect( m_resourceQueryWidget, SIGNAL(resourceActivated(Nepomuk::Resource)),
+             this, SLOT(slotResourceActivated(Nepomuk::Resource)) );
 
-    m_pimoModel = new Nepomuk::PIMOItemModel( m_pimoView );
-    m_pimoModel->setParentClass( Nepomuk::Vocabulary::PIMO::Thing() );
-    m_pimoSortModel = new QSortFilterProxyModel( m_pimoView );
-    m_pimoSortModel->setSourceModel( m_pimoModel );
-    m_pimoSortModel->setSortCaseSensitivity( Qt::CaseInsensitive );
-    m_pimoSortModel->setDynamicSortFilter( true );
-    m_pimoView->setModel( m_pimoSortModel );
-    m_pimoView->setContextMenuPolicy( Qt::CustomContextMenu );
-    m_pimoView->setSortingEnabled( true );
-    m_pimoView->sortByColumn( 0, Qt::AscendingOrder );
-    m_pimoView->setDragEnabled(true);
-    m_pimoView->setAcceptDrops(true);
-    m_pimoView->setDropIndicatorShown(true);
-
-    m_propertyModel = new Nepomuk::ResourcePropertyEditModel( m_propertyView );
-    m_propertyView->setModel( m_propertyModel );
-    m_propertyView->header()->hide();
-    m_propertyView->header()->setResizeMode( QHeaderView::ResizeToContents );
-    m_propertyView->setItemDelegateForColumn( 1, new Nepomuk::ResourcePropertyDelegate( m_propertyView ) );
-
-    m_baseClassCombo->addItem( "PIMO Classes", QVariant( Nepomuk::Vocabulary::PIMO::Thing() ) );
-    m_baseClassCombo->addItem( "All Classes", QVariant( Soprano::Vocabulary::RDFS::Resource() ) );
-
-    connect( m_pimoView, SIGNAL( customContextMenuRequested( const QPoint& ) ),
-             this, SLOT( slotPIMOViewContextMenu( const QPoint& ) ) );
-    connect( m_resourceView, SIGNAL( customContextMenuRequested( const QPoint& ) ),
-             this, SLOT( slotResourceViewContextMenu( const QPoint& ) ) );
-    connect( m_pimoView->selectionModel(), SIGNAL( currentChanged( const QModelIndex&, const QModelIndex& ) ),
-             this, SLOT( slotCurrentPIMOClassChanged( const QModelIndex&, const QModelIndex& ) ) );
-    connect( m_resourceView->selectionModel(), SIGNAL( selectionChanged( const QItemSelection&, const QItemSelection& ) ),
-             this, SLOT( slotCurrentResourceChanged( const QItemSelection&, const QItemSelection& ) ) );
-    connect( m_baseClassCombo, SIGNAL( activated( int ) ),
-             this, SLOT( slotBaseClassChanged( int ) ) );
-
-    m_resourceEditor->hide();
+    // init
+    m_actionModeBrowse->setChecked( true );
+    m_actionDelete->setEnabled( false );
+    slotResourcesSelected( QList<Nepomuk::Resource>() );
 }
 
 
@@ -105,156 +83,129 @@ MainWindow::~MainWindow()
 }
 
 
+QList<Nepomuk::Resource> MainWindow::selectedResources() const
+{
+    if( m_mainStack->currentWidget() == m_resourceBrowser )
+        return m_resourceBrowser->selectedResources();
+    else if( m_mainStack->currentWidget() == m_resourceEditor )
+        return QList<Nepomuk::Resource>() << m_resourceEditor->resource();
+    else
+        return QList<Nepomuk::Resource>();
+}
+
+
 void MainWindow::setupActions()
 {
+    // ontology handling actions
+    // =============================================
     m_actionNewSubClass = new KAction( KIcon( "document-new" ), i18n( "Create Subclass" ), actionCollection() );
     m_actionNewProperty = new KAction( KIcon( "document-new" ), i18n( "Create Property" ), actionCollection() );
     m_actionNewResource = new KAction( KIcon( "document-new" ), i18n( "Create Resource" ), actionCollection() );
 
-    connect( m_actionNewSubClass, SIGNAL(triggered(bool)), this, SLOT(slotCreateClass()) );
-    connect( m_actionNewProperty, SIGNAL(triggered(bool)), this, SLOT(slotCreateProperty()) );
-    connect( m_actionNewResource, SIGNAL(triggered(bool)), this, SLOT(slotCreateResource()) );
+    connect( m_actionNewSubClass, SIGNAL(triggered(bool)), m_resourceBrowser, SLOT(createClass()) );
+    connect( m_actionNewProperty, SIGNAL(triggered(bool)), m_resourceBrowser, SLOT(createProperty()) );
+    connect( m_actionNewResource, SIGNAL(triggered(bool)), m_resourceBrowser, SLOT(createResource()) );
 
     actionCollection()->addAction( "create_class", m_actionNewSubClass );
     actionCollection()->addAction( "create_property", m_actionNewProperty );
     actionCollection()->addAction( "create_resource", m_actionNewResource );
 
+
+    // mode actions
+    // =============================================
+    m_actionModeBrowse = new KToggleAction( actionCollection() );
+    m_actionModeBrowse->setText( i18n("Browse Resources") );
+    m_actionModeBrowse->setIcon( KIcon("FIXME") );
+    actionCollection()->addAction( "mode_browse", m_actionModeBrowse );
+    connect( m_actionModeBrowse, SIGNAL(triggered()), this, SLOT(slotModeBrowse()) );
+
+    m_actionModeQuery = new KToggleAction( actionCollection() );
+    m_actionModeQuery->setText( i18n("Query Resources") );
+    m_actionModeQuery->setIcon( KIcon("FIXME") );
+    actionCollection()->addAction( "mode_query", m_actionModeQuery );
+    connect( m_actionModeQuery, SIGNAL(triggered()), this, SLOT(slotModeQuery()) );
+
+    m_actionModeEdit = new KToggleAction( actionCollection() );
+    m_actionModeEdit->setText( i18n("Edit Resource") );
+    m_actionModeEdit->setIcon( KIcon("FIXME") );
+    actionCollection()->addAction( "mode_edit", m_actionModeEdit );
+    connect( m_actionModeEdit, SIGNAL(triggered()), this, SLOT(slotModeEdit()) );
+
+    QActionGroup* modeGroup = new QActionGroup( this );
+    modeGroup->setExclusive( true );
+    modeGroup->addAction( m_actionModeBrowse );
+    modeGroup->addAction( m_actionModeQuery );
+    modeGroup->addAction( m_actionModeEdit );
+
+
+    // resource actions
+    // =============================================
+    m_actionDelete = new KAction( actionCollection() );
+    m_actionDelete->setText( i18n("Delete Resource") );
+    m_actionDelete->setIcon( KIcon("edit-delete") );
+    actionCollection()->addAction( "resource_delete", m_actionDelete );
+    connect( m_actionDelete, SIGNAL(triggered()), this, SLOT(slotDeleteResource()) );
+
+    // misc actions
+    // =============================================
     KStandardAction::quit( kapp, SLOT( quit() ), actionCollection() );
 
     setupGUI();
 }
 
 
-void MainWindow::slotPIMOViewContextMenu( const QPoint& pos )
-{
-    QModelIndex index = m_pimoView->indexAt( pos );
-    if ( index.isValid() ) {
-        Nepomuk::Types::Class type = index.data( Nepomuk::PIMOItemModel::TypeRole ).value<Nepomuk::Types::Class>();
-
-        QMenu::exec( QList<QAction*>()
-                     << m_actionNewSubClass
-                     << m_actionNewProperty
-                     << m_actionNewResource,
-                     m_pimoView->viewport()->mapToGlobal( pos ) );
-    }
-}
-
-
-void MainWindow::slotResourceViewContextMenu( const QPoint& pos )
+void MainWindow::slotModeBrowse()
 {
     kDebug();
-    QModelIndexList selection = m_resourceView->selectionModel()->selectedIndexes();
-
-    if ( !selection.isEmpty() ) {
-        QList<QAction*> actions;
-
-        QAction sep( this );
-        sep.setSeparator( true );
-        QAction actionSetContext( KIcon( "nepomuk" ), i18n( "Set as current context" ), this );
-
-        if ( selection.count() == 1 &&
-             Nepomuk::ContextServiceInterface::isAvailable() ) {
-            actions << &sep << &actionSetContext;
-        }
-
-        QAction actionRemove( KIcon( "edit-delete" ), i18n( "Remove resources" ), this );
-
-        QAction* a = QMenu::exec( actions
-                                  << &actionRemove,
-                                  m_resourceView->viewport()->mapToGlobal( pos ) );
-        if( a == &actionRemove ) {
-            foreach( const QModelIndex& index, selection ) {
-                Nepomuk::Resource res( index.data( Nepomuk::ResourceModel::ResourceUriRole ).value<QUrl>() );
-                res.remove();
-            }
-        }
-        else if ( a == &actionSetContext ) {
-            Nepomuk::Resource res( selection.first().data( Nepomuk::ResourceModel::ResourceUriRole ).value<QUrl>() );
-            Nepomuk::ContextServiceInterface::instance()->setCurrentContext( res.resourceUri() );
-        }
-    }
- }
-
-
-void MainWindow::slotCurrentPIMOClassChanged( const QModelIndex& current, const QModelIndex& )
-{
-    if ( current.isValid() ) {
-        Nepomuk::Types::Class type = current.data( Nepomuk::PIMOItemModel::TypeRole ).value<Nepomuk::Types::Class>();
-        kDebug() << "Selection changed:" << type.label();
-        m_resourceView->setType( type );
-    }
-
-    m_resourceEditor->hide();
-    m_propertyModel->clear();
+    m_mainStack->setCurrentWidget( m_resourceBrowser );
+    slotResourcesSelected( selectedResources() );
 }
 
 
-void MainWindow::slotCurrentResourceChanged( const QItemSelection&, const QItemSelection& )
+void MainWindow::slotModeQuery()
 {
     kDebug();
-    QModelIndexList selection = m_resourceView->selectionModel()->selectedIndexes();
-    if ( !selection.isEmpty() ) {
-        QUrl res = selection.first().data( Nepomuk::ResourceModel::ResourceUriRole ).value<QUrl>();
-        m_propertyModel->setResource( res );
+    m_mainStack->setCurrentWidget( m_resourceQueryWidget );
+    // in query mode we do not have a selected resource
+    slotResourcesSelected( selectedResources() );
+}
+
+
+void MainWindow::slotModeEdit()
+{
+    kDebug();
+    if( selectedResources().count() == 1 ) {
+        m_resourceEditor->setResource( selectedResources().first() );
+        m_mainStack->setCurrentWidget( m_resourceEditor );
+    }
+}
+
+
+void MainWindow::slotResourcesSelected( const QList<Nepomuk::Resource>& res )
+{
+    m_actionModeEdit->setEnabled( res.count() == 1 );
+    m_actionDelete->setEnabled( !res.isEmpty() );
+}
+
+
+void MainWindow::slotResourceActivated( const Nepomuk::Resource& res )
+{
+    kDebug() << res.resourceUri();
+    m_resourceEditor->setResource( res );
+    m_actionModeEdit->setChecked( true );
+    m_mainStack->setCurrentWidget( m_resourceEditor );
+}
+
+
+void MainWindow::slotDeleteResource()
+{
+    QList<Nepomuk::Resource> rl = selectedResources();
+    if( rl.isEmpty() ) {
+        KMessageBox::sorry( this, i18n("No Resource to delete selected.") );
     }
     else {
-        m_propertyModel->clear();
-    }
-
-    if ( selection.count() == 1 ) {
-        QUrl res = selection.first().data( Nepomuk::ResourceModel::ResourceUriRole ).value<QUrl>();
-        m_resourceEditor->setResource( res );
-        m_resourceEditor->show();
-    }
-    else {
-        m_resourceEditor->hide();
-    }
-}
-
-
-void MainWindow::slotBaseClassChanged( int index )
-{
-    m_pimoModel->setParentClass( m_baseClassCombo->itemData( index ).toUrl() );
-}
-
-
-Nepomuk::Types::Class MainWindow::selectedClass() const
-{
-    QModelIndex current = m_pimoView->selectionModel()->currentIndex();
-    if ( current.isValid() )
-        return current.data( Nepomuk::PIMOItemModel::TypeRole ).value<Nepomuk::Types::Class>();
-    else
-        return m_pimoModel->parentClass();
-}
-
-
-void MainWindow::slotCreateClass()
-{
-    Nepomuk::Types::Class newClass = NewClassDialog::createClass( selectedClass(), this );
-    if ( newClass.isValid() ) {
-        // update the model
-        m_pimoModel->updateClass( selectedClass() );
-    }
-}
-
-
-void MainWindow::slotCreateProperty()
-{
-    // create a new resource
-    if ( NewClassDialog::createProperty( selectedClass(), this ).isValid() ) {
-        selectedClass().reset( false );
-        // FIXME: udpate property model if necessary
-    }
-}
-
-
-void MainWindow::slotCreateResource()
-{
-    // create a new resource
-    Nepomuk::Resource res = NewClassDialog::createResource( selectedClass(), this );
-    if ( res.isValid() ) {
-        // update
-        m_resourceView->addResource( res );
+        Q_FOREACH( Nepomuk::Resource res, rl )
+            res.remove();
     }
 }
 

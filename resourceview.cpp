@@ -43,10 +43,6 @@ ResourceView::ResourceView( QWidget* parent )
     m_resourceModel = new Nepomuk::AsyncLoadingResourceModel( this );
     setModel( m_resourceModel );
     setContextMenuPolicy( Qt::CustomContextMenu );
-    Nepomuk::ResourceDelegate* delegate = new Nepomuk::ResourceDelegate( this );
-    delegate->setDisplayMode( Nepomuk::AbstractResourceGuiItem::DisplayFull );
-    setItemDelegateForColumn( 0, delegate );
-    setIconSize( QSize( 48, 48 ) );
     setSpacing( KDialog::spacingHint() );
     setDragEnabled(true);
     setAcceptDrops(true);

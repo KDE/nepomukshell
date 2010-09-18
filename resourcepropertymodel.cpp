@@ -19,6 +19,7 @@
 #include "resourcepropertymodel.h"
 
 #include <nepomuk/resource.h>
+#include <nepomuk/resourcemanager.h>
 #include <nepomuk/class.h>
 #include <nepomuk/property.h>
 #include <nepomuk/variant.h>
@@ -29,103 +30,43 @@
 #include <KMessageBox>
 
 #include <QtGui/QFont>
+#include <QtCore/QPair>
+#include <QtCore/QList>
+
+#include <Soprano/Statement>
+#include <Soprano/Node>
+#include <Soprano/LiteralValue>
+#include <Soprano/Model>
+#include <Soprano/Vocabulary/NAO>
+#include <Soprano/QueryResultIterator>
+
 
 Q_DECLARE_METATYPE( Nepomuk::Types::Property )
 Q_DECLARE_METATYPE( Nepomuk::Variant )
-
-class Node
-{
-public:
-    Node( int r )
-        : row( r ) {
-    }
-    virtual ~Node() {
-    }
-
-    int row;
-};
-
-
-class TypeNode;
-
-class PropertyNode : public Node
-{
-public:
-    PropertyNode( const Nepomuk::Types::Property& p, TypeNode* parentNode, int row = 0 )
-        : Node( row ),
-          property( p ),
-          typeNode( parentNode ) {
-    }
-    ~PropertyNode();
-
-    Nepomuk::Types::Property property;
-    Soprano::Node value;
-
-    TypeNode* typeNode;
-};
-
-
-class TypeNode : public Node
-{
-public:
-    TypeNode( const Nepomuk::Types::Class& t,  int row = 0 )
-        : Node( row ),
-          type( t ),
-          initialized( false ) {
-    }
-    ~TypeNode() {
-        qDeleteAll( propertyNodes );
-    }
-
-    Nepomuk::Types::Class type;
-
-    QList<PropertyNode*> propertyNodes;
-
-    bool initialized;
-
-    void updateProperties();
-};
-
-
-void TypeNode::updateProperties()
-{
-    qDeleteAll( propertyNodes );
-    propertyNodes.clear();
-    int i = 0;
-    foreach( Nepomuk::Types::Property p, type.domainOf() ) {
-        propertyNodes.append( new PropertyNode( p, this, i++ ) );
-    }
-}
-
-PropertyNode::~PropertyNode()
-{
-}
-
 
 
 class Nepomuk::ResourcePropertyEditModel::Private
 {
 public:
-    Resource resource;
-    QList<Types::Class> types;
-    QList<TypeNode*> typeNodes;
+    Resource m_resource;
+    QList<QPair<Soprano::Statement, QDateTime> > m_properties;
 
-    void updateTypeNodes();
+    void rebuild();
 };
 
 
-void Nepomuk::ResourcePropertyEditModel::Private::updateTypeNodes()
+void Nepomuk::ResourcePropertyEditModel::Private::rebuild()
 {
-    qDeleteAll( typeNodes );
-    typeNodes.clear();
-    QSet<Types::Class> cl;
-    foreach( Types::Class t, types ) {
-        cl += t.allParentClasses().toSet();
-        cl += t;
-    }
-    int i = 0;
-    foreach( Types::Class t, cl ) {
-        typeNodes.append( new TypeNode( t, i++ ) );
+    m_properties.clear();
+
+    // we get all statements + their creation date
+    const QString query = QString::fromLatin1("select ?p ?o ?g ?d where { graph ?g { %1 ?p ?o } . OPTIONAL { ?g %2 ?d . } }")
+                          .arg(Soprano::Node::resourceToN3(m_resource.resourceUri()),
+                               Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::created()));
+    Soprano::QueryResultIterator it = ResourceManager::instance()->mainModel()->executeQuery( query, Soprano::Query::QueryLanguageSparql );
+    while( it.next() ) {
+        m_properties.append( qMakePair( Soprano::Statement( m_resource.resourceUri(), it["p"], it["o"], it["g"] ),
+                                        it["d"].literal().toDateTime() ) );
     }
 }
 
@@ -145,128 +86,80 @@ Nepomuk::ResourcePropertyEditModel::~ResourcePropertyEditModel()
 
 Nepomuk::Resource Nepomuk::ResourcePropertyEditModel::resource() const
 {
-    return d->resource;
-}
-
-
-void Nepomuk::ResourcePropertyEditModel::setTypes( const QList<Types::Class>& types )
-{
-    d->types = types;
-    d->updateTypeNodes();
-    reset();
+    return d->m_resource;
 }
 
 
 void Nepomuk::ResourcePropertyEditModel::setResource( const Nepomuk::Resource& resource )
 {
-    d->resource = resource;
-    d->types.clear();
-    foreach( QUrl type, resource.types() ) {
-        d->types.append( type );
-    }
-    d->updateTypeNodes();
-    reset();
-}
-
-
-void Nepomuk::ResourcePropertyEditModel::clear()
-{
-    d->resource = Resource();
-    d->types.clear();
-    d->updateTypeNodes();
+    d->m_resource = resource;
+    d->rebuild();
     reset();
 }
 
 
 int Nepomuk::ResourcePropertyEditModel::columnCount( const QModelIndex& ) const
 {
-    return 2;
+    return 3;
 }
 
 
 int Nepomuk::ResourcePropertyEditModel::rowCount( const QModelIndex& index ) const
 {
-    if ( index.isValid() ) {
-        Node* node = static_cast<Node*>( index.internalPointer() );
-        Q_ASSERT( node );
-
-        if ( TypeNode* typeNode = dynamic_cast<TypeNode*>( node ) ) {
-            return typeNode->type.domainOf().count();
-        }
-    }
-    else {
-        return d->typeNodes.count();
-    }
-
-    return 0;
+    return d->m_properties.count();
 }
 
 
 QVariant Nepomuk::ResourcePropertyEditModel::data( const QModelIndex& index, int role ) const
 {
-    if ( index.isValid() ) {
-        Node* node = static_cast<Node*>( index.internalPointer() );
-        Q_ASSERT( node );
+    if ( index.isValid() and index.row() < d->m_properties.count() ) {
+        const Nepomuk::Types::Property property = d->m_properties[index.row()].first.predicate().uri();
+        const Soprano::Node value = d->m_properties[index.row()].first.object();
+        const QDateTime date = d->m_properties[index.row()].second;
 
-        if ( TypeNode* typeNode = dynamic_cast<TypeNode*>( node ) ) {
-            if ( index.column() == 0 ) {
-                switch( role ) {
-                case Qt::DisplayRole:
-                    return typeNode->type.label();
-
-                case Qt::DecorationRole:
-                    return typeNode->type.icon();
-
-                case Qt::ToolTipRole:
-                    return "<p>" + typeNode->type.comment() + "<br><i>" + typeNode->type.uri().toString() + "</i>";
-
-                case Qt::FontRole: {
-                    QFont fnt;
-                    fnt.setBold( true );
-                    return fnt;
-                }
-                }
-            }
-        }
-        else {
-            PropertyNode* propertyNode = static_cast<PropertyNode*>( node );
+        switch( index.column() ) {
+        case 0:
             switch( role ) {
             case Qt::DisplayRole:
-                if ( index.column() == 0 ) {
-                    return propertyNode->property.label();
-                }
-                else {
-                    return d->resource.property( propertyNode->property.uri() ).toString();
-                }
+                return property.label();
 
             case Qt::DecorationRole:
-                return propertyNode->property.icon();
+                return property.icon();
 
             case Qt::ToolTipRole:
-                if ( index.column() == 0 ) {
-                    return "<p>" + propertyNode->property.comment() + "<br><i>" + propertyNode->property.uri().toString() + "</i>";
-                }
+                return "<p>" + property.comment() + "<br><i>" + property.uri().toString() + "</i>";
+            }
+
+        case 1:
+            switch( role ) {
+            case Qt::DisplayRole:
+                if( value.isResource() )
+                    return Nepomuk::Resource(value.uri()).genericLabel();
+                else
+                    return value.literal().variant();
 
             case Qt::EditRole:
-                if ( index.column() == 1 ) {
-                    // FIXME: handle lists
-                    Variant v = d->resource.property( propertyNode->property.uri() );
-                    if ( v.isValid() ) {
-                        // the actual data contains the data type
-                        return v.variant();
-                    }
-                    else {
-                        // just inform the delegate about the type we want to edit
-                        // FIXME: handle URIs
-                        return QVariant( propertyNode->property.literalRangeType().dataType() );
-                    }
-                }
+                if( value.isResource() )
+                    return QVariant::fromValue(Nepomuk::Resource(value.uri()));
+                else
+                    return value.literal().variant();
 
-            case PropertyRole:
-                return QVariant::fromValue( propertyNode->property );
+            case Qt::DecorationRole:
+                if( value.isResource() )
+                    return Nepomuk::Resource(value.uri()).genericIcon();
+                break;
+            }
 
-            case ValueRole:
-                return QVariant::fromValue( d->resource.property( propertyNode->property.uri() ) );
+        case 2:
+            if( role == Qt::DisplayRole ) {
+                if( date.isValid() )
+                    return date;
+                else
+                    return i18n("Unknown");
+            }
+            else if( role == Qt::ToolTipRole ) {
+                if( !date.isValid() )
+                    return i18n("An invalid creation date means invalid Nepomuk data!");
             }
         }
     }
@@ -275,132 +168,75 @@ QVariant Nepomuk::ResourcePropertyEditModel::data( const QModelIndex& index, int
 }
 
 
-bool Nepomuk::ResourcePropertyEditModel::setData( const QModelIndex& index, const QVariant& value, int role )
+QVariant Nepomuk::ResourcePropertyEditModel::headerData( int section, Qt::Orientation orientation, int role ) const
 {
-    kDebug() << index << value << role;
-
-    // FIXME: handle lists
-
-    if ( d->resource.isValid() ) {
-        if ( index.isValid() ) {
-            Node* node = static_cast<Node*>( index.internalPointer() );
-            Q_ASSERT( node );
-
-            if ( PropertyNode* propertyNode = dynamic_cast<PropertyNode*>( node ) ) {
-
-                // Do we have a class range
-                if ( propertyNode->property.range().isValid() ) {
-                    kDebug() << propertyNode->property.uri() << "is resource property with range" << propertyNode->property.range().uri();
-
-                    QUrl uri = value.toUrl();
-                    if ( !uri.isValid() ) {
-                        // fallback for simple string editors
-                        uri = value.toString();
-                    }
-
-                    if ( uri.isValid() ) {
-                        // ensure that the resource has the proper type
-                        Resource res( uri );
-                        if ( res.hasType( propertyNode->property.range().uri() ) ) {
-                            if ( propertyNode->property.maxCardinality() == 1 ||
-                                 !d->resource.hasProperty( propertyNode->property.uri() ) ||
-                                 KMessageBox::questionYesNo( 0,
-                                                             i18n( "Property %1 has a cardinality greater than 1. "
-                                                                   "Should the value be set or added to the list?", propertyNode->property.label() ),
-                                                             i18n( "Property change" ),
-                                                             KGuiItem( i18n( "Overwrite" ) ),
-                                                             KGuiItem( i18n( "Add value" ) ) ) == KMessageBox::Yes ) {
-                                kDebug() << "Setting resource value for property" << propertyNode->property.uri() << "to" << uri;
-                                d->resource.setProperty( propertyNode->property.uri(), res );
-                            }
-                            else {
-                                kDebug() << "Adding resource value for property" << propertyNode->property.uri() << ":" << uri;
-                                Variant v = d->resource.property( propertyNode->property.uri() );
-                                v.append( res );
-                                d->resource.setProperty( propertyNode->property.uri(), v );
-                            }
-                            emit dataChanged( index, index );
-                            return true;
-                        }
-                        else {
-                            kDebug() << uri << "has invalid type for property" << propertyNode->property;
-                            return false;
-                        }
-                    }
-                    else if ( value.type() == QVariant::Url || value.type() == QVariant::Invalid ) {
-                        kDebug() << "Removing property" << propertyNode->property.uri();
-                        // clear property
-                        d->resource.removeProperty( propertyNode->property.uri() );
-                        emit dataChanged( index, index );
-                        return true;
-                    }
-                }
-
-                // looks like a literal range
-                else {
-                    kDebug() << "Setting literal value for property" << propertyNode->property.uri() << "to" << value;
-                    // FIXME: make sure we have the proper type
-                    d->resource.setProperty( propertyNode->property.uri(), Variant( value ) );
-                    emit dataChanged( index, index );
-                    return true;
-                }
-            }
-            else {
-                // this should never happen since type nodes are not editable
-                return false;
-            }
-        }
-        else {
-            kDebug() << "Cannot edit invalid index.";
-            return false;
+    if( orientation == Qt::Horizontal &&
+        role == Qt::DisplayRole ) {
+        switch( section ) {
+        case 0:
+            return i18n("Property");
+        case 1:
+            return i18n("Value");
+        case 2:
+            return i18n("Creation Date");
         }
     }
-    else {
-        kDebug() << "Cannot change data with an invalid resource.";
-        return false;
+
+    return QAbstractTableModel::headerData( section, orientation, role );
+}
+
+
+bool Nepomuk::ResourcePropertyEditModel::removeRows( int row, int count, const QModelIndex& parent )
+{
+    kDebug() << row << count;
+    if( !parent.isValid() && row+count <= d->m_properties.count() ) {
+        for( int i = row; i < row+count; ++i ) {
+            kDebug() << "Deleting row" << row;
+            // we do NOT use i since we are removing the row
+            Soprano::Statement statement = d->m_properties[row].first;
+            ResourceManager::instance()->mainModel()->removeStatement( statement );
+            d->m_properties.removeAt( row );
+        }
+        return true;
     }
 
-    // shut up GCC
     return false;
 }
 
 
-QModelIndex Nepomuk::ResourcePropertyEditModel::index( int row, int column, const QModelIndex& parent ) const
+bool Nepomuk::ResourcePropertyEditModel::setData( const QModelIndex& index, const QVariant& value, int role )
 {
-    // parent elements: the types as a more fancy header
-    // then the properties assigned to the types as children
-    if ( parent.isValid() ) {
-        TypeNode* parentNode = static_cast<TypeNode*>( parent.internalPointer() );
-        Q_ASSERT( parentNode );
+    kDebug() << index << value << role;
 
-        if ( !parentNode->initialized ) {
-            parentNode->updateProperties();
-            parentNode->initialized = true;
-        }
+    if ( d->m_resource.isValid() ) {
+        if ( index.isValid() ) {
+            const Nepomuk::Types::Property property = d->m_properties[index.row()].first.predicate().uri();
+            Soprano::Node newObjectNode;
+            if( property.range().isValid() ) {
+                newObjectNode = value.toUrl();
+            }
+            else {
+                newObjectNode = Soprano::LiteralValue( value );
+            }
 
-        if ( row >= 0 && row < parentNode->propertyNodes.count() ) {
-            return createIndex( row, column, parentNode->propertyNodes[row] );
+            if( newObjectNode.isValid() ) {
+                Soprano::Statement statement = d->m_properties[index.row()].first;
+                ResourceManager::instance()->mainModel()->removeStatement( statement );
+                statement.setObject( newObjectNode );
+                ResourceManager::instance()->mainModel()->addStatement( statement );
+                d->rebuild();
+                emit dataChanged( index, index );
+                return true;
+            }
         }
     }
-    else if ( row >= 0 && row < d->typeNodes.count() ) {
-        return createIndex( row, column, d->typeNodes[row] );
-    }
 
-    return QModelIndex();
+    return false;
 }
 
 
 QModelIndex Nepomuk::ResourcePropertyEditModel::parent( const QModelIndex& index ) const
 {
-    if ( index.isValid() ) {
-        Node* node = static_cast<Node*>( index.internalPointer() );
-        Q_ASSERT( node );
-
-        if ( PropertyNode* propertyNode = dynamic_cast<PropertyNode*>( node ) ) {
-            return createIndex( propertyNode->typeNode->row, 0, propertyNode->typeNode );
-        }
-    }
-
     return QModelIndex();
 }
 
@@ -408,16 +244,9 @@ QModelIndex Nepomuk::ResourcePropertyEditModel::parent( const QModelIndex& index
 Qt::ItemFlags Nepomuk::ResourcePropertyEditModel::flags( const QModelIndex& index ) const
 {
     Qt::ItemFlags flags = QAbstractItemModel::flags( index );
-
-    if ( index.isValid() ) {
-        Node* node = static_cast<Node*>( index.internalPointer() );
-        Q_ASSERT( node );
-
-        if ( dynamic_cast<PropertyNode*>( node ) && index.column() == 1 ) {
-            flags |= Qt::ItemIsEditable;
-        }
-    }
-
+    // FIXME: implement resource range editing
+    if( index.column() == 1 && d->m_properties[index.row()].first.object().isLiteral() )
+        flags |= Qt::ItemIsEditable;
     return flags;
 }
 

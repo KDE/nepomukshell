@@ -50,34 +50,18 @@ namespace Nepomuk {
         int columnCount( const QModelIndex& parent = QModelIndex() ) const;
         int rowCount( const QModelIndex& parent = QModelIndex() ) const;
         QVariant data( const QModelIndex& index, int role = Qt::DisplayRole ) const;
-        QModelIndex index( int row, int column, const QModelIndex& parent = QModelIndex() ) const;
         QModelIndex parent( const QModelIndex& index ) const;
         Qt::ItemFlags flags( const QModelIndex& index ) const;
+        QVariant headerData( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 
+        bool removeRows( int row, int count, const QModelIndex& parent = QModelIndex() );
         bool setData( const QModelIndex& index, const QVariant& value, int role );
 
-        enum Roles {
-            PropertyRole = 9000,
-            ValueRole = 9001
-        };
-
     public Q_SLOTS:
-        /**
-         * Set the types of class we are editing.
-         * If a resource is set there is no need to set
-         * a type.
-         */
-        void setTypes( const QList<Types::Class>& type );
-
         /**
          * Se the resource to edit.
          */
         void setResource( const Resource& resource );
-
-        /**
-         * Clear the model, i.e. display nothing.
-         */
-        void clear();
 
     private:
         class Private;

@@ -23,7 +23,7 @@
 
 #include <nepomuk/class.h>
 #include <nepomuk/property.h>
-#include <nepomuk/resource.h>
+#include <nepomuk/thing.h>
 #include <nepomuk/resourcemanager.h>
 
 #include <KDebug>
@@ -143,15 +143,20 @@ Nepomuk::Resource NewClassDialog::createResource( Nepomuk::Types::Class type, QW
     dlg.m_labelTitle->setPixmap( icon.pixmap( 32, 32 ) );
 
     if ( dlg.exec() ) {
-        QString name = dlg.m_editClassLabel->text();
-        QString comment = dlg.m_editClassComment->text();
-        QString icon = dlg.m_buttonClassIcon->icon();
+        const QString name = dlg.m_editClassLabel->text();
+        const QString comment = dlg.m_editClassComment->text();
+        const QString icon = dlg.m_buttonClassIcon->icon();
 
-        Nepomuk::PimoModel pimoModel( Nepomuk::ResourceManager::instance()->mainModel() );
-        return pimoModel.createThing( type.uri(),
-                                      name,
-                                      comment,
-                                      icon != "unknown" ? icon : QString() );
+        Nepomuk::Thing newThing( QUrl(), type.uri() );
+        newThing.setLabel( name );
+        if ( !comment.isEmpty() ) {
+            newThing.setDescription( comment );
+        }
+        if ( !icon.isEmpty() ) {
+            // FIXME: create a proper Symbol object, if possible maybe a subclass DesktopIcon if its a standard icon
+            newThing.addSymbol( icon );
+        }
+        return newThing;
     }
     else {
         return Nepomuk::Resource();
