@@ -64,7 +64,7 @@ ResourceEditorWidget::~ResourceEditorWidget()
 void ResourceEditorWidget::setResource( const Nepomuk::Resource& res )
 {
     if( resource().isValid() )
-        m_backStack.push( resource() );
+        m_backStack.push( resource().resourceUri() );
     m_forwardStack.clear();
     setResourceInternal( res );
     updateResourceHistoryButtonStates();
@@ -108,7 +108,7 @@ void ResourceEditorWidget::slotNodeActivated( const QModelIndex& index )
 void ResourceEditorWidget::slotResourceHistoryBack()
 {
     if( !m_backStack.isEmpty() ) {
-        m_forwardStack.push( resource() );
+        m_forwardStack.push( resource().resourceUri() );
         setResourceInternal( m_backStack.pop() );
         updateResourceHistoryButtonStates();
     }
@@ -118,7 +118,7 @@ void ResourceEditorWidget::slotResourceHistoryBack()
 void ResourceEditorWidget::slotResourceHistoryForward()
 {
     if( !m_forwardStack.isEmpty() ) {
-        m_backStack.push( resource() );
+        m_backStack.push( resource().resourceUri() );
         setResourceInternal( m_forwardStack.pop() );
         updateResourceHistoryButtonStates();
     }

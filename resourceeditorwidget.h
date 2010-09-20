@@ -62,8 +62,8 @@ private:
     Nepomuk::ResourcePropertyEditModel* m_propertyModel;
     Nepomuk::Resource m_resource;
 
-    QStack<Nepomuk::Resource> m_backStack;
-    QStack<Nepomuk::Resource> m_forwardStack;
+    QStack<QUrl> m_backStack;
+    QStack<QUrl> m_forwardStack;
 };
 
 #endif
