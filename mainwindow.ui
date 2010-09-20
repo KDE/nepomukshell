@@ -2,97 +2,25 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QWidget" name="MainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>849</width>
-    <height>621</height>
-   </rect>
+  <property name="windowTitle">
+   <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QSplitter" name="splitter_3">
+    <widget class="Line" name="line">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QSplitter" name="splitter_2">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <widget class="QSplitter" name="splitter">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <widget class="QWidget" name="">
-        <layout class="QVBoxLayout" name="verticalLayout_2">
-         <item>
-          <layout class="QHBoxLayout">
-           <item>
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>Classes:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="m_baseClassCombo"/>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="QTreeView" name="m_pimoView"/>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="">
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <widget class="QLabel" name="m_labelResourceViewTitle">
-           <property name="text">
-            <string>All Resources</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="ResourceView" name="m_resourceView"/>
-         </item>
-        </layout>
-       </widget>
-      </widget>
-      <widget class="QWidget" name="">
-       <layout class="QVBoxLayout">
-        <item>
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Properties:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QTreeView" name="m_propertyView"/>
-        </item>
-       </layout>
-      </widget>
-     </widget>
-     <widget class="Nepomuk::ResourceEditor" name="m_resourceEditor" native="true"/>
+    </widget>
+   </item>
+   <item>
+    <widget class="QStackedWidget" name="m_mainStack">
+     <widget class="QWidget" name="page"/>
+     <widget class="QWidget" name="page_2"/>
     </widget>
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>Nepomuk::ResourceEditor</class>
-   <extends>QWidget</extends>
-   <header>resourceeditor.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ResourceView</class>
-   <extends>QListView</extends>
-   <header>resourceview.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

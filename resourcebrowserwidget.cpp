@@ -25,7 +25,6 @@
 #include "newclassdialog.h"
 
 #include "resourcemodel.h"
-#include "nepomukcontext.h"
 
 #include <QtGui/QTreeView>
 #include <QtGui/QListView>
@@ -118,25 +117,10 @@ void ResourceBrowserWidget::slotResourceViewContextMenu( const QPoint& pos )
 
     if ( !selection.isEmpty() ) {
         QList<QAction*> actions;
+        actions << m_actionCollection->action("resource_delete");
 
-        QAction sep( this );
-        sep.setSeparator( true );
-        QAction actionSetContext( KIcon( "nepomuk" ), i18n( "Set as current context" ), this );
-
-        if ( selection.count() == 1 &&
-             Nepomuk::ContextServiceInterface::isAvailable() ) {
-            actions << &sep << &actionSetContext;
-        }
-
-        QAction* actionRemove = m_actionCollection->action("resource_delete");
-
-        QAction* a = QMenu::exec( actions
-                                  << actionRemove,
-                                  m_resourceView->viewport()->mapToGlobal( pos ) );
-        if ( a == &actionSetContext ) {
-            Nepomuk::Resource res( selection.first().data( Nepomuk::ResourceModel::ResourceUriRole ).value<QUrl>() );
-            Nepomuk::ContextServiceInterface::instance()->setCurrentContext( res.resourceUri() );
-        }
+        QMenu::exec( actions,
+                     m_resourceView->viewport()->mapToGlobal( pos ) );
     }
 }
 

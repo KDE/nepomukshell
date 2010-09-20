@@ -9,8 +9,6 @@ include_directories(
   ${NEPOMUK_INCLUDE_DIR}/nepomuk
   ${nepomukextras_SOURCE_DIR}
   ${nepomuk_kde_SOURCE_DIR}/misc
-  ${nepomuk_kde_SOURCE_DIR}/usercontext/lib
-  ${nepomuk_kde_BINARY_DIR}/usercontext/lib
   ${nepomukshell_SOURCE_DIR}/settings
 )
 
@@ -30,6 +28,7 @@ set( nepomukshell_BIN_SRCS
 )
 
 kde4_add_ui_files(nepomukshell_BIN_SRCS 
+  mainwindow.ui
   resourcebrowserwidget.ui
   resourceeditorwidget.ui
   resourcequerywidget.ui
@@ -43,7 +42,6 @@ kde4_add_executable(nepomukshell ${nepomukshell_BIN_SRCS})
 
 target_link_libraries(nepomukshell
   nepomukextras
-  nepomukcontext
   ${NEPOMUK_LIBRARIES}
   ${QT_QTGUI_LIBRARY}
   ${QT_QTDBUS_LIBRARY}

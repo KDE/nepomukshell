@@ -23,7 +23,6 @@
 #include "pimo.h"
 #include "resourcepropertymodel.h"
 #include "resourcepropertydelegate.h"
-#include "nepomukcontext.h"
 #include "resourceeditor.h"
 #include "resourceview.h"
 #include "resourcemodel.h"
@@ -60,8 +59,8 @@ MainWindow::MainWindow()
 {
     setCaption( i18n("NepSaK - The Nepomuk Shell") );
 
-    m_mainStack = new QStackedWidget( this );
-    setCentralWidget( m_mainStack );
+    setCentralWidget( new QWidget( this ) );
+    setupUi( centralWidget() );
 
     m_resourceBrowser = new ResourceBrowserWidget( actionCollection(), m_mainStack );
     m_mainStack->addWidget( m_resourceBrowser );
@@ -85,6 +84,7 @@ MainWindow::MainWindow()
              this, SLOT(slotResourceActivated(Nepomuk::Resource)) );
 
     // init
+    m_mainStack->setCurrentWidget( m_resourceBrowser );
     m_actionModeBrowse->setChecked( true );
     m_actionDelete->setEnabled( false );
     slotResourcesSelected( QList<Nepomuk::Resource>() );

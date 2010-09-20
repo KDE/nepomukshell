@@ -25,6 +25,8 @@
 
 #include <Nepomuk/Resource>
 
+#include "ui_mainwindow.h"
+
 class QTreeView;
 class QListView;
 class KAction;
@@ -33,7 +35,7 @@ class ResourceEditorWidget;
 class ResourceQueryWidget;
 class QStackedWidget;
 
-class MainWindow : public KXmlGuiWindow
+class MainWindow : public KXmlGuiWindow, private Ui::MainWindow
 {
     Q_OBJECT
 
@@ -59,7 +61,6 @@ private:
     void readSettings();
     void saveSettings();
 
-    QStackedWidget* m_mainStack;
     ResourceBrowserWidget* m_resourceBrowser;
     ResourceQueryWidget* m_resourceQueryWidget;
     ResourceEditorWidget* m_resourceEditor;
