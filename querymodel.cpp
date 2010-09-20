@@ -42,11 +42,29 @@ public:
 
 void Nepomuk::QueryModel::Private::updateQuery()
 {
-    if( m_query.isEmpty() ) {
-        m_bindings.clear();
-    }
-    else {
-        m_bindings = ResourceManager::instance()->mainModel()->executeQuery( m_query, Soprano::Query::QueryLanguageSparql ).allBindings();
+    m_bindings.clear();
+
+    if( !m_query.isEmpty() ) {
+        Soprano::QueryResultIterator it = ResourceManager::instance()->mainModel()->executeQuery( m_query, Soprano::Query::QueryLanguageSparql );
+        if ( it.isBool() ) {
+            Soprano::BindingSet set;
+            set.insert( QLatin1String( "result" ), Soprano::LiteralValue( it.boolValue() ) );
+            m_bindings.append( set );
+        }
+        else if ( it.isGraph() ) {
+            while ( it.next() ) {
+                const Soprano::Statement s = it.currentStatement();
+                Soprano::BindingSet set;
+                set.insert( QLatin1String( "subject" ), s.subject() );
+                set.insert( QLatin1String( "predicate" ), s.predicate() );
+                set.insert( QLatin1String( "object" ), s.object() );
+                set.insert( QLatin1String( "context" ), s.context() );
+                m_bindings << set;
+            }
+        }
+        else {
+            m_bindings = it.allBindings();
+        }
     }
 }
 
