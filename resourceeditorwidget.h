@@ -22,6 +22,7 @@
 #define _NEPOMUK_RESOURCE_EDITOR_WIDGET_H_
 
 #include <QtGui/QWidget>
+#include <QtCore/QStack>
 
 #include <Nepomuk/Resource>
 #include <Nepomuk/Types/Class>
@@ -51,10 +52,18 @@ public Q_SLOTS:
 private Q_SLOTS:
     void slotPropertyContextMenu( const QPoint& pos );
     void slotNodeActivated( const QModelIndex& index );
+    void slotResourceHistoryBack();
+    void slotResourceHistoryForward();
 
 private:
+    void setResourceInternal( const Nepomuk::Resource& res );
+    void updateResourceHistoryButtonStates();
+
     Nepomuk::ResourcePropertyEditModel* m_propertyModel;
     Nepomuk::Resource m_resource;
+
+    QStack<Nepomuk::Resource> m_backStack;
+    QStack<Nepomuk::Resource> m_forwardStack;
 };
 
 #endif

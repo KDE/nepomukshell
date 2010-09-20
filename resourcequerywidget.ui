@@ -30,6 +30,26 @@
       </widget>
      </item>
      <item>
+      <widget class="QToolButton" name="m_buttonBack">
+       <property name="toolTip">
+        <string>Browse back in the query history</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="m_buttonForward">
+       <property name="toolTip">
+        <string>Browse forward in the query history</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="m_queryButton">
        <property name="text">
         <string>Run Query</string>

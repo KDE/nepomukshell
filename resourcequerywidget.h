@@ -28,6 +28,8 @@
 
 #include "ui_resourcequerywidget.h"
 
+class KConfigGroup;
+class QEvent;
 namespace Nepomuk {
     class QueryModel;
 }
@@ -40,15 +42,29 @@ public:
     ResourceQueryWidget( QWidget* parent = 0 );
     ~ResourceQueryWidget();
 
+    QStringList queryHistory() const;
+
+    void readSettings( const KConfigGroup& cfg );
+    void saveSettings( KConfigGroup& cfg ) const;
+
+    bool eventFilter( QObject* watched, QEvent* event );
+
 Q_SIGNALS:
     void resourceActivated( const Nepomuk::Resource& res );
 
 private Q_SLOTS:
     void slotQueryButtonClicked();
     void slotNodeActivated( const QModelIndex& index );
+    void slotQueryHistoryPrevious();
+    void slotQueryHistoryNext();
 
 private:
+    void updateHistoryButtonStates();
+
     Nepomuk::QueryModel* m_queryModel;
+
+    QStringList m_queryHistory;
+    int m_queryHistoryIndex;
 };
 
 #endif

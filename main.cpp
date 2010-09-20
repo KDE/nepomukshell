@@ -21,15 +21,17 @@
 #include <KAboutData>
 
 #include "mainwindow.h"
+#include "infosplash.h"
 
 int main( int argc, char *argv[] )
 {
-    KAboutData aboutData( "nepomukshell", 0,
+    KAboutData aboutData( "nepomukshell",
+                          "nepomukshell",
                           ki18n("Nepomuk Shell"),
-                          "0.2",
-                          ki18n("Nepomuk Shell"),
+                          "0.4",
+                          ki18n("NepSak - The Nepomuk Shell"),
                           KAboutData::License_GPL,
-                          ki18n("(c) 2008-2009, Sebastian Trüg"),
+                          ki18n("(c) 2008-2010, Sebastian Trüg"),
                           KLocalizedString(),
                           "http://nepomuk.kde.org" );
     aboutData.addAuthor(ki18n("Sebastian Trüg"),ki18n("Maintainer"), "trueg@kde.org");
@@ -44,6 +46,10 @@ int main( int argc, char *argv[] )
 
     MainWindow* mainWin = new MainWindow();
     mainWin->show();
+
+    InfoSplash* splash = new InfoSplash( mainWin );
+    splash->exec();
+    delete splash;
 
     return app.exec();
 }

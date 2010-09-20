@@ -1,10 +1,13 @@
 /*
-   Copyright (C) 2008-2009 by Sebastian Trueg <trueg at kde.org>
+   Copyright (C) 2008-2010 by Sebastian Trueg <trueg at kde.org>
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License as
+   published by the Free Software Foundation; either version 2 of
+   the License or (at your option) version 3 or any later version
+   accepted by the membership of KDE e.V. (or its successor approved
+   by the membership of KDE e.V.), which shall act as a proxy
+   defined in Section 14 of version 3 of the license.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,8 +15,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "mainwindow.h"
@@ -29,6 +31,9 @@
 #include "resourceeditorwidget.h"
 #include "resourcequerywidget.h"
 
+#include "nepomukshellsettings.h"
+#include "resourcebrowsersettingspage.h"
+
 #include <QtGui/QStackedWidget>
 
 #include <nepomuk/class.h>
@@ -43,6 +48,9 @@
 #include <KApplication>
 #include <KToggleAction>
 #include <KMessageBox>
+#include <KConfigDialog>
+#include <KConfig>
+#include <KGlobal>
 
 #include <Soprano/Vocabulary/RDFS>
 
@@ -50,6 +58,8 @@
 MainWindow::MainWindow()
     : KXmlGuiWindow( 0 )
 {
+    setCaption( i18n("NepSaK - The Nepomuk Shell") );
+
     m_mainStack = new QStackedWidget( this );
     setCentralWidget( m_mainStack );
 
@@ -78,6 +88,8 @@ MainWindow::MainWindow()
     m_actionModeBrowse->setChecked( true );
     m_actionDelete->setEnabled( false );
     slotResourcesSelected( QList<Nepomuk::Resource>() );
+
+    readSettings();
 }
 
 
@@ -86,14 +98,25 @@ MainWindow::~MainWindow()
 }
 
 
+bool MainWindow::queryClose()
+{
+    saveSettings();
+    return KXmlGuiWindow::queryClose();
+}
+
+
 QList<Nepomuk::Resource> MainWindow::selectedResources() const
 {
-    if( m_mainStack->currentWidget() == m_resourceBrowser )
+    if( m_mainStack->currentWidget() == m_resourceEditor ) {
+        QList<Nepomuk::Resource> rl;
+        Nepomuk::Resource res = m_resourceEditor->resource();
+        if( res.exists() )
+            rl << res;
+        return rl;
+    }
+    else {
         return m_resourceBrowser->selectedResources();
-    else if( m_mainStack->currentWidget() == m_resourceEditor )
-        return QList<Nepomuk::Resource>() << m_resourceEditor->resource();
-    else
-        return QList<Nepomuk::Resource>();
+    }
 }
 
 
@@ -149,11 +172,13 @@ void MainWindow::setupActions()
     actionCollection()->addAction( "resource_delete", m_actionDelete );
     connect( m_actionDelete, SIGNAL(triggered()), this, SLOT(slotDeleteResource()) );
 
+
     // misc actions
     // =============================================
+    KStandardAction::preferences( this, SLOT( slotSettings() ), actionCollection() );
     KStandardAction::quit( kapp, SLOT( quit() ), actionCollection() );
 
-    setupGUI();
+    setupGUI( Keys|Save|Create );
 }
 
 
@@ -169,18 +194,19 @@ void MainWindow::slotModeQuery()
 {
     kDebug();
     m_mainStack->setCurrentWidget( m_resourceQueryWidget );
-    // in query mode we do not have a selected resource
-    slotResourcesSelected( selectedResources() );
+    m_actionDelete->setEnabled( false );
 }
 
 
 void MainWindow::slotModeEdit()
 {
     kDebug();
-    if( selectedResources().count() == 1 ) {
+    if( !m_resourceEditor->resource().isValid() &&
+        selectedResources().count() == 1 ) {
         m_resourceEditor->setResource( selectedResources().first() );
-        m_mainStack->setCurrentWidget( m_resourceEditor );
     }
+
+    m_mainStack->setCurrentWidget( m_resourceEditor );
 }
 
 
@@ -208,9 +234,49 @@ void MainWindow::slotDeleteResource()
         KMessageBox::sorry( this, i18n("No Resource to delete selected.") );
     }
     else {
-        Q_FOREACH( Nepomuk::Resource res, rl )
-            res.remove();
+        QStringList resNames;
+        Q_FOREACH( Nepomuk::Resource res, rl ) {
+            resNames << res.genericLabel();
+        }
+        if( KMessageBox::questionYesNoList( this,
+                                            i18n("Do you really want to delete these resources?"),
+                                            resNames,
+                                            i18n("Deleting Resources") ) == KMessageBox::Yes ) {
+            Q_FOREACH( Nepomuk::Resource res, rl ) {
+                res.remove();
+            }
+        }
     }
+}
+
+
+void MainWindow::slotSettings()
+{
+    if( KConfigDialog::showDialog("settings") )
+        return;
+
+    KConfigDialog* dialog = new KConfigDialog( this, "settings", Settings::self() );
+    dialog->setFaceType( KPageDialog::List );
+    dialog->addPage( new ResourceBrowserSettingsPage(),
+                     i18n("Resource Browser"),
+                     QLatin1String("nepomuk"),
+                     i18n("Configure the Resource Browser") );
+    dialog->show();
+}
+
+
+void MainWindow::readSettings()
+{
+    kDebug();
+    m_resourceQueryWidget->readSettings( KGlobal::config()->group("Query") );
+}
+
+
+void MainWindow::saveSettings()
+{
+    kDebug();
+    KConfigGroup grp = KGlobal::config()->group("Query");
+    m_resourceQueryWidget->saveSettings( grp );
 }
 
 #include "mainwindow.moc"

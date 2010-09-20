@@ -50,9 +50,14 @@ private Q_SLOTS:
     void slotResourcesSelected( const QList<Nepomuk::Resource>& res );
     void slotResourceActivated( const Nepomuk::Resource& res );
     void slotDeleteResource();
+    void slotSettings();
 
 private:
+    bool queryClose();
+
     void setupActions();
+    void readSettings();
+    void saveSettings();
 
     QStackedWidget* m_mainStack;
     ResourceBrowserWidget* m_resourceBrowser;

@@ -11,6 +11,7 @@ include_directories(
   ${nepomuk_kde_SOURCE_DIR}/misc
   ${nepomuk_kde_SOURCE_DIR}/usercontext/lib
   ${nepomuk_kde_BINARY_DIR}/usercontext/lib
+  ${nepomukshell_SOURCE_DIR}/settings
 )
 
 set( nepomukshell_BIN_SRCS
@@ -25,10 +26,18 @@ set( nepomukshell_BIN_SRCS
   resourceeditorwidget.cpp
   resourcequerywidget.cpp
   querymodel.cpp
+  infosplash.cpp
 )
 
-kde4_add_ui_files(nepomukshell_BIN_SRCS resourcebrowserwidget.ui resourceeditorwidget.ui resourcequerywidget.ui)
-kde4_add_ui_files(nepomukshell_BIN_SRCS newclassdialog.ui)
+kde4_add_ui_files(nepomukshell_BIN_SRCS 
+  resourcebrowserwidget.ui
+  resourceeditorwidget.ui
+  resourcequerywidget.ui
+  newclassdialog.ui
+  settings/resourcebrowsersettingspage.ui)
+
+kde4_add_kcfg_files(nepomukshell_BIN_SRCS
+  settings/nepomukshellsettings.kcfgc)
 
 kde4_add_executable(nepomukshell ${nepomukshell_BIN_SRCS})
 

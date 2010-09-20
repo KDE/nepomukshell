@@ -17,6 +17,7 @@
  */
 
 #include "asyncloadingresourcemodel.h"
+#include "nepomukshellsettings.h"
 
 #include <Nepomuk/ResourceManager>
 #include <Nepomuk/Types/Class>
@@ -57,15 +58,27 @@ public:
 void Nepomuk::AsyncLoadingResourceModel::Private::query()
 {
     m_lastCount = 0;
+    QString query;
+    if( Settings::self()->recursiveQuery() ) {
+        query = QString::fromLatin1( "select distinct ?r where { "
+                                     "?r a ?t . ?t %4 %1 . "
+                                     "} OFFSET %2 LIMIT %3" )
+                .arg( Soprano::Node::resourceToN3( m_type.uri() ) )
+                .arg( m_lastOffset )
+                .arg( s_queryLimit )
+                .arg( Soprano::Node::resourceToN3( Soprano::Vocabulary::RDFS::subClassOf() ) );
+    }
+    else {
+        query = QString::fromLatin1( "select distinct ?r where { "
+                                     "?r a %1 . "
+                                     "} OFFSET %2 LIMIT %3" )
+                .arg( Soprano::Node::resourceToN3( m_type.uri() ) )
+                .arg( m_lastOffset )
+                .arg( s_queryLimit );
+    }
+
     m_currentQuery = Soprano::Util::AsyncQuery::executeQuery( ResourceManager::instance()->mainModel(),
-                                                              QString( "select distinct ?r where { "
-                                                                       "{ ?r a %1 . } UNION "
-                                                                       "{ ?r a ?t . ?t %4 %1 . } "
-                                                                       "} OFFSET %2 LIMIT %3" )
-                                                              .arg( Soprano::Node::resourceToN3( m_type.uri() ) )
-                                                              .arg( m_lastOffset )
-                                                              .arg( s_queryLimit )
-                                                              .arg( Soprano::Node::resourceToN3( Soprano::Vocabulary::RDFS::subClassOf() ) ),
+                                                              query,
                                                               Soprano::Query::QueryLanguageSparql );
     q->connect( m_currentQuery, SIGNAL( nextReady( Soprano::Util::AsyncQuery* ) ),
                 SLOT( _k_queryNextReady( Soprano::Util::AsyncQuery* ) ) );

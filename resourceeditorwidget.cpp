@@ -28,12 +28,16 @@
 #include <KUrl>
 #include <KDebug>
 #include <KAction>
+#include <KIcon>
 
 
 ResourceEditorWidget::ResourceEditorWidget( QWidget* parent )
     : QWidget( parent )
 {
     setupUi( this );
+
+    m_buttonBack->setIcon( KIcon("go-previous") );
+    m_buttonForward->setIcon( KIcon("go-next") );
 
     m_propertyModel = new Nepomuk::ResourcePropertyEditModel( m_propertyView );
     m_propertyView->setModel( m_propertyModel );
@@ -43,6 +47,12 @@ ResourceEditorWidget::ResourceEditorWidget( QWidget* parent )
              this, SLOT( slotPropertyContextMenu( const QPoint& ) ) );
     connect( m_propertyView, SIGNAL(doubleClicked(QModelIndex)),
              this, SLOT(slotNodeActivated(QModelIndex)) );
+    connect(m_buttonBack, SIGNAL(clicked()),
+            this, SLOT(slotResourceHistoryBack()) );
+    connect(m_buttonForward, SIGNAL(clicked()),
+            this, SLOT(slotResourceHistoryForward()) );
+
+    updateResourceHistoryButtonStates();
 }
 
 
@@ -53,12 +63,11 @@ ResourceEditorWidget::~ResourceEditorWidget()
 
 void ResourceEditorWidget::setResource( const Nepomuk::Resource& res )
 {
-    if( m_resource != res ) {
-        m_resource = res;
-        m_propertyModel->setResource( res );
-        m_uriLabel->setText( KUrl(res.resourceUri()).url() );
-        m_statementEditor->setResource( res );
-    }
+    if( resource().isValid() )
+        m_backStack.push( resource() );
+    m_forwardStack.clear();
+    setResourceInternal( res );
+    updateResourceHistoryButtonStates();
 }
 
 
@@ -93,6 +102,44 @@ void ResourceEditorWidget::slotNodeActivated( const QModelIndex& index )
             emit resourceActivated( res );
         }
     }
+}
+
+
+void ResourceEditorWidget::slotResourceHistoryBack()
+{
+    if( !m_backStack.isEmpty() ) {
+        m_forwardStack.push( resource() );
+        setResourceInternal( m_backStack.pop() );
+        updateResourceHistoryButtonStates();
+    }
+}
+
+
+void ResourceEditorWidget::slotResourceHistoryForward()
+{
+    if( !m_forwardStack.isEmpty() ) {
+        m_backStack.push( resource() );
+        setResourceInternal( m_forwardStack.pop() );
+        updateResourceHistoryButtonStates();
+    }
+}
+
+
+void ResourceEditorWidget::setResourceInternal( const Nepomuk::Resource& res )
+{
+    if( m_resource != res ) {
+        m_resource = res;
+        m_propertyModel->setResource( res );
+        m_uriLabel->setText( KUrl(res.resourceUri()).url() );
+        m_statementEditor->setResource( res );
+    }
+}
+
+
+void ResourceEditorWidget::updateResourceHistoryButtonStates()
+{
+    m_buttonBack->setEnabled( !m_backStack.isEmpty() );
+    m_buttonForward->setEnabled( !m_forwardStack.isEmpty() );
 }
 
 #include "resourceeditorwidget.moc"
