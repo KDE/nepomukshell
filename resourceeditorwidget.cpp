@@ -97,7 +97,7 @@ void ResourceEditorWidget::slotNodeActivated( const QModelIndex& index )
 {
     Soprano::Node node = m_propertyModel->nodeForIndex( index );
     if ( node.isValid() && node.isResource() ) {
-        Nepomuk::Resource res( node.uri() );
+        Nepomuk::Resource res = Nepomuk::Resource::fromResourceUri( node.uri() );
         if( res.exists() ) {
             emit resourceActivated( res );
         }
