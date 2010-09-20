@@ -50,6 +50,7 @@
 #include <KConfigDialog>
 #include <KConfig>
 #include <KGlobal>
+#include <KFileDialog>
 
 #include <Soprano/Vocabulary/RDFS>
 
@@ -95,6 +96,21 @@ MainWindow::MainWindow()
 
 MainWindow::~MainWindow()
 {
+}
+
+
+void MainWindow::openResource( const Nepomuk::Resource& res )
+{
+    m_resourceEditor->setResource( res );
+    m_actionModeEdit->setChecked( true );
+    m_mainStack->setCurrentWidget( m_resourceEditor );
+    slotResourcesSelected( selectedResources() );
+}
+
+
+void MainWindow::openResource( const KUrl& url )
+{
+    openResource( Nepomuk::Resource( url ) );
 }
 
 
@@ -176,6 +192,7 @@ void MainWindow::setupActions()
     // misc actions
     // =============================================
     KStandardAction::preferences( this, SLOT( slotSettings() ), actionCollection() );
+    KStandardAction::open( this, SLOT( slotOpen() ), actionCollection() );
     KStandardAction::quit( kapp, SLOT( quit() ), actionCollection() );
 
     setupGUI( Keys|Save|Create );
@@ -212,7 +229,7 @@ void MainWindow::slotModeEdit()
 
 void MainWindow::slotResourcesSelected( const QList<Nepomuk::Resource>& res )
 {
-    m_actionModeEdit->setEnabled( res.count() == 1 );
+    m_actionModeEdit->setEnabled( res.count() == 1 || m_resourceEditor->resource().isValid() );
     m_actionDelete->setEnabled( !res.isEmpty() );
 }
 
@@ -220,10 +237,7 @@ void MainWindow::slotResourcesSelected( const QList<Nepomuk::Resource>& res )
 void MainWindow::slotResourceActivated( const Nepomuk::Resource& res )
 {
     kDebug() << res.resourceUri();
-    m_resourceEditor->setResource( res );
-    m_actionModeEdit->setChecked( true );
-    m_mainStack->setCurrentWidget( m_resourceEditor );
-    slotResourcesSelected( selectedResources() );
+    openResource( res );
 }
 
 
@@ -277,6 +291,15 @@ void MainWindow::saveSettings()
     kDebug();
     KConfigGroup grp = KGlobal::config()->group("Query");
     m_resourceQueryWidget->saveSettings( grp );
+}
+
+
+void MainWindow::slotOpen()
+{
+    KUrl url = KFileDialog::getOpenUrl( KUrl(), QString(), this, i18n( "Open a file or Nepomuk resource to edit" ) );
+    if ( !url.isEmpty() ) {
+        openResource( url );
+    }
 }
 
 #include "mainwindow.moc"

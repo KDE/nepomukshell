@@ -45,6 +45,10 @@ public:
 
     QList<Nepomuk::Resource> selectedResources() const;
 
+public Q_SLOTS:
+    void openResource( const Nepomuk::Resource& res );
+    void openResource( const KUrl& url );
+
 private Q_SLOTS:
     void slotModeBrowse();
     void slotModeQuery();
@@ -53,6 +57,7 @@ private Q_SLOTS:
     void slotResourceActivated( const Nepomuk::Resource& res );
     void slotDeleteResource();
     void slotSettings();
+    void slotOpen();
 
 private:
     bool queryClose();
