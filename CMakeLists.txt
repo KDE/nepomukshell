@@ -43,11 +43,9 @@ target_link_libraries(nepomukshell
   nepomukextras
   ${NEPOMUK_LIBRARIES}
   ${QT_QTGUI_LIBRARY}
-  ${QT_QTDBUS_LIBRARY}
   ${KDE4_KDEUI_LIBS}
   ${KDE4_KIO_LIBS}
   ${SOPRANO_LIBRARIES}
-  ${SOPRANO_INDEX_LIBRARIES}
 )
 
 install(TARGETS nepomukshell DESTINATION ${BIN_INSTALL_DIR})
