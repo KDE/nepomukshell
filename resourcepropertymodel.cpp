@@ -1,10 +1,13 @@
 /*
-   Copyright (C) 2008 by Sebastian Trueg <trueg at kde.org>
+   Copyright (C) 2008-2010 by Sebastian Trueg <trueg at kde.org>
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License as
+   published by the Free Software Foundation; either version 2 of
+   the License or (at your option) version 3 or any later version
+   accepted by the membership of KDE e.V. (or its successor approved
+   by the membership of KDE e.V.), which shall act as a proxy
+   defined in Section 14 of version 3 of the license.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,11 +15,11 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "resourcepropertymodel.h"
+#include "nie.h"
 
 #include <nepomuk/resource.h>
 #include <nepomuk/resourcemanager.h>
@@ -133,8 +136,15 @@ QVariant Nepomuk::ResourcePropertyEditModel::data( const QModelIndex& index, int
         case 1:
             switch( role ) {
             case Qt::DisplayRole:
-                if( value.isResource() )
-                    return Nepomuk::Resource(value.uri()).genericLabel();
+                if( value.isResource() ) {
+                    Resource res = Resource::fromResourceUri( value.uri() );
+                    if ( property == Nepomuk::Vocabulary::NIE::url() ) {
+                        return KUrl( value.uri() ).prettyUrl();
+                    }
+                    else {
+                        return res.genericLabel();
+                    }
+                }
                 else
                     return value.literal().variant();
 
@@ -148,6 +158,9 @@ QVariant Nepomuk::ResourcePropertyEditModel::data( const QModelIndex& index, int
                 if( value.isResource() )
                     return Nepomuk::Resource(value.uri()).genericIcon();
                 break;
+
+            case Qt::ToolTipRole:
+                return value.toString();
             }
 
         case 2:
@@ -158,7 +171,9 @@ QVariant Nepomuk::ResourcePropertyEditModel::data( const QModelIndex& index, int
                     return i18n("Unknown");
             }
             else if( role == Qt::ToolTipRole ) {
-                if( !date.isValid() )
+                if( date.isValid() )
+                    return Soprano::LiteralValue( date ).toString();
+                else
                     return i18n("An invalid creation date means invalid Nepomuk data!");
             }
         }
