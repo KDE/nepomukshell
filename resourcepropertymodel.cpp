@@ -120,6 +120,10 @@ QVariant Nepomuk::ResourcePropertyEditModel::data( const QModelIndex& index, int
         const Soprano::Node value = d->m_properties[index.row()].first.object();
         const QDateTime date = d->m_properties[index.row()].second;
 
+        if( role == PropertyRole ) {
+            return QVariant::fromValue( property );
+        }
+
         switch( index.column() ) {
         case 0:
             switch( role ) {

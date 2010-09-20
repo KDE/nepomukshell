@@ -60,6 +60,10 @@ namespace Nepomuk {
 
         Soprano::Node nodeForIndex( const QModelIndex& index ) const;
 
+        enum CustomRoles {
+            PropertyRole = 3468698
+        };
+
     public Q_SLOTS:
         /**
          * Se the resource to edit.

@@ -42,7 +42,7 @@ Nepomuk::ResourcePropertyDelegate::~ResourcePropertyDelegate()
 }
 
 
-QWidget * Nepomuk::ResourcePropertyDelegate::createEditor( QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index ) const
+QWidget* Nepomuk::ResourcePropertyDelegate::createEditor( QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index ) const
 {
 //    kDebug() << parent << option << index;
     QVariant v = index.data( ResourcePropertyEditModel::PropertyRole );
@@ -69,8 +69,8 @@ void Nepomuk::ResourcePropertyDelegate::setEditorData( QWidget* editor, const QM
         Types::Property property = v.value<Types::Property>();
         if ( property.range().isValid() ) {
             ResourceInputWidget* w = qobject_cast<ResourceInputWidget*>( editor );
-            w->setResource( index.data( ResourcePropertyEditModel::ValueRole ).value<Nepomuk::Variant>().toResource() );
-            kDebug() << index.data( ResourcePropertyEditModel::ValueRole ).value<Nepomuk::Variant>().toResource().resourceUri();
+            w->setResource( index.data( Qt::EditRole ).value<Nepomuk::Resource>() );
+            kDebug() << index.data( Qt::EditRole ).value<Nepomuk::Resource>().resourceUri();
             return;
         }
     }
