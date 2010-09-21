@@ -1,6 +1,8 @@
 [Desktop Entry]
 Name=NepSaK - The Nepomuk Shell
+Name[x-test]=xxNepSaK - The Nepomuk Shellxx
 Comment=The Nepomuk Swiss Army Knife Developer Shell
+Comment[x-test]=xxThe Nepomuk Swiss Army Knife Developer Shellxx
 Icon=nepomuk
 Exec=nepomukshell
 Type=Application
