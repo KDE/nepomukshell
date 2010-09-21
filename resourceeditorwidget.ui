@@ -47,6 +47,9 @@
        <property name="text">
         <string/>
        </property>
+       <property name="textInteractionFlags">
+        <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+       </property>
       </widget>
      </item>
     </layout>
@@ -74,6 +77,16 @@
    </item>
    <item>
     <widget class="QTableView" name="m_propertyView"/>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Backlinks:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTableView" name="m_backlinksView"/>
    </item>
   </layout>
  </widget>

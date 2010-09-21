@@ -60,6 +60,7 @@ private:
     void updateResourceHistoryButtonStates();
 
     Nepomuk::ResourcePropertyEditModel* m_propertyModel;
+    Nepomuk::ResourcePropertyEditModel* m_backlinksModel;
     Nepomuk::Resource m_resource;
 
     QStack<QUrl> m_backStack;

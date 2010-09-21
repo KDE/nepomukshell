@@ -52,6 +52,8 @@ class Nepomuk::ResourcePropertyEditModel::Private
 {
 public:
     Resource m_resource;
+    ResourcePropertyEditModel::Mode m_mode;
+
     QList<QPair<Soprano::Statement, QDateTime> > m_properties;
 
     void rebuild();
@@ -63,13 +65,26 @@ void Nepomuk::ResourcePropertyEditModel::Private::rebuild()
     m_properties.clear();
 
     // we get all statements + their creation date
-    const QString query = QString::fromLatin1("select ?p ?o ?g ?d where { graph ?g { %1 ?p ?o } . OPTIONAL { ?g %2 ?d . } }")
-                          .arg(Soprano::Node::resourceToN3(m_resource.resourceUri()),
-                               Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::created()));
+    QString query;
+    if ( m_mode == ResourcePropertyEditModel::PropertiesMode ) {
+        query = QString::fromLatin1("select ?p ?o ?g ?d where { graph ?g { %1 ?p ?o } . OPTIONAL { ?g %2 ?d . } }")
+                .arg(Soprano::Node::resourceToN3(m_resource.resourceUri()),
+                     Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::created()));
+    }
+    else {
+        query = QString::fromLatin1("select ?s ?p ?g ?d where { graph ?g { ?s ?p %1 } . OPTIONAL { ?g %2 ?d . } }")
+                .arg(Soprano::Node::resourceToN3(m_resource.resourceUri()),
+                     Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::created()));
+    }
+
     Soprano::QueryResultIterator it = ResourceManager::instance()->mainModel()->executeQuery( query, Soprano::Query::QueryLanguageSparql );
     while( it.next() ) {
-        m_properties.append( qMakePair( Soprano::Statement( m_resource.resourceUri(), it["p"], it["o"], it["g"] ),
-                                        it["d"].literal().toDateTime() ) );
+        Soprano::Statement s;
+        if ( m_mode == ResourcePropertyEditModel::PropertiesMode )
+            s = Soprano::Statement( m_resource.resourceUri(), it["p"], it["o"], it["g"] );
+        else
+            s = Soprano::Statement( it["s"], it["p"], m_resource.resourceUri(), it["g"] );
+        m_properties.append( qMakePair( s, it["d"].literal().toDateTime() ) );
     }
 }
 
@@ -78,12 +93,29 @@ Nepomuk::ResourcePropertyEditModel::ResourcePropertyEditModel( QObject* parent )
     : QAbstractTableModel( parent ),
       d( new Private() )
 {
+    d->m_mode = PropertiesMode;
 }
 
 
 Nepomuk::ResourcePropertyEditModel::~ResourcePropertyEditModel()
 {
     delete d;
+}
+
+
+void Nepomuk::ResourcePropertyEditModel::setMode( Mode mode )
+{
+    if ( d->m_mode != mode ) {
+        d->m_mode = mode;
+        d->rebuild();
+        reset();
+    }
+}
+
+
+Nepomuk::ResourcePropertyEditModel::Mode Nepomuk::ResourcePropertyEditModel::mode() const
+{
+    return d->m_mode;
 }
 
 
@@ -117,7 +149,7 @@ QVariant Nepomuk::ResourcePropertyEditModel::data( const QModelIndex& index, int
 {
     if ( index.isValid() and index.row() < d->m_properties.count() ) {
         const Nepomuk::Types::Property property = d->m_properties[index.row()].first.predicate().uri();
-        const Soprano::Node value = d->m_properties[index.row()].first.object();
+        const Soprano::Node value = nodeForIndex( index );
         const QDateTime date = d->m_properties[index.row()].second;
 
         if( role == PropertyRole ) {
@@ -262,7 +294,10 @@ Soprano::Node Nepomuk::ResourcePropertyEditModel::nodeForIndex( const QModelInde
         case 0:
             return d->m_properties[index.row()].first.predicate();
         case 1:
-            return d->m_properties[index.row()].first.object();
+            if ( d->m_mode == PropertiesMode )
+                return d->m_properties[index.row()].first.object();
+            else
+                return d->m_properties[index.row()].first.subject();
         case 2:
             return Soprano::LiteralValue( d->m_properties[index.row()].second );
         }

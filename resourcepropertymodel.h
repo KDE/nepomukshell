@@ -42,6 +42,14 @@ namespace Nepomuk {
         ResourcePropertyEditModel( QObject* parent = 0 );
         ~ResourcePropertyEditModel();
 
+        enum Mode {
+            PropertiesMode,
+            BacklinksMode
+        };
+
+        void setMode( Mode mode );
+        Mode mode() const;
+
         /**
          * \return The configured resource or an invalid one if
          * no resource has been set.

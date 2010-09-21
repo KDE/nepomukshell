@@ -43,9 +43,18 @@ ResourceEditorWidget::ResourceEditorWidget( QWidget* parent )
     m_propertyView->setModel( m_propertyModel );
     m_propertyView->setContextMenuPolicy( Qt::CustomContextMenu );
 
+    m_backlinksModel = new Nepomuk::ResourcePropertyEditModel( m_backlinksView );
+    m_backlinksModel->setMode( Nepomuk::ResourcePropertyEditModel::BacklinksMode );
+    m_backlinksView->setModel( m_backlinksModel );
+    m_backlinksView->setContextMenuPolicy( Qt::CustomContextMenu );
+
     connect( m_propertyView, SIGNAL( customContextMenuRequested( const QPoint& ) ),
              this, SLOT( slotPropertyContextMenu( const QPoint& ) ) );
+    connect( m_backlinksView, SIGNAL( customContextMenuRequested( const QPoint& ) ),
+             this, SLOT( slotPropertyContextMenu( const QPoint& ) ) );
     connect( m_propertyView, SIGNAL(doubleClicked(QModelIndex)),
+             this, SLOT(slotNodeActivated(QModelIndex)) );
+    connect( m_backlinksView, SIGNAL(doubleClicked(QModelIndex)),
              this, SLOT(slotNodeActivated(QModelIndex)) );
     connect(m_buttonBack, SIGNAL(clicked()),
             this, SLOT(slotResourceHistoryBack()) );
@@ -74,7 +83,8 @@ void ResourceEditorWidget::setResource( const Nepomuk::Resource& res )
 void ResourceEditorWidget::slotPropertyContextMenu( const QPoint& pos )
 {
     kDebug();
-    QModelIndex index = m_propertyView->indexAt( pos );
+    QTableView* view = qobject_cast<QTableView*>( sender() );
+    QModelIndex index = view->indexAt( pos );
     if ( index.isValid() ) {
         QList<QAction*> actions;
 
@@ -84,9 +94,9 @@ void ResourceEditorWidget::slotPropertyContextMenu( const QPoint& pos )
         actions.append( &actionDelete );
 
         QAction* a = QMenu::exec( actions,
-                                  m_propertyView->viewport()->mapToGlobal( pos ) );
+                                  view->viewport()->mapToGlobal( pos ) );
         if( a == &actionDelete ) {
-            m_propertyModel->removeRow( index.row() );
+            view->model()->removeRow( index.row() );
         }
     }
 
@@ -95,7 +105,7 @@ void ResourceEditorWidget::slotPropertyContextMenu( const QPoint& pos )
 
 void ResourceEditorWidget::slotNodeActivated( const QModelIndex& index )
 {
-    Soprano::Node node = m_propertyModel->nodeForIndex( index );
+    Soprano::Node node = qobject_cast<const Nepomuk::ResourcePropertyEditModel*>( index.model() )->nodeForIndex( index );
     if ( node.isValid() && node.isResource() ) {
         Nepomuk::Resource res = Nepomuk::Resource::fromResourceUri( node.uri() );
         if( res.exists() ) {
@@ -130,6 +140,7 @@ void ResourceEditorWidget::setResourceInternal( const Nepomuk::Resource& res )
     if( m_resource != res ) {
         m_resource = res;
         m_propertyModel->setResource( res );
+        m_backlinksModel->setResource( res );
         m_uriLabel->setText( KUrl(res.resourceUri()).url() );
         m_statementEditor->setResource( res );
     }
