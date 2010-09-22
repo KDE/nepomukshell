@@ -55,7 +55,7 @@
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
-     <widget class="QPlainTextEdit" name="m_queryEdit"/>
+     <widget class="QTextEdit" name="m_queryEdit"/>
      <widget class="QTableView" name="m_queryView"/>
     </widget>
    </item>

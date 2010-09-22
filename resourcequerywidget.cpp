@@ -20,6 +20,7 @@
 
 #include "resourcequerywidget.h"
 #include "querymodel.h"
+#include "sparqlsyntaxhighlighter.h"
 
 #include <QtGui/QPlainTextEdit>
 #include <QtGui/QPushButton>
@@ -44,6 +45,7 @@ ResourceQueryWidget::ResourceQueryWidget( QWidget* parent )
     m_buttonForward->setIcon( KIcon("go-next") );
 
     m_queryEdit->setFont( KGlobalSettings::fixedFont() );
+    m_queryEdit->setAcceptRichText( true );
     // we install an event filter to catch Ctrl+Return for quick query execution
     m_queryEdit->installEventFilter( this );
 
@@ -64,6 +66,8 @@ ResourceQueryWidget::ResourceQueryWidget( QWidget* parent )
 
     // the empty string representing the current query
     m_queryHistory << QString();
+
+    m_highlighter = new Nepomuk::SparqlSyntaxHighlighter( m_queryEdit );
 }
 
 

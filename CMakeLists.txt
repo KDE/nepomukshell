@@ -24,6 +24,7 @@ set( nepomukshell_BIN_SRCS
   resourcequerywidget.cpp
   querymodel.cpp
   infosplash.cpp
+  sparqlsyntaxhighlighter.cpp
 )
 
 kde4_add_ui_files(nepomukshell_BIN_SRCS 

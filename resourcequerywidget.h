@@ -32,6 +32,7 @@ class KConfigGroup;
 class QEvent;
 namespace Nepomuk {
     class QueryModel;
+    class SparqlSyntaxHighlighter;
 }
 
 class ResourceQueryWidget : public QWidget, private Ui::ResourceQueryWidget
@@ -62,7 +63,8 @@ private:
     void updateHistoryButtonStates();
 
     Nepomuk::QueryModel* m_queryModel;
-
+    Nepomuk::SparqlSyntaxHighlighter* m_highlighter;
+    
     QStringList m_queryHistory;
     int m_queryHistoryIndex;
 };
