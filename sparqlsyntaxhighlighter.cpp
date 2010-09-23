@@ -20,7 +20,7 @@
 #include "sparqlsyntaxhighlighter.h"
 #include <KDebug>
 
-Nepomuk::SparqlSyntaxHighlighter::SparqlSyntaxHighlighter(QObject* parent)
+Nepomuk::SparqlSyntaxHighlighter::SparqlSyntaxHighlighter(QTextDocument* parent)
     : QSyntaxHighlighter( parent )
 {
     // Keywords
@@ -61,7 +61,7 @@ Nepomuk::SparqlSyntaxHighlighter::SparqlSyntaxHighlighter(QObject* parent)
     abrUriFormat.setForeground( Qt::darkMagenta );
     QRegExp abrUriRegex( "\\b\\w*:\\w*\\b" );
     m_rules.append( Rule( abrUriRegex, abrUriFormat ) );
-    
+
     // Literals
     QTextCharFormat literalFormat;
     literalFormat.setForeground( Qt::red );
@@ -71,13 +71,12 @@ Nepomuk::SparqlSyntaxHighlighter::SparqlSyntaxHighlighter(QObject* parent)
 
 void Nepomuk::SparqlSyntaxHighlighter::highlightBlock(const QString& text)
 {
-    kDebug();
     foreach (const Rule &rule, m_rules) {
         QRegExp expression(rule.pattern);
         int index = expression.indexIn(text);
-        while (index >= 0) {
-            int length = expression.matchedLength();
-            kDebug() << "Setting " << rule.format;
+        int length = 0;
+        while (index >= 0 && ( length = expression.matchedLength() ) > 0 ) {
+            kDebug() << index << length;
             setFormat(index, length, rule.format);
             index = expression.indexIn(text, index + length);
         }

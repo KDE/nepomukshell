@@ -25,12 +25,12 @@
 #include <QtGui/QSyntaxHighlighter>
 
 namespace Nepomuk {
-    
+
     class SparqlSyntaxHighlighter : public QSyntaxHighlighter
     {
         Q_OBJECT
     public:
-        SparqlSyntaxHighlighter(QObject* parent);
+        SparqlSyntaxHighlighter(QTextDocument* parent);
 
         virtual void highlightBlock(const QString& text);
 
