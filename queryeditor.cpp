@@ -37,13 +37,14 @@ QueryEditor::QueryEditor(QWidget* parent): QTextEdit(parent)
 {
     setFont( KGlobalSettings::fixedFont() );
     setAcceptRichText( true );
+    setFocus();
 
     m_highlighter = new Nepomuk::SparqlSyntaxHighlighter( this );
     
     //
     // Completion
     //
-    QString query = QString::fromLatin1("select ?pre ?r where { graph ?g {?r a ?t.} ?g a nrl:Ontology. ?g nao:hasDefaultNamespaceAbbreviation ?pre. }");
+    QString query = QString::fromLatin1("select ?pre ?r where { graph ?g {?r a ?t.} ?g nao:hasDefaultNamespaceAbbreviation ?pre. }");
     
     Soprano::Model * model = Nepomuk::ResourceManager::instance()->mainModel();
     Soprano::QueryResultIterator it = model->executeQuery( query, Soprano::Query::QueryLanguageSparql );
