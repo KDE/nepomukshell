@@ -33,37 +33,36 @@
 
 #include <Nepomuk/ResourceManager>
 
-QueryEditor::QueryEditor(QWidget* parent)
-    : QTextEdit(parent)
+QueryEditor::QueryEditor(QWidget* parent): QTextEdit(parent)
 {
     setFont( KGlobalSettings::fixedFont() );
     setAcceptRichText( false );
     setFocus();
 
     m_highlighter = new Nepomuk::SparqlSyntaxHighlighter( document() );
-
+    
     //
     // Completion
     //
     QString query = QString::fromLatin1("select ?pre ?r where { graph ?g {?r a ?t.} ?g nao:hasDefaultNamespaceAbbreviation ?pre. }");
-
+    
     Soprano::Model * model = Nepomuk::ResourceManager::instance()->mainModel();
     Soprano::QueryResultIterator it = model->executeQuery( query, Soprano::Query::QueryLanguageSparql );
-
+    
     QStringList candidates;
     while( it.next() ) {
         QString prefix = it["pre"].toString();
         QString res = it["r"].uri().toString();
         res = res.mid( res.lastIndexOf('#') + 1 );
-
+        
         candidates << QString( prefix + ':' + res );
     }
-
+    
     m_completer = new QCompleter( this );
     m_completer->setModel( new QStringListModel( candidates, m_completer ) );
     m_completer->setModelSorting( QCompleter::CaseSensitivelySortedModel );
     m_completer->setCaseSensitivity( Qt::CaseInsensitive );
-
+    
     m_completer->setWidget( this );
     m_completer->setCompletionMode( QCompleter::PopupCompletion );
 
@@ -90,7 +89,7 @@ void QueryEditor::keyPressEvent(QKeyEvent* e)
     QString text = wordUnderCursor();
     if( text.length() < 2 ) // min 2 char for completion
         return;
-
+    
     m_completer->setCompletionPrefix( text );
 
     QRect cr = cursorRect();
@@ -109,7 +108,7 @@ QString QueryEditor::wordUnderCursor()
     while( 1 ) {
         // vHanda: I don't understand why the cursor seems to give a pos 1 past the last char instead
         // of just the last char.
-        int pos = tc.position() - 1;
+        int pos = tc.position() - 1; 
         if( pos < 0 || eow.contains( document()->characterAt(pos) ) )
             break;
         tc.movePosition( QTextCursor::Left, QTextCursor::KeepAnchor );
@@ -126,3 +125,6 @@ void QueryEditor::insertCompletion(const QString& completion)
     tc.insertText(completion.right(extra));
     setTextCursor(tc);
 }
+
+
+

@@ -20,12 +20,16 @@
 #include "sparqlsyntaxhighlighter.h"
 #include <KDebug>
 
-Nepomuk::SparqlSyntaxHighlighter::SparqlSyntaxHighlighter(QTextDocument* parent)
-    : QSyntaxHighlighter( parent )
+Nepomuk::SparqlSyntaxHighlighter::SparqlSyntaxHighlighter(QTextDocument* parent): QSyntaxHighlighter(parent)
+{
+    init();
+}
+
+void Nepomuk::SparqlSyntaxHighlighter::init()
 {
     // Keywords
     QTextCharFormat keywordFormat;
-    keywordFormat.setForeground( Qt::darkCyan );
+    keywordFormat.setForeground( Qt::darkMagenta );
     keywordFormat.setFontWeight( QFont::Bold );
     QStringList keywords;
 
@@ -37,48 +41,58 @@ Nepomuk::SparqlSyntaxHighlighter::SparqlSyntaxHighlighter(QTextDocument* parent)
              << "\\bgraph\\b" << "\\bunion\\b" << "\\bfilter\\b" << "\\bstr\\b"
              << "\\blang\\b" << "\\blangmatches\\b" << "\\bdatatype\\b" << "\\bbound\\b"
              << "\\bsameTerm\\b" << "\\bisIRI\\b" << "\\bisURI\\b" << "\\bisLiteral\\b"
-             << "\\bisBlank\\b" << "\\bregex\\b" << "\\btrue\\b" << "\\bfalse\\b";
+             << "\\bisBlank\\b" << "\\bregex\\b" << "\\btrue\\b" << "\\bfalse\\b" << "\\ba\\b";
 
     foreach( const QString & s, keywords ) {
-        m_rules.append( Rule( QRegExp(s), keywordFormat ) );
+        QRegExp regex( s, Qt::CaseInsensitive );
+        m_rules.append( Rule( regex, keywordFormat ) );
     }
 
     // Variables
     QTextCharFormat varFormat;
     varFormat.setForeground( Qt::blue );
-    QRegExp varRegex( "\\b\\?\\w+\\b" );
+    QRegExp varRegex( "\\?\\w+" );
     m_rules.append( Rule( varRegex, varFormat ) );
 
     // URI
     QTextCharFormat uriFormat;
-    uriFormat.setForeground( Qt::green );
-    QRegExp uriRegex( "\\b(\\w|/)*\\b" );
+    uriFormat.setForeground( Qt::darkGreen );
+    QRegExp uriRegex( "<.*>" );
     m_rules.append( Rule( uriRegex, uriFormat ) );
 
     // Abbreviated uris --> uri:word
     //TODO: Highlight uri and word with different colours
     QTextCharFormat abrUriFormat;
-    abrUriFormat.setForeground( Qt::darkMagenta );
-    QRegExp abrUriRegex( "\\b\\w*:\\w*\\b" );
+    abrUriFormat.setForeground( Qt::darkGray );
+    QRegExp abrUriRegex( "\\b\\w+:\\w*\\b" );
     m_rules.append( Rule( abrUriRegex, abrUriFormat ) );
-
+    
     // Literals
     QTextCharFormat literalFormat;
     literalFormat.setForeground( Qt::red );
-    QRegExp literalRegex( "\\b\".*\"\\b" );
+    QRegExp literalRegex( "\".*\"" );
     m_rules.append( Rule( literalRegex, literalFormat ) );
+
+    // Comments
+    QTextCharFormat commentFormat;
+    commentFormat.setForeground( Qt::darkYellow );
+    QRegExp commentRegex( "^#.*$" );
+    m_rules.append( Rule( commentRegex, commentFormat ) );
 }
 
 void Nepomuk::SparqlSyntaxHighlighter::highlightBlock(const QString& text)
 {
+    //kDebug();
+    //int i=0;
     foreach (const Rule &rule, m_rules) {
         QRegExp expression(rule.pattern);
         int index = expression.indexIn(text);
         int length = 0;
         while (index >= 0 && ( length = expression.matchedLength() ) > 0 ) {
-            kDebug() << index << length;
+            //kDebug() << "Setting " << i;
             setFormat(index, length, rule.format);
             index = expression.indexIn(text, index + length);
         }
+        //i++;
     }
 }

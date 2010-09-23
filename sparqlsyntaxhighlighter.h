@@ -25,7 +25,7 @@
 #include <QtGui/QSyntaxHighlighter>
 
 namespace Nepomuk {
-
+    
     class SparqlSyntaxHighlighter : public QSyntaxHighlighter
     {
         Q_OBJECT
@@ -35,6 +35,8 @@ namespace Nepomuk {
         virtual void highlightBlock(const QString& text);
 
     private:
+        void init();
+        
         struct Rule {
             QRegExp pattern;
             QTextCharFormat format;
