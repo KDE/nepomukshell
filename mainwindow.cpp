@@ -157,21 +157,21 @@ void MainWindow::setupActions()
     // =============================================
     m_actionModeBrowse = new KToggleAction( actionCollection() );
     m_actionModeBrowse->setText( i18n("Browse Resources") );
-    m_actionModeBrowse->setIcon( KIcon("FIXME") );
+    m_actionModeBrowse->setIcon( KIcon("view-list-tree") );
     m_actionModeBrowse->setShortcut( Qt::ALT + Qt::Key_B );
     actionCollection()->addAction( "mode_browse", m_actionModeBrowse );
     connect( m_actionModeBrowse, SIGNAL(triggered()), this, SLOT(slotModeBrowse()) );
 
     m_actionModeQuery = new KToggleAction( actionCollection() );
     m_actionModeQuery->setText( i18n("Query Resources") );
-    m_actionModeQuery->setIcon( KIcon("FIXME") );
+    m_actionModeQuery->setIcon( KIcon("edit-find") );
     m_actionModeQuery->setShortcut( Qt::ALT + Qt::Key_Q );
     actionCollection()->addAction( "mode_query", m_actionModeQuery );
     connect( m_actionModeQuery, SIGNAL(triggered()), this, SLOT(slotModeQuery()) );
 
     m_actionModeEdit = new KToggleAction( actionCollection() );
     m_actionModeEdit->setText( i18n("Edit Resource") );
-    m_actionModeEdit->setIcon( KIcon("FIXME") );
+    m_actionModeEdit->setIcon( KIcon("edit-rename") );
     m_actionModeEdit->setShortcut( Qt::ALT + Qt::Key_E );
     actionCollection()->addAction( "mode_edit", m_actionModeEdit );
     connect( m_actionModeEdit, SIGNAL(triggered()), this, SLOT(slotModeEdit()) );
