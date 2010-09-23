@@ -22,6 +22,8 @@
 
 #include <KLocale>
 #include <KIcon>
+#include <KComponentData>
+#include <KAboutData>
 
 #include <QtGui/QLabel>
 #include <QtGui/QVBoxLayout>
@@ -42,13 +44,14 @@ InfoSplash::InfoSplash( QWidget* parent )
 
     QLabel* label
         = new QLabel( i18n("<h2>NepSaK</h2>"
-                           "<p>The <b>Nep</b>omuk <b>S</b>wiss <b>A</b>rmy <b>K</b>nife</p>"
-                           "<p>Copyright (C) 2008-2010 Sebastian Trueg <trueg@kde.org></p>"
+                           "<p>The <b>Nep</b>omuk <b>S</b>wiss <b>A</b>rmy <b>K</b>nife</p> %1"
+                           "<p>Copyright (C) 2008-2010 Sebastian Trueg &lt;trueg@kde.org&gt;<br/>2010 Vishesh Handa &lt;handa.vish@gmail.com&gt;</p>"
                            "<p>NepSak is a maintenance and debugging tool intended for developers. "
                            "It is NOT intended for the end user.</p>"
                            "<p>NepSak allows to browse, query, and edit your Nepomuk resources. It provides the means "
                            "to modify, delete, and mess up your data in any way possible.</p>"
-                           "<p><b>USE WITH CARE</b></p>"),
+                           "<p><b>USE WITH CARE</b></p>",
+                           KGlobal::mainComponent().aboutData()->version() ),
                       this );
     label->setAlignment( Qt::AlignCenter );
     label->setWordWrap( true );

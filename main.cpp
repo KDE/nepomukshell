@@ -30,13 +30,15 @@ int main( int argc, char *argv[] )
     KAboutData aboutData( "nepomukshell",
                           "nepomukshell",
                           ki18n("Nepomuk Shell"),
-                          "0.5",
+                          "0.6",
                           ki18n("NepSak - The Nepomuk Shell"),
                           KAboutData::License_GPL,
                           ki18n("(c) 2008-2010, Sebastian Trüg"),
                           KLocalizedString(),
                           "http://nepomuk.kde.org" );
-    aboutData.addAuthor(ki18n("Sebastian Trüg"),ki18n("Maintainer"), "trueg@kde.org");
+    aboutData.addAuthor(ki18n("Sebastian Trüg"), ki18n("Maintainer"), "trueg@kde.org");
+    aboutData.addAuthor(ki18n("Vishesh Handa"), ki18n( "Developer" ), "handa.vish@gmail.com" );
+
     aboutData.setProgramIconName( "nepomuk" );
 
     KCmdLineArgs::init( argc, argv, &aboutData );
