@@ -15,3 +15,4 @@ Icon=nepomuk
 Exec=nepomukshell
 Type=Application
 Categories=Qt;KDE;Development;
+X-DocPath=nepomukshell/index.html

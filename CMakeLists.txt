@@ -53,3 +53,5 @@ target_link_libraries(nepomukshell
 install(TARGETS nepomukshell DESTINATION ${BIN_INSTALL_DIR})
 install(FILES nepomukshell.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
 install(FILES nepomukshellui.rc DESTINATION  ${DATA_INSTALL_DIR}/nepomukshell)
+
+add_subdirectory(doc)
