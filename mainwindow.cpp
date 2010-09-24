@@ -22,7 +22,6 @@
 #include "pimoitemmodel.h"
 #include "pimo.h"
 #include "resourcepropertymodel.h"
-#include "resourcepropertydelegate.h"
 #include "resourceeditor.h"
 #include "resourceview.h"
 #include "resourcemodel.h"
