@@ -57,6 +57,16 @@ QueryEditor::QueryEditor(QWidget* parent): QTextEdit(parent)
         
         candidates << QString( prefix + ':' + res );
     }
+
+    // Keywords
+    candidates << "prefix" << "select" << "distinct" << "reduced"
+               << "construct" << "describe" << "ask" << "from"
+               << "named" << "where" << "order" << "by" << "asc"
+               << "desc" << "limit" << "offset" << "optional"
+               << "graph" << "union" << "filter" << "str"
+               << "lang" << "langmatches" << "datatype" << "bound"
+               << "sameTerm" << "isIRI" << "isURI" << "isLiteral"
+               << "isBlank" << "regex" << "true" << "false";
     
     m_completer = new QCompleter( this );
     m_completer->setModel( new QStringListModel( candidates, m_completer ) );
