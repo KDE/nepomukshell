@@ -46,6 +46,7 @@
 #include <Soprano/Vocabulary/RDFS>
 
 
+Q_DECLARE_METATYPE( Nepomuk::Resource )
 Q_DECLARE_METATYPE( Nepomuk::Types::Class )
 
 
@@ -153,8 +154,8 @@ void ResourceBrowserWidget::slotBaseClassChanged( int index )
 
 void ResourceBrowserWidget::slotResourceActivated( const QModelIndex& index )
 {
-    QUrl res = index.data( Nepomuk::ResourceModel::ResourceUriRole ).value<QUrl>();
-    kDebug() << res;
+    Nepomuk::Resource res = index.data( Nepomuk::Utils::ResourceModel::ResourceRole ).value<Nepomuk::Resource>();
+    kDebug() << res.resourceUri();
     emit resourceActivated( res );
 }
 
@@ -195,7 +196,7 @@ QList<Nepomuk::Resource> ResourceBrowserWidget::selectedResources() const
     QList<Nepomuk::Resource> rl;
     QModelIndexList selection = m_resourceView->selectionModel()->selectedIndexes();
     Q_FOREACH( const QModelIndex& index, selection )
-        rl << index.data( Nepomuk::ResourceModel::ResourceUriRole ).value<QUrl>();
+        rl << index.data( Nepomuk::Utils::ResourceModel::ResourceRole ).value<Nepomuk::Resource>();
     return rl;
 }
 

@@ -26,7 +26,7 @@ namespace Nepomuk {
         class Class;
     }
 
-    class AsyncLoadingResourceModel : public SimpleResourceModel
+    class AsyncLoadingResourceModel : public Utils::SimpleResourceModel
     {
         Q_OBJECT
 
