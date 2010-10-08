@@ -31,7 +31,7 @@
 class QSortFilterProxyModel;
 class KActionCollection;
 namespace Nepomuk {
-    class PIMOItemModel;
+    class ClassModel;
 }
 
 class ResourceBrowserWidget : public QWidget, private Ui::ResourceBrowserWidget
@@ -63,7 +63,7 @@ private Q_SLOTS:
     void slotResourceActivated( const QModelIndex& );
 
 private:
-    Nepomuk::PIMOItemModel* m_pimoModel;
+    Nepomuk::ClassModel* m_pimoModel;
     QSortFilterProxyModel* m_pimoSortModel;
     KActionCollection* m_actionCollection;
 };

@@ -19,7 +19,6 @@
  */
 
 #include "mainwindow.h"
-#include "pimoitemmodel.h"
 #include "pimo.h"
 #include "resourcepropertymodel.h"
 #include "resourceeditor.h"

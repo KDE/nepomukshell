@@ -19,7 +19,7 @@
 */
 
 #include "resourcebrowserwidget.h"
-#include "pimoitemmodel.h"
+#include "classmodel.h"
 #include "pimo.h"
 #include "resourcepropertymodel.h"
 #include "newclassdialog.h"
@@ -46,6 +46,9 @@
 #include <Soprano/Vocabulary/RDFS>
 
 
+Q_DECLARE_METATYPE( Nepomuk::Types::Class )
+
+
 ResourceBrowserWidget::ResourceBrowserWidget( KActionCollection* ac, QWidget* parent )
     : QWidget( parent ),
       m_actionCollection(ac)
@@ -55,7 +58,7 @@ ResourceBrowserWidget::ResourceBrowserWidget( KActionCollection* ac, QWidget* pa
     m_pimoView->header()->hide();
     m_pimoView->setSelectionMode( QAbstractItemView::SingleSelection );
 
-    m_pimoModel = new Nepomuk::PIMOItemModel( m_pimoView );
+    m_pimoModel = new Nepomuk::ClassModel( m_pimoView );
     m_pimoModel->setParentClass( Nepomuk::Vocabulary::PIMO::Thing() );
     m_pimoSortModel = new KRecursiveFilterProxyModel( m_pimoView );
     m_pimoSortModel->setSourceModel( m_pimoModel );
@@ -99,7 +102,7 @@ void ResourceBrowserWidget::slotPIMOViewContextMenu( const QPoint& pos )
     kDebug();
     QModelIndex index = m_pimoView->indexAt( pos );
     if ( index.isValid() ) {
-        Nepomuk::Types::Class type = index.data( Nepomuk::PIMOItemModel::TypeRole ).value<Nepomuk::Types::Class>();
+        Nepomuk::Types::Class type = index.data( Nepomuk::ClassModel::TypeRole ).value<Nepomuk::Types::Class>();
 
         QMenu::exec( QList<QAction*>()
                      << m_actionCollection->action( QLatin1String( "create_class" ) )
@@ -128,7 +131,7 @@ void ResourceBrowserWidget::slotResourceViewContextMenu( const QPoint& pos )
 void ResourceBrowserWidget::slotCurrentPIMOClassChanged( const QModelIndex& current, const QModelIndex& )
 {
     if ( current.isValid() ) {
-        Nepomuk::Types::Class type = current.data( Nepomuk::PIMOItemModel::TypeRole ).value<Nepomuk::Types::Class>();
+        Nepomuk::Types::Class type = current.data( Nepomuk::ClassModel::TypeRole ).value<Nepomuk::Types::Class>();
         kDebug() << "Selection changed:" << type.label();
         m_resourceView->setType( type );
     }
@@ -201,7 +204,7 @@ Nepomuk::Types::Class ResourceBrowserWidget::selectedClass() const
 {
     QModelIndex current = m_pimoView->selectionModel()->currentIndex();
     if ( current.isValid() )
-        return current.data( Nepomuk::PIMOItemModel::TypeRole ).value<Nepomuk::Types::Class>();
+        return current.data( Nepomuk::ClassModel::TypeRole ).value<Nepomuk::Types::Class>();
     else
         return m_pimoModel->parentClass();
 }
