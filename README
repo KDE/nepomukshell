@@ -1,0 +1,7 @@
+NepomukShell
+============
+
+Review for inclusion in kdesdk or alternatively in extragear.
+Nepomukshell is a maintenance and debugging tool for the Nepomuk
+data storage. It allows to browse, query, and edit resources 
+in Nepomuk.

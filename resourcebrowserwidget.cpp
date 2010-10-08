@@ -71,8 +71,8 @@ ResourceBrowserWidget::ResourceBrowserWidget( KActionCollection* ac, QWidget* pa
 
     m_classFilter->setProxy( m_pimoSortModel );
 
-    m_baseClassCombo->addItem( "PIMO Classes", QVariant( Nepomuk::Vocabulary::PIMO::Thing() ) );
-    m_baseClassCombo->addItem( "All Classes", QVariant( Soprano::Vocabulary::RDFS::Resource() ) );
+    m_baseClassCombo->addItem( i18n( "PIMO Classes" ), QVariant( Nepomuk::Vocabulary::PIMO::Thing() ) );
+    m_baseClassCombo->addItem( i18n( "All Classes" ), QVariant( Soprano::Vocabulary::RDFS::Resource() ) );
 
     connect( m_pimoView, SIGNAL( customContextMenuRequested( const QPoint& ) ),
              this, SLOT( slotPIMOViewContextMenu( const QPoint& ) ) );
@@ -102,9 +102,9 @@ void ResourceBrowserWidget::slotPIMOViewContextMenu( const QPoint& pos )
         Nepomuk::Types::Class type = index.data( Nepomuk::PIMOItemModel::TypeRole ).value<Nepomuk::Types::Class>();
 
         QMenu::exec( QList<QAction*>()
-                     << m_actionCollection->action("create_class")
-                     << m_actionCollection->action("create_property")
-                     << m_actionCollection->action("create_resource"),
+                     << m_actionCollection->action( QLatin1String( "create_class" ) )
+                     << m_actionCollection->action( QLatin1String( "create_property" ) )
+                     << m_actionCollection->action( QLatin1String( "create_resource" ) ),
                      m_pimoView->viewport()->mapToGlobal( pos ) );
     }
 }
@@ -117,7 +117,7 @@ void ResourceBrowserWidget::slotResourceViewContextMenu( const QPoint& pos )
 
     if ( !selection.isEmpty() ) {
         QList<QAction*> actions;
-        actions << m_actionCollection->action("resource_delete");
+        actions << m_actionCollection->action( QLatin1String( "resource_delete" ) );
 
         QMenu::exec( actions,
                      m_resourceView->viewport()->mapToGlobal( pos ) );

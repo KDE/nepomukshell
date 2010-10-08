@@ -34,14 +34,14 @@ void Nepomuk::SparqlSyntaxHighlighter::init()
     QStringList keywords;
 
     //FIXME: Separate special inbuilt keywords
-    keywords << "\\bprefix\\b" << "\\bselect\\b" << "\\bdistinct\\b" << "\\breduced\\b"
-             << "\\bconstruct\\b" << "\\bdescribe\\b" << "\\bask\\b" << "\\bfrom\\b"
-             << "\\bnamed\\b" << "\\bwhere\\b" << "\\border\\b" << "\\bby\\b" << "\\basc\\b"
-             << "\\bdesc\\b" << "\\blimit\\b" << "\\boffset\\b" << "\\boptional\\b"
-             << "\\bgraph\\b" << "\\bunion\\b" << "\\bfilter\\b" << "\\bstr\\b"
-             << "\\blang\\b" << "\\blangmatches\\b" << "\\bdatatype\\b" << "\\bbound\\b"
-             << "\\bsameTerm\\b" << "\\bisIRI\\b" << "\\bisURI\\b" << "\\bisLiteral\\b"
-             << "\\bisBlank\\b" << "\\bregex\\b" << "\\btrue\\b" << "\\bfalse\\b" << "\\ba\\b";
+    keywords << QLatin1String( "\\bprefix\\b" ) << QLatin1String( "\\bselect\\b" ) << QLatin1String( "\\bdistinct\\b" ) << QLatin1String( "\\breduced\\b" )
+             << QLatin1String( "\\bconstruct\\b" ) << QLatin1String( "\\bdescribe\\b" ) << QLatin1String( "\\bask\\b" ) << QLatin1String( "\\bfrom\\b" )
+             << QLatin1String( "\\bnamed\\b" ) << QLatin1String( "\\bwhere\\b" ) << QLatin1String( "\\border\\b" ) << QLatin1String( "\\bby\\b" ) << QLatin1String( "\\basc\\b" )
+             << QLatin1String( "\\bdesc\\b" ) << QLatin1String( "\\blimit\\b" ) << QLatin1String( "\\boffset\\b" ) << QLatin1String( "\\boptional\\b" )
+             << QLatin1String( "\\bgraph\\b" ) << QLatin1String( "\\bunion\\b" ) << QLatin1String( "\\bfilter\\b" ) << QLatin1String( "\\bstr\\b" )
+             << QLatin1String( "\\blang\\b" ) << QLatin1String( "\\blangmatches\\b" ) << QLatin1String( "\\bdatatype\\b" ) << QLatin1String( "\\bbound\\b" )
+             << QLatin1String( "\\bsameTerm\\b" ) << QLatin1String( "\\bisIRI\\b" ) << QLatin1String( "\\bisURI\\b" ) << QLatin1String( "\\bisLiteral\\b" )
+             << QLatin1String( "\\bisBlank\\b" ) << QLatin1String( "\\bregex\\b" ) << QLatin1String( "\\btrue\\b" ) << QLatin1String( "\\bfalse\\b" ) << QLatin1String( "\\ba\\b" );
 
     foreach( const QString & s, keywords ) {
         QRegExp regex( s, Qt::CaseInsensitive );
@@ -51,32 +51,32 @@ void Nepomuk::SparqlSyntaxHighlighter::init()
     // Variables
     QTextCharFormat varFormat;
     varFormat.setForeground( Qt::blue );
-    QRegExp varRegex( "\\?\\w+" );
+    QRegExp varRegex( QLatin1String( "\\?\\w+" ) );
     m_rules.append( Rule( varRegex, varFormat ) );
 
     // URI
     QTextCharFormat uriFormat;
     uriFormat.setForeground( Qt::darkGreen );
-    QRegExp uriRegex( "<.*>" );
+    QRegExp uriRegex( QLatin1String( "<.*>" ) );
     m_rules.append( Rule( uriRegex, uriFormat ) );
 
     // Abbreviated uris --> uri:word
     //TODO: Highlight uri and word with different colours
     QTextCharFormat abrUriFormat;
     abrUriFormat.setForeground( Qt::darkGray );
-    QRegExp abrUriRegex( "\\b\\w+:\\w*\\b" );
+    QRegExp abrUriRegex( QLatin1String( "\\b\\w+:\\w*\\b" ) );
     m_rules.append( Rule( abrUriRegex, abrUriFormat ) );
-    
+
     // Literals
     QTextCharFormat literalFormat;
     literalFormat.setForeground( Qt::red );
-    QRegExp literalRegex( "\".*\"" );
+    QRegExp literalRegex( QLatin1String( "\".*\"" ) );
     m_rules.append( Rule( literalRegex, literalFormat ) );
 
     // Comments
     QTextCharFormat commentFormat;
     commentFormat.setForeground( Qt::darkYellow );
-    QRegExp commentRegex( "^#.*$" );
+    QRegExp commentRegex( QLatin1String( "^#.*$" ) );
     m_rules.append( Rule( commentRegex, commentFormat ) );
 }
 

@@ -39,7 +39,7 @@ InfoSplash::InfoSplash( QWidget* parent )
     QVBoxLayout* lay = new QVBoxLayout( w );
 
     QLabel* iconLabel = new QLabel( w );
-    iconLabel->setPixmap( KIcon("nepomuk").pixmap( 64, 64 ) );
+    iconLabel->setPixmap( KIcon(QLatin1String("nepomuk")).pixmap( 64, 64 ) );
     iconLabel->setAlignment( Qt::AlignCenter );
 
     QLabel* label

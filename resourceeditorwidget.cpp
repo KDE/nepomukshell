@@ -36,8 +36,8 @@ ResourceEditorWidget::ResourceEditorWidget( QWidget* parent )
 {
     setupUi( this );
 
-    m_buttonBack->setIcon( KIcon("go-previous") );
-    m_buttonForward->setIcon( KIcon("go-next") );
+    m_buttonBack->setIcon( KIcon( QLatin1String( "go-previous" ) ) );
+    m_buttonForward->setIcon( KIcon( QLatin1String( "go-next" ) ) );
 
     m_propertyModel = new Nepomuk::ResourcePropertyEditModel( m_propertyView );
     m_propertyView->setModel( m_propertyModel );
@@ -90,7 +90,7 @@ void ResourceEditorWidget::slotPropertyContextMenu( const QPoint& pos )
 
         KAction actionDelete(this);
         actionDelete.setText( i18n("Delete statement") );
-        actionDelete.setIcon( KIcon("edit-delete") );
+        actionDelete.setIcon( KIcon( QLatin1String( "edit-delete" ) ) );
         actions.append( &actionDelete );
 
         QAction* a = QMenu::exec( actions,

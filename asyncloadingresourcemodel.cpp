@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2009 by Sebastian Trueg <trueg at kde.org>
+   Copyright (C) 2009-2010 by Sebastian Trueg <trueg at kde.org>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -90,7 +90,7 @@ void Nepomuk::AsyncLoadingResourceModel::Private::query()
 void Nepomuk::AsyncLoadingResourceModel::Private::_k_queryNextReady( Soprano::Util::AsyncQuery* query )
 {
     ++m_lastCount;
-    Soprano::Node r = query->binding( "r" );
+    Soprano::Node r = query->binding( QLatin1String( "r" ) );
     q->addResource( r.uri() );
     query->next();
 }

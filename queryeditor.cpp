@@ -40,39 +40,39 @@ QueryEditor::QueryEditor(QWidget* parent): QTextEdit(parent)
     setFocus();
 
     m_highlighter = new Nepomuk::SparqlSyntaxHighlighter( document() );
-    
+
     //
     // Completion
     //
     QString query = QString::fromLatin1("select ?pre ?r where { graph ?g {?r a ?t.} ?g nao:hasDefaultNamespaceAbbreviation ?pre. }");
-    
+
     Soprano::Model * model = Nepomuk::ResourceManager::instance()->mainModel();
     Soprano::QueryResultIterator it = model->executeQuery( query, Soprano::Query::QueryLanguageSparql );
-    
+
     QStringList candidates;
     while( it.next() ) {
-        QString prefix = it["pre"].toString();
-        QString res = it["r"].uri().toString();
-        res = res.mid( res.lastIndexOf('#') + 1 );
-        
-        candidates << QString( prefix + ':' + res );
+        QString prefix = it[QLatin1String("pre")].toString();
+        QString res = it[QLatin1String("r")].uri().toString();
+        res = res.mid( res.lastIndexOf(QLatin1String( "#" )) + 1 );
+
+        candidates << QString( prefix + QLatin1String( ":" ) + res );
     }
 
     // Keywords
-    candidates << "prefix" << "select" << "distinct" << "reduced"
-               << "construct" << "describe" << "ask" << "from"
-               << "named" << "where" << "order" << "by" << "asc"
-               << "desc" << "limit" << "offset" << "optional"
-               << "graph" << "union" << "filter" << "str"
-               << "lang" << "langmatches" << "datatype" << "bound"
-               << "sameTerm" << "isIRI" << "isURI" << "isLiteral"
-               << "isBlank" << "regex" << "true" << "false";
-    
+    candidates << QLatin1String( "prefix" ) << QLatin1String( "select" ) << QLatin1String( "distinct" ) << QLatin1String( "reduced" )
+               << QLatin1String( "construct" ) << QLatin1String( "describe" ) << QLatin1String( "ask" ) << QLatin1String( "from" )
+               << QLatin1String( "named" ) << QLatin1String( "where" ) << QLatin1String( "order" ) << QLatin1String( "by" ) << QLatin1String( "asc" )
+               << QLatin1String( "desc" ) << QLatin1String( "limit" ) << QLatin1String( "offset" ) << QLatin1String( "optional" )
+               << QLatin1String( "graph" ) << QLatin1String( "union" ) << QLatin1String( "filter" ) << QLatin1String( "str" )
+               << QLatin1String( "lang" ) << QLatin1String( "langmatches" ) << QLatin1String( "datatype" ) << QLatin1String( "bound" )
+               << QLatin1String( "sameTerm" ) << QLatin1String( "isIRI" ) << QLatin1String( "isURI" ) << QLatin1String( "isLiteral" )
+               << QLatin1String( "isBlank" ) << QLatin1String( "regex" ) << QLatin1String( "true" ) << QLatin1String( "false" );
+
     m_completer = new QCompleter( this );
     m_completer->setModel( new QStringListModel( candidates, m_completer ) );
     m_completer->setModelSorting( QCompleter::CaseSensitivelySortedModel );
     m_completer->setCaseSensitivity( Qt::CaseInsensitive );
-    
+
     m_completer->setWidget( this );
     m_completer->setCompletionMode( QCompleter::PopupCompletion );
 
@@ -99,7 +99,7 @@ void QueryEditor::keyPressEvent(QKeyEvent* e)
     QString text = wordUnderCursor();
     if( text.length() < 2 ) // min 2 char for completion
         return;
-    
+
     m_completer->setCompletionPrefix( text );
 
     QRect cr = cursorRect();
@@ -111,14 +111,14 @@ void QueryEditor::keyPressEvent(QKeyEvent* e)
 
 QString QueryEditor::wordUnderCursor()
 {
-    static QString eow("~!@#$%^&*()+{}|\"<>,./;'[]\\-= "); // everything without ':', '?' and '_'
+    static QString eow = QLatin1String( "~!@#$%^&*()+{}|\"<>,./;'[]\\-= " ); // everything without ':', '?' and '_'
     QTextCursor tc = textCursor();
 
     tc.anchor();
     while( 1 ) {
         // vHanda: I don't understand why the cursor seems to give a pos 1 past the last char instead
         // of just the last char.
-        int pos = tc.position() - 1; 
+        int pos = tc.position() - 1;
         if( pos < 0 || eow.contains( document()->characterAt(pos) ) )
             break;
         tc.movePosition( QTextCursor::Left, QTextCursor::KeepAnchor );

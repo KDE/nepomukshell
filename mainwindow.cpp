@@ -139,40 +139,40 @@ void MainWindow::setupActions()
 {
     // ontology handling actions
     // =============================================
-    m_actionNewSubClass = new KAction( KIcon( "document-new" ), i18n( "Create Subclass" ), actionCollection() );
-    m_actionNewProperty = new KAction( KIcon( "document-new" ), i18n( "Create Property" ), actionCollection() );
-    m_actionNewResource = new KAction( KIcon( "document-new" ), i18n( "Create Resource" ), actionCollection() );
+    m_actionNewSubClass = new KAction( KIcon( QLatin1String( "document-new" ) ), i18n( "Create Subclass" ), actionCollection() );
+    m_actionNewProperty = new KAction( KIcon( QLatin1String( "document-new" ) ), i18n( "Create Property" ), actionCollection() );
+    m_actionNewResource = new KAction( KIcon( QLatin1String( "document-new" ) ), i18n( "Create Resource" ), actionCollection() );
 
     connect( m_actionNewSubClass, SIGNAL(triggered(bool)), m_resourceBrowser, SLOT(createClass()) );
     connect( m_actionNewProperty, SIGNAL(triggered(bool)), m_resourceBrowser, SLOT(createProperty()) );
     connect( m_actionNewResource, SIGNAL(triggered(bool)), m_resourceBrowser, SLOT(createResource()) );
 
-    actionCollection()->addAction( "create_class", m_actionNewSubClass );
-    actionCollection()->addAction( "create_property", m_actionNewProperty );
-    actionCollection()->addAction( "create_resource", m_actionNewResource );
+    actionCollection()->addAction( QLatin1String( "create_class" ), m_actionNewSubClass );
+    actionCollection()->addAction( QLatin1String( "create_property" ), m_actionNewProperty );
+    actionCollection()->addAction( QLatin1String( "create_resource" ), m_actionNewResource );
 
 
     // mode actions
     // =============================================
     m_actionModeBrowse = new KToggleAction( actionCollection() );
     m_actionModeBrowse->setText( i18n("Browse Resources") );
-    m_actionModeBrowse->setIcon( KIcon("view-list-tree") );
+    m_actionModeBrowse->setIcon( KIcon( QLatin1String( "view-list-tree" ) ) );
     m_actionModeBrowse->setShortcut( Qt::ALT + Qt::Key_B );
-    actionCollection()->addAction( "mode_browse", m_actionModeBrowse );
+    actionCollection()->addAction( QLatin1String( "mode_browse" ), m_actionModeBrowse );
     connect( m_actionModeBrowse, SIGNAL(triggered()), this, SLOT(slotModeBrowse()) );
 
     m_actionModeQuery = new KToggleAction( actionCollection() );
     m_actionModeQuery->setText( i18n("Query Resources") );
-    m_actionModeQuery->setIcon( KIcon("edit-find") );
+    m_actionModeQuery->setIcon( KIcon( QLatin1String( "edit-find" ) ) );
     m_actionModeQuery->setShortcut( Qt::ALT + Qt::Key_Q );
-    actionCollection()->addAction( "mode_query", m_actionModeQuery );
+    actionCollection()->addAction( QLatin1String( "mode_query" ), m_actionModeQuery );
     connect( m_actionModeQuery, SIGNAL(triggered()), this, SLOT(slotModeQuery()) );
 
     m_actionModeEdit = new KToggleAction( actionCollection() );
     m_actionModeEdit->setText( i18n("Edit Resource") );
-    m_actionModeEdit->setIcon( KIcon("edit-rename") );
+    m_actionModeEdit->setIcon( KIcon( QLatin1String( "edit-rename" ) ) );
     m_actionModeEdit->setShortcut( Qt::ALT + Qt::Key_E );
-    actionCollection()->addAction( "mode_edit", m_actionModeEdit );
+    actionCollection()->addAction( QLatin1String( "mode_edit" ), m_actionModeEdit );
     connect( m_actionModeEdit, SIGNAL(triggered()), this, SLOT(slotModeEdit()) );
 
     QActionGroup* modeGroup = new QActionGroup( this );
@@ -186,8 +186,8 @@ void MainWindow::setupActions()
     // =============================================
     m_actionDelete = new KAction( actionCollection() );
     m_actionDelete->setText( i18n("Delete Resource") );
-    m_actionDelete->setIcon( KIcon("edit-delete") );
-    actionCollection()->addAction( "resource_delete", m_actionDelete );
+    m_actionDelete->setIcon( KIcon( QLatin1String( "edit-delete" ) ) );
+    actionCollection()->addAction( QLatin1String( "resource_delete" ), m_actionDelete );
     connect( m_actionDelete, SIGNAL(triggered()), this, SLOT(slotDeleteResource()) );
 
 
@@ -268,10 +268,10 @@ void MainWindow::slotDeleteResource()
 
 void MainWindow::slotSettings()
 {
-    if( KConfigDialog::showDialog("settings") )
+    if( KConfigDialog::showDialog( QLatin1String( "settings") ) )
         return;
 
-    KConfigDialog* dialog = new KConfigDialog( this, "settings", Settings::self() );
+    KConfigDialog* dialog = new KConfigDialog( this, QLatin1String( "settings" ), Settings::self() );
     dialog->setFaceType( KPageDialog::List );
     dialog->addPage( new ResourceBrowserSettingsPage(),
                      i18n("Resource Browser"),

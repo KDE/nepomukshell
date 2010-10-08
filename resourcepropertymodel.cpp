@@ -81,10 +81,10 @@ void Nepomuk::ResourcePropertyEditModel::Private::rebuild()
     while( it.next() ) {
         Soprano::Statement s;
         if ( m_mode == ResourcePropertyEditModel::PropertiesMode )
-            s = Soprano::Statement( m_resource.resourceUri(), it["p"], it["o"], it["g"] );
+            s = Soprano::Statement( m_resource.resourceUri(), it[QLatin1String("p")], it[QLatin1String("o")], it[QLatin1String("g")] );
         else
-            s = Soprano::Statement( it["s"], it["p"], m_resource.resourceUri(), it["g"] );
-        m_properties.append( qMakePair( s, it["d"].literal().toDateTime() ) );
+            s = Soprano::Statement( it[QLatin1String("s")], it[QLatin1String("p")], m_resource.resourceUri(), it[QLatin1String("g")] );
+        m_properties.append( qMakePair( s, it[QLatin1String("d")].literal().toDateTime() ) );
     }
 }
 
@@ -166,7 +166,7 @@ QVariant Nepomuk::ResourcePropertyEditModel::data( const QModelIndex& index, int
                 return property.icon();
 
             case Qt::ToolTipRole:
-                return "<p>" + property.comment() + "<br><i>" + property.uri().toString() + "</i>";
+                return QLatin1String( "<p>" ) + property.comment() + QLatin1String( "<br><i>" ) + property.uri().toString() + QLatin1String( "</i>" );
             }
 
         case 1:

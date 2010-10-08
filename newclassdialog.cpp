@@ -71,7 +71,7 @@ Nepomuk::Types::Class NewClassDialog::createClass( Nepomuk::Types::Class parentC
     dlg.m_rangeWidget->hide();
     QIcon icon = parentClass.icon();
     if ( icon.isNull() ) {
-        icon = KIcon( "nepomuk" );
+        icon = KIcon( QLatin1String( "nepomuk" ) );
     }
     dlg.m_labelTitle->setPixmap( icon.pixmap( 32, 32 ) );
 
@@ -84,7 +84,7 @@ Nepomuk::Types::Class NewClassDialog::createClass( Nepomuk::Types::Class parentC
         return pimoModel.createClass( parentClass.uri(),
                                       name,
                                       comment,
-                                      icon != "unknown" ? icon : QString() );
+                                      icon != QLatin1String( "unknown" ) ? icon : QString() );
     }
     else {
         return Nepomuk::Types::Class();
@@ -99,7 +99,7 @@ Nepomuk::Types::Property NewClassDialog::createProperty( Nepomuk::Types::Class p
     dlg.m_labelTitle->setComment( i18n( "for <i>%1</i>", parentClass.label() )  );
     QIcon icon = parentClass.icon();
     if ( icon.isNull() ) {
-        icon = KIcon( "nepomuk" );
+        icon = KIcon( QLatin1String( "nepomuk" ) );
     }
     dlg.m_labelTitle->setPixmap( icon.pixmap( 32, 32 ) );
 
@@ -122,7 +122,7 @@ Nepomuk::Types::Property NewClassDialog::createProperty( Nepomuk::Types::Class p
                                          dlg.m_propertyRangeCombo->itemData( dlg.m_propertyRangeCombo->currentIndex() ).toUrl(),
                                          name,
                                          comment,
-                                         icon != "unknown" ? icon : QString() );
+                                         icon != QLatin1String( "unknown" ) ? icon : QString() );
     }
     else {
         return Nepomuk::Types::Property();
@@ -138,7 +138,7 @@ Nepomuk::Resource NewClassDialog::createResource( Nepomuk::Types::Class type, QW
     dlg.m_rangeWidget->hide();
     QIcon icon = type.icon();
     if ( icon.isNull() ) {
-        icon = KIcon( "nepomuk" );
+        icon = KIcon( QLatin1String( "nepomuk" ) );
     }
     dlg.m_labelTitle->setPixmap( icon.pixmap( 32, 32 ) );
 

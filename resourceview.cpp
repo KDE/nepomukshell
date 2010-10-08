@@ -74,13 +74,13 @@ void ResourceView::addResource( const Nepomuk::Resource& res )
 
 void ResourceView::dragEnterEvent( QDragEnterEvent* event )
 {
-    event->setAccepted( event->mimeData()->hasFormat( "text/uri-list" ) );
+    event->setAccepted( event->mimeData()->hasFormat( QLatin1String( "text/uri-list" ) ) );
 }
 
 
 void ResourceView::dragMoveEvent( QDragMoveEvent* event )
 {
-    event->setAccepted( event->mimeData()->hasFormat( "text/uri-list" ) &&
+    event->setAccepted( event->mimeData()->hasFormat( QLatin1String( "text/uri-list" ) ) &&
                         indexAt( event->pos() ).isValid() );
 }
 

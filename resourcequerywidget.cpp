@@ -39,8 +39,8 @@ ResourceQueryWidget::ResourceQueryWidget( QWidget* parent )
 {
     setupUi( this );
 
-    m_buttonBack->setIcon( KIcon("go-previous") );
-    m_buttonForward->setIcon( KIcon("go-next") );
+    m_buttonBack->setIcon( KIcon( QLatin1String( "go-previous" ) ) );
+    m_buttonForward->setIcon( KIcon( QLatin1String( "go-next" ) ) );
 
     // we install an event filter to catch Ctrl+Return for quick query execution
     m_queryEdit->installEventFilter( this );
