@@ -20,7 +20,6 @@
 
 #include "resourceeditorwidget.h"
 #include "resourcepropertymodel.h"
-#include "statementeditor.h"
 
 #include <QtGui/QTableView>
 #include <QtGui/QMenu>

@@ -204,7 +204,7 @@ QVariant Nepomuk::ResourcePropertyEditModel::data( const QModelIndex& index, int
                 if( date.isValid() )
                     return date;
                 else
-                    return i18n("Unknown");
+                    return i18nc("@item refers to an unknown date", "Unknown");
             }
             else if( role == Qt::ToolTipRole ) {
                 if( date.isValid() )
@@ -225,11 +225,11 @@ QVariant Nepomuk::ResourcePropertyEditModel::headerData( int section, Qt::Orient
         role == Qt::DisplayRole ) {
         switch( section ) {
         case 0:
-            return i18n("Property");
+            return i18nc("@title:column The RDF property of a triple", "Property");
         case 1:
-            return i18n("Value");
+            return i18nc("@title:column The object value of an RDF triple", "Value");
         case 2:
-            return i18n("Creation Date");
+            return i18nc("@title:column The creation date of an RDF triple", "Creation Date");
         }
     }
 

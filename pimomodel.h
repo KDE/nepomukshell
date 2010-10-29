@@ -21,8 +21,6 @@
 
 #include <Soprano/RdfSchemaModel>
 
-#include "nepomukextras_export.h"
-
 namespace Nepomuk {
     /**
      * \class PimoModel pimomodel.h pimomodel.h
@@ -31,7 +29,7 @@ namespace Nepomuk {
      *
      * \sa Vocabulary::PIMO
      */
-    class NEPOMUKEXTRAS_EXPORT PimoModel : public Soprano::RdfSchemaModel
+    class PimoModel : public Soprano::RdfSchemaModel
     {
         Q_OBJECT
 

@@ -81,8 +81,8 @@ ResourceBrowserWidget::ResourceBrowserWidget( QWidget* parent )
 
     m_classFilter->setProxy( m_pimoSortModel );
 
-    m_baseClassCombo->addItem( i18n( "PIMO Classes" ), QVariant( Nepomuk::Vocabulary::PIMO::Thing() ) );
-    m_baseClassCombo->addItem( i18n( "All Classes" ), QVariant( Soprano::Vocabulary::RDFS::Resource() ) );
+    m_baseClassCombo->addItem( i18nc( "@item:inlistbox Referring to all RDF classes in the Nepomuk PIMO ontology", "PIMO Classes" ), QVariant( Nepomuk::Vocabulary::PIMO::Thing() ) );
+    m_baseClassCombo->addItem( i18nc( "@item:inlistbox Referring to all RDF classes in the Nepomuk db", "All Classes" ), QVariant( Soprano::Vocabulary::RDFS::Resource() ) );
 
     connect( m_pimoView, SIGNAL( customContextMenuRequested( const QPoint& ) ),
              this, SLOT( slotPIMOViewContextMenu( const QPoint& ) ) );

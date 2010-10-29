@@ -21,7 +21,6 @@
 #include "mainwindow.h"
 #include "pimo.h"
 #include "resourcepropertymodel.h"
-#include "resourceeditor.h"
 #include "resourceview.h"
 #include "resourcemodel.h"
 #include "resourcebrowserwidget.h"
@@ -141,9 +140,9 @@ void MainWindow::setupActions()
 {
     // ontology handling actions
     // =============================================
-    m_actionNewSubClass = new KAction( KIcon( QLatin1String( "document-new" ) ), i18n( "Create Subclass" ), actionCollection() );
-    m_actionNewProperty = new KAction( KIcon( QLatin1String( "document-new" ) ), i18n( "Create Property" ), actionCollection() );
-    m_actionNewResource = new KAction( KIcon( QLatin1String( "document-new" ) ), i18n( "Create Resource" ), actionCollection() );
+    m_actionNewSubClass = new KAction( KIcon( QLatin1String( "document-new" ) ), i18nc( "@action:button create a new subclass to an existing RDF class", "Create Subclass" ), actionCollection() );
+    m_actionNewProperty = new KAction( KIcon( QLatin1String( "document-new" ) ), i18nc( "@action:button create a new subproperty to an existing RDF property", "Create Property" ), actionCollection() );
+    m_actionNewResource = new KAction( KIcon( QLatin1String( "document-new" ) ), i18nc( "@action:button create a new Nepomuk resource of any type", "Create Resource" ), actionCollection() );
 
     connect( m_actionNewSubClass, SIGNAL(triggered(bool)), m_resourceBrowser, SLOT(createClass()) );
     connect( m_actionNewProperty, SIGNAL(triggered(bool)), m_resourceBrowser, SLOT(createProperty()) );
@@ -157,21 +156,21 @@ void MainWindow::setupActions()
     // mode actions
     // =============================================
     m_actionModeBrowse = new KToggleAction( actionCollection() );
-    m_actionModeBrowse->setText( i18n("Browse Resources") );
+    m_actionModeBrowse->setText( i18nc("@action:button", "Browse Resources") );
     m_actionModeBrowse->setIcon( KIcon( QLatin1String( "view-list-tree" ) ) );
     m_actionModeBrowse->setShortcut( Qt::ALT + Qt::Key_B );
     actionCollection()->addAction( QLatin1String( "mode_browse" ), m_actionModeBrowse );
     connect( m_actionModeBrowse, SIGNAL(triggered()), this, SLOT(slotModeBrowse()) );
 
     m_actionModeQuery = new KToggleAction( actionCollection() );
-    m_actionModeQuery->setText( i18n("Query Resources") );
+    m_actionModeQuery->setText( i18nc("@action:button", "Query Resources") );
     m_actionModeQuery->setIcon( KIcon( QLatin1String( "edit-find" ) ) );
     m_actionModeQuery->setShortcut( Qt::ALT + Qt::Key_Q );
     actionCollection()->addAction( QLatin1String( "mode_query" ), m_actionModeQuery );
     connect( m_actionModeQuery, SIGNAL(triggered()), this, SLOT(slotModeQuery()) );
 
     m_actionModeEdit = new KToggleAction( actionCollection() );
-    m_actionModeEdit->setText( i18n("Edit Resource") );
+    m_actionModeEdit->setText( i18nc("@action:button", "Edit Resource") );
     m_actionModeEdit->setIcon( KIcon( QLatin1String( "edit-rename" ) ) );
     m_actionModeEdit->setShortcut( Qt::ALT + Qt::Key_E );
     actionCollection()->addAction( QLatin1String( "mode_edit" ), m_actionModeEdit );
@@ -187,7 +186,7 @@ void MainWindow::setupActions()
     // resource actions
     // =============================================
     m_actionDelete = new KAction( actionCollection() );
-    m_actionDelete->setText( i18n("Delete Resource") );
+    m_actionDelete->setText( i18nc("@action:button", "Delete Resource") );
     m_actionDelete->setIcon( KIcon( QLatin1String( "edit-delete" ) ) );
     actionCollection()->addAction( QLatin1String( "resource_delete" ), m_actionDelete );
     connect( m_actionDelete, SIGNAL(triggered()), this, SLOT(slotDeleteResource()) );

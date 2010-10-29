@@ -22,7 +22,6 @@
 #include "nepomukshellsettings.h"
 #include "mainwindow.h"
 
-#include "resourcedelegate.h"
 #include "pimo.h"
 
 #include <Nepomuk/Thing>

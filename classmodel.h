@@ -23,8 +23,6 @@
 
 #include <QtCore/QAbstractItemModel>
 
-#include "nepomukextras_export.h"
-
 namespace Nepomuk {
     namespace Types {
         class Class;
@@ -47,7 +45,7 @@ namespace Nepomuk {
          *
          * \since 4.6
          */
-        class NEPOMUKEXTRAS_EXPORT ClassModel : public QAbstractItemModel
+        class ClassModel : public QAbstractItemModel
         {
             Q_OBJECT
 

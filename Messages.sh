@@ -1,3 +1,3 @@
 #! /usr/bin/env bash
-$EXTRACTRC *.rc *.ui >> rc.cpp
-$XGETTEXT *.cpp -o $podir/nepomukshell.pot
+$EXTRACTRC `find . -name "*.ui" -o -name "*.kcfg` >> rc.cpp
+$XGETTEXT `find . -name "*.cpp"` -o $podir/nepomukshell.pot
