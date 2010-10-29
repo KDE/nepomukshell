@@ -29,9 +29,10 @@
 #include "ui_resourcebrowserwidget.h"
 
 class QSortFilterProxyModel;
-class KActionCollection;
 namespace Nepomuk {
-    class ClassModel;
+    namespace Utils {
+        class ClassModel;
+    }
 }
 
 class ResourceBrowserWidget : public QWidget, private Ui::ResourceBrowserWidget
@@ -39,7 +40,7 @@ class ResourceBrowserWidget : public QWidget, private Ui::ResourceBrowserWidget
     Q_OBJECT
 
 public:
-    ResourceBrowserWidget( KActionCollection* ac, QWidget* parent = 0 );
+    ResourceBrowserWidget( QWidget* parent = 0 );
     ~ResourceBrowserWidget();
 
     QList<Nepomuk::Resource> selectedResources() const;
@@ -50,22 +51,21 @@ Q_SIGNALS:
     void resourceActivated( const Nepomuk::Resource& res );
 
 public Q_SLOTS:
+    void setSelectedClass( const Nepomuk::Types::Class& type );
     void createClass();
     void createProperty();
     void createResource();
 
 private Q_SLOTS:
     void slotPIMOViewContextMenu( const QPoint& pos );
-    void slotResourceViewContextMenu( const QPoint& pos );
-    void slotCurrentResourceChanged( const QItemSelection& current, const QItemSelection& );
     void slotCurrentPIMOClassChanged( const QModelIndex& current, const QModelIndex& );
     void slotBaseClassChanged( int index );
-    void slotResourceActivated( const QModelIndex& );
 
 private:
-    Nepomuk::ClassModel* m_pimoModel;
+    void updateQuery( int offset );
+
+    Nepomuk::Utils::ClassModel* m_pimoModel;
     QSortFilterProxyModel* m_pimoSortModel;
-    KActionCollection* m_actionCollection;
 };
 
 #endif

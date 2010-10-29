@@ -45,6 +45,8 @@ public:
 
     QList<Nepomuk::Resource> selectedResources() const;
 
+    static MainWindow* nepomukShellMain();
+
 public Q_SLOTS:
     void openResource( const Nepomuk::Resource& res );
     void openResource( const KUrl& url );
@@ -79,6 +81,8 @@ private:
     KAction* m_actionModeEdit;
 
     KAction* m_actionDelete;
+
+    static MainWindow* s_self;
 };
 
 #endif

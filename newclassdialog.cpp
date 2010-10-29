@@ -18,7 +18,6 @@
 
 #include "newclassdialog.h"
 #include "pimomodel.h"
-#include "pimoitemmodel.h"
 #include "pimo.h"
 
 #include <nepomuk/class.h>

@@ -17,7 +17,6 @@ set( nepomukshell_BIN_SRCS
   mainwindow.cpp
   newclassdialog.cpp
   resourcepropertymodel.cpp
-  asyncloadingresourcemodel.cpp
   resourceview.cpp
   resourcebrowserwidget.cpp
   resourceeditorwidget.cpp
@@ -26,12 +25,15 @@ set( nepomukshell_BIN_SRCS
   infosplash.cpp
   sparqlsyntaxhighlighter.cpp
   queryeditor.cpp
+  classmodel.cpp
+  pimomodel.cpp
 )
 
 soprano_add_ontology(nepomukshell_BIN_SRCS ${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/pimo/pimo.trig "PIMO" "Nepomuk::Vocabulary" "trig")
 
 kde4_add_ui_files(nepomukshell_BIN_SRCS 
   mainwindow.ui
+  resourceview.ui
   resourcebrowserwidget.ui
   resourceeditorwidget.ui
   resourcequerywidget.ui
@@ -44,7 +46,6 @@ kde4_add_kcfg_files(nepomukshell_BIN_SRCS
 kde4_add_executable(nepomukshell ${nepomukshell_BIN_SRCS})
 
 target_link_libraries(nepomukshell
-  nepomukextras
   ${NEPOMUK_LIBRARIES}
   ${QT_QTGUI_LIBRARY}
   ${KDE4_KDEUI_LIBS}

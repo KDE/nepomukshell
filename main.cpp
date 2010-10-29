@@ -30,7 +30,7 @@ int main( int argc, char *argv[] )
     KAboutData aboutData( "nepomukshell",
                           "nepomukshell",
                           ki18n("Nepomuk Shell"),
-                          "0.6",
+                          "0.7",
                           ki18n("NepSak - The Nepomuk Shell"),
                           KAboutData::License_GPL,
                           ki18n("(c) 2008-2010, Sebastian Trüg"),

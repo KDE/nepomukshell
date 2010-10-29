@@ -9,5 +9,9 @@
 	    <label>Recursively query resources</label>
 	    <default>true</default>
     </entry>
+    <entry name="queryLimit" type="int">
+	    <label>Maximum number of results to show on one page</label>
+	    <default>20</default>
+    </entry>
   </group>
 </kcfg>

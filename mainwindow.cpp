@@ -52,16 +52,19 @@
 
 #include <Soprano/Vocabulary/RDFS>
 
+MainWindow* MainWindow::s_self = 0;
 
 MainWindow::MainWindow()
     : KXmlGuiWindow( 0 )
 {
+    s_self = this;
+
     setCaption( i18n("NepSaK - The Nepomuk Shell") );
 
     setCentralWidget( new QWidget( this ) );
     setupUi( centralWidget() );
 
-    m_resourceBrowser = new ResourceBrowserWidget( actionCollection(), m_mainStack );
+    m_resourceBrowser = new ResourceBrowserWidget( m_mainStack );
     m_mainStack->addWidget( m_resourceBrowser );
 
     m_resourceQueryWidget = new ResourceQueryWidget( m_mainStack );
@@ -301,6 +304,13 @@ void MainWindow::slotOpen()
     if ( !url.isEmpty() ) {
         openResource( url );
     }
+}
+
+
+// static
+MainWindow* MainWindow::nepomukShellMain()
+{
+    return s_self;
 }
 
 #include "mainwindow.moc"

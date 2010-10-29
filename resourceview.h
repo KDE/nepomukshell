@@ -19,21 +19,31 @@
 #ifndef _RESOURCE_VIEW_H_
 #define _RESOURCE_VIEW_H_
 
-#include <QtGui/QListView>
+#include <QtGui/QWidget>
+#include "ui_resourceview.h"
 
-class QDropEvent;
-class QDragEnterEvent;
-class QDragMoveEvent;
+#include <Nepomuk/Query/Query>
+
+class QItemSelection;
+class QModelIndex;
 namespace Nepomuk {
     namespace Types {
         class Class;
     }
+    namespace Utils {
+        class SimpleResourceModel;
+    }
+    namespace Query {
+        class QueryServiceClient;
+    }
     class Resource;
-    class AsyncLoadingResourceModel;
 }
 
-
-class ResourceView : public QListView
+/**
+ * Displays a list of resources in pages. Use pageForward() and
+ * pageBack() to browse the pages.
+ */
+class ResourceView : public QWidget, public Ui::ResourceView
 {
     Q_OBJECT
 
@@ -41,11 +51,10 @@ public:
     ResourceView( QWidget* parent = 0 );
     ~ResourceView();
 
+    QList<Nepomuk::Resource> selectedResources() const;
+
 public Q_SLOTS:
-    /**
-     * Load all resources of type \a type async.
-     */
-    void setType( const Nepomuk::Types::Class& type );
+    void setQuery( const Nepomuk::Query::Query& query );
 
     /**
      * Convenience method to quickly update the list
@@ -54,12 +63,30 @@ public Q_SLOTS:
      */
     void addResource( const Nepomuk::Resource& res );
 
-private:
-    void dropEvent( QDropEvent* e );
-    void dragEnterEvent( QDragEnterEvent* event );
-    void dragMoveEvent( QDragMoveEvent* event );
+Q_SIGNALS:
+    void selectionChanged( const QList<Nepomuk::Resource>& );
+    void resourceActivated( const Nepomuk::Resource& );
+    void resourceTypeActivated( const Nepomuk::Types::Class& );
 
-    Nepomuk::AsyncLoadingResourceModel* m_resourceModel;
+private Q_SLOTS:
+    void pageBack();
+    void pageForward();
+    void updatePageButtons();
+    void slotCurrentResourceChanged( const QItemSelection&, const QItemSelection& );
+    void slotIndexActivated( const QModelIndex& index );
+    void slotResourceViewContextMenu( const QPoint& pos );
+    void slotTotalResultCount( int );
+
+private:
+    void listQuery();
+    bool atStart() const;
+    bool atEnd() const;
+
+    Nepomuk::Query::Query m_currentQuery;
+    Nepomuk::Query::QueryServiceClient* m_queryClient;
+    Nepomuk::Utils::SimpleResourceModel* m_resourceModel;
+    int m_queryCount;
+    int m_queryPage;
 };
 
 #endif

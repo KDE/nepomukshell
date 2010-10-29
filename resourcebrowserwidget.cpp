@@ -23,6 +23,8 @@
 #include "pimo.h"
 #include "resourcepropertymodel.h"
 #include "newclassdialog.h"
+#include "nepomukshellsettings.h"
+#include "mainwindow.h"
 
 #include "resourcemodel.h"
 
@@ -38,11 +40,16 @@
 #include <nepomuk/class.h>
 #include <nepomuk/property.h>
 #include <nepomuk/resourcemanager.h>
+#include <Nepomuk/Query/Query>
+#include <Nepomuk/Query/ResourceTerm>
+#include <Nepomuk/Query/ResourceTypeTerm>
+#include <Nepomuk/Query/ComparisonTerm>
 
 #include <KDebug>
 #include <krecursivefilterproxymodel.h>
 #include <KActionCollection>
 
+#include <Soprano/Vocabulary/RDF>
 #include <Soprano/Vocabulary/RDFS>
 
 
@@ -50,17 +57,16 @@ Q_DECLARE_METATYPE( Nepomuk::Resource )
 Q_DECLARE_METATYPE( Nepomuk::Types::Class )
 
 
-ResourceBrowserWidget::ResourceBrowserWidget( KActionCollection* ac, QWidget* parent )
-    : QWidget( parent ),
-      m_actionCollection(ac)
+ResourceBrowserWidget::ResourceBrowserWidget( QWidget* parent )
+    : QWidget( parent )
 {
     setupUi( this );
 
     m_pimoView->header()->hide();
     m_pimoView->setSelectionMode( QAbstractItemView::SingleSelection );
 
-    m_pimoModel = new Nepomuk::ClassModel( m_pimoView );
-    m_pimoModel->setParentClass( Nepomuk::Vocabulary::PIMO::Thing() );
+    m_pimoModel = new Nepomuk::Utils::ClassModel( m_pimoView );
+    m_pimoModel->addRootClass( Nepomuk::Vocabulary::PIMO::Thing() );
     m_pimoSortModel = new KRecursiveFilterProxyModel( m_pimoView );
     m_pimoSortModel->setSourceModel( m_pimoModel );
     m_pimoSortModel->setSortCaseSensitivity( Qt::CaseInsensitive );
@@ -80,16 +86,16 @@ ResourceBrowserWidget::ResourceBrowserWidget( KActionCollection* ac, QWidget* pa
 
     connect( m_pimoView, SIGNAL( customContextMenuRequested( const QPoint& ) ),
              this, SLOT( slotPIMOViewContextMenu( const QPoint& ) ) );
-    connect( m_resourceView, SIGNAL( customContextMenuRequested( const QPoint& ) ),
-             this, SLOT( slotResourceViewContextMenu( const QPoint& ) ) );
     connect( m_pimoView->selectionModel(), SIGNAL( currentChanged( const QModelIndex&, const QModelIndex& ) ),
              this, SLOT( slotCurrentPIMOClassChanged( const QModelIndex&, const QModelIndex& ) ) );
-    connect( m_resourceView->selectionModel(), SIGNAL( selectionChanged( const QItemSelection&, const QItemSelection& ) ),
-             this, SLOT( slotCurrentResourceChanged( const QItemSelection&, const QItemSelection& ) ) );
+    connect( m_resourceView, SIGNAL(selectionChanged(QList<Nepomuk::Resource>)),
+             this, SIGNAL(resourcesSelected(QList<Nepomuk::Resource>)) );
     connect( m_baseClassCombo, SIGNAL( activated( int ) ),
              this, SLOT( slotBaseClassChanged( int ) ) );
-    connect( m_resourceView, SIGNAL(doubleClicked(QModelIndex)),
-             this, SLOT(slotResourceActivated(QModelIndex)) );
+    connect( m_resourceView, SIGNAL(resourceActivated(Nepomuk::Resource)),
+             this, SIGNAL(resourceActivated(Nepomuk::Resource)) );
+    connect( m_resourceView, SIGNAL(resourceTypeActivated(Nepomuk::Types::Class)),
+             this, SLOT(setSelectedClass(Nepomuk::Types::Class)) );
 }
 
 
@@ -103,28 +109,13 @@ void ResourceBrowserWidget::slotPIMOViewContextMenu( const QPoint& pos )
     kDebug();
     QModelIndex index = m_pimoView->indexAt( pos );
     if ( index.isValid() ) {
-        Nepomuk::Types::Class type = index.data( Nepomuk::ClassModel::TypeRole ).value<Nepomuk::Types::Class>();
+        Nepomuk::Types::Class type = index.data( Nepomuk::Utils::ClassModel::TypeRole ).value<Nepomuk::Types::Class>();
 
         QMenu::exec( QList<QAction*>()
-                     << m_actionCollection->action( QLatin1String( "create_class" ) )
-                     << m_actionCollection->action( QLatin1String( "create_property" ) )
-                     << m_actionCollection->action( QLatin1String( "create_resource" ) ),
+                     << MainWindow::nepomukShellMain()->actionCollection()->action( QLatin1String( "create_class" ) )
+                     << MainWindow::nepomukShellMain()->actionCollection()->action( QLatin1String( "create_property" ) )
+                     << MainWindow::nepomukShellMain()->actionCollection()->action( QLatin1String( "create_resource" ) ),
                      m_pimoView->viewport()->mapToGlobal( pos ) );
-    }
-}
-
-
-void ResourceBrowserWidget::slotResourceViewContextMenu( const QPoint& pos )
-{
-    kDebug();
-    QModelIndexList selection = m_resourceView->selectionModel()->selectedIndexes();
-
-    if ( !selection.isEmpty() ) {
-        QList<QAction*> actions;
-        actions << m_actionCollection->action( QLatin1String( "resource_delete" ) );
-
-        QMenu::exec( actions,
-                     m_resourceView->viewport()->mapToGlobal( pos ) );
     }
 }
 
@@ -132,31 +123,16 @@ void ResourceBrowserWidget::slotResourceViewContextMenu( const QPoint& pos )
 void ResourceBrowserWidget::slotCurrentPIMOClassChanged( const QModelIndex& current, const QModelIndex& )
 {
     if ( current.isValid() ) {
-        Nepomuk::Types::Class type = current.data( Nepomuk::ClassModel::TypeRole ).value<Nepomuk::Types::Class>();
+        Nepomuk::Types::Class type = current.data( Nepomuk::Utils::ClassModel::TypeRole ).value<Nepomuk::Types::Class>();
         kDebug() << "Selection changed:" << type.label();
-        m_resourceView->setType( type );
+        setSelectedClass(type);
     }
-}
-
-
-void ResourceBrowserWidget::slotCurrentResourceChanged( const QItemSelection&, const QItemSelection& )
-{
-    kDebug();
-    emit resourcesSelected( selectedResources() );
 }
 
 
 void ResourceBrowserWidget::slotBaseClassChanged( int index )
 {
-    m_pimoModel->setParentClass( m_baseClassCombo->itemData( index ).toUrl() );
-}
-
-
-void ResourceBrowserWidget::slotResourceActivated( const QModelIndex& index )
-{
-    Nepomuk::Resource res = index.data( Nepomuk::Utils::ResourceModel::ResourceRole ).value<Nepomuk::Resource>();
-    kDebug() << res.resourceUri();
-    emit resourceActivated( res );
+    m_pimoModel->setRootClass( m_baseClassCombo->itemData( index ).toUrl() );
 }
 
 
@@ -193,11 +169,7 @@ void ResourceBrowserWidget::createResource()
 
 QList<Nepomuk::Resource> ResourceBrowserWidget::selectedResources() const
 {
-    QList<Nepomuk::Resource> rl;
-    QModelIndexList selection = m_resourceView->selectionModel()->selectedIndexes();
-    Q_FOREACH( const QModelIndex& index, selection )
-        rl << index.data( Nepomuk::Utils::ResourceModel::ResourceRole ).value<Nepomuk::Resource>();
-    return rl;
+    return m_resourceView->selectedResources();
 }
 
 
@@ -205,9 +177,37 @@ Nepomuk::Types::Class ResourceBrowserWidget::selectedClass() const
 {
     QModelIndex current = m_pimoView->selectionModel()->currentIndex();
     if ( current.isValid() )
-        return current.data( Nepomuk::ClassModel::TypeRole ).value<Nepomuk::Types::Class>();
+        return current.data( Nepomuk::Utils::ClassModel::TypeRole ).value<Nepomuk::Types::Class>();
     else
-        return m_pimoModel->parentClass();
+        return m_pimoModel->rootClasses().first();
+}
+
+
+namespace {
+void setIndexVisible( QTreeView* view, const QModelIndex& index ) {
+    QModelIndex parent = view->model()->parent(index);
+    if( parent.isValid() ) {
+        setIndexVisible(view, parent);
+        view->setExpanded(parent, true);
+    }
+}
+}
+
+void ResourceBrowserWidget::setSelectedClass( const Nepomuk::Types::Class& type )
+{
+    kDebug() << type;
+
+    QModelIndex index = m_pimoSortModel->mapFromSource(m_pimoModel->indexForClass(type));
+    setIndexVisible( m_pimoView, index );
+    kDebug() << index << index.data(Nepomuk::Utils::ClassModel::TypeRole).value<Nepomuk::Types::Class>();
+    m_pimoView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Clear|QItemSelectionModel::SelectCurrent);
+
+    if( Settings::self()->recursiveQuery() ) {
+        m_resourceView->setQuery( Nepomuk::Query::Query( Nepomuk::Query::ResourceTypeTerm( selectedClass() ) ) );
+    }
+    else {
+        m_resourceView->setQuery( Nepomuk::Query::Query( Nepomuk::Query::ComparisonTerm( Soprano::Vocabulary::RDF::type(), Nepomuk::Query::ResourceTerm( selectedClass().uri() ) ) ) );
+    }
 }
 
 #include "resourcebrowserwidget.moc"

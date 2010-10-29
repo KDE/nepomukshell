@@ -142,7 +142,6 @@ void ResourceEditorWidget::setResourceInternal( const Nepomuk::Resource& res )
         m_propertyModel->setResource( res );
         m_backlinksModel->setResource( res );
         m_uriLabel->setText( KUrl(res.resourceUri()).url() );
-        m_statementEditor->setResource( res );
     }
 }
 
