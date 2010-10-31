@@ -2,9 +2,6 @@
 <ui version="4.0">
  <class>ResourceQueryWidget</class>
  <widget class="QWidget" name="ResourceQueryWidget">
-  <property name="windowTitle">
-   <string>Form</string>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
