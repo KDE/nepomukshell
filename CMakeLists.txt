@@ -51,6 +51,8 @@ target_link_libraries(nepomukshell
   ${KDE4_KDEUI_LIBS}
   ${KDE4_KIO_LIBS}
   ${SOPRANO_LIBRARIES}
+  ${NEPOMUK_QUERY_LIBRARIES}
+  nepomukutils
 )
 
 install(TARGETS nepomukshell DESTINATION ${BIN_INSTALL_DIR})
