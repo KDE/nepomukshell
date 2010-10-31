@@ -27,7 +27,6 @@
 #include <Soprano/Node>
 
 namespace Nepomuk {
-    class Resource;
 
     class QueryModel : public QAbstractTableModel
     {

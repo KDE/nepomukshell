@@ -26,12 +26,10 @@
 #include <Soprano/Node>
 
 
-class QUrl;
 
 namespace Nepomuk {
     class Resource;
     namespace Types {
-        class Class;
     }
 
     class ResourcePropertyEditModel : public QAbstractTableModel

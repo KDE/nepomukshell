@@ -27,13 +27,10 @@
 
 #include "ui_mainwindow.h"
 
-class QTreeView;
-class QListView;
 class KAction;
 class ResourceBrowserWidget;
 class ResourceEditorWidget;
 class ResourceQueryWidget;
-class QStackedWidget;
 
 class MainWindow : public KXmlGuiWindow, private Ui::MainWindow
 {
