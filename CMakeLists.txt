@@ -1,5 +1,11 @@
 project(nepomukshell)
 
+find_package(KDE4 REQUIRED)
+find_package(Nepomuk REQUIRED)
+
+include(KDE4Defaults)
+include(SopranoAddOntology)
+
 include_directories(
   ${QT_INCLUDES}
   ${KDE4_INCLUDES}
