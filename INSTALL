@@ -1,0 +1,26 @@
+BUILDING NepomukShell
+=====================
+
+Nepomukshell's build system uses cmake.
+So to compile Nepomukshell first create a build dir (cmake does not support
+building in the source dir):
+
+  mkdir build
+  cd build
+
+then run cmake:
+
+  cmake ..
+
+(a typical cmake option that is often used is: -DCMAKE_INSTALL_PREFIX=<prefix>)
+
+Nepomukshell then presents a configuration summary. At this point you may
+want to install missing dependancies and run cmake again.
+
+Finally build Nepomukshell:
+
+  make
+
+And install it (in most cases root privileges are required):
+
+  make install

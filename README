@@ -1,7 +1,9 @@
-NepomukShell
-============
+NepSak (The Nepomuk Shell)
+==========================
 
-Review for inclusion in kdesdk or alternatively in extragear.
-Nepomukshell is a maintenance and debugging tool for the Nepomuk
-data storage. It allows to browse, query, and edit resources 
-in Nepomuk.
+The Nepomuk Swiss Army Knife is a maintenance and debugging tool intended for developers.
+It is NOT intended for the end user.
+NepSak allows to browse, query, and edit your Nepomuk resources. It provides the means 
+to modify, delete, and mess up your data in any way possible.
+
+USE WITH CARE!
