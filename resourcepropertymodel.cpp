@@ -28,11 +28,10 @@
 #include <nepomuk/variant.h>
 #include <nepomuk/literal.h>
 
-#include <KIcon>
 #include <KDebug>
-#include <KMessageBox>
 
 #include <QtGui/QFont>
+#include <QtGui/QIcon>
 #include <QtCore/QPair>
 #include <QtCore/QList>
 

@@ -33,7 +33,6 @@
 
 #include <kpixmapsequenceoverlaypainter.h>
 #include <KDialog>
-#include <KUrl>
 #include <KDebug>
 #include <KIcon>
 #include <KActionCollection>
