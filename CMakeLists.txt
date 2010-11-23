@@ -1,10 +1,18 @@
 project(nepomukshell)
 
+##################  Nepomukshell version  ################################
+set(CMAKE_NEPOMUKSHELL_VERSION_MAJOR 0)
+set(CMAKE_NEPOMUKSHELL_VERSION_MINOR 7)
+set(CMAKE_NEPOMUKSHELL_VERSION_RELEASE 0)
+set(CMAKE_NEPOMUKSHELL_VERSION_STRING "${CMAKE_NEPOMUKSHELL_VERSION_MAJOR}.${CMAKE_NEPOMUKSHELL_VERSION_MINOR}.${CMAKE_NEPOMUKSHELL_VERSION_RELEASE}")
+
 find_package(KDE4 REQUIRED)
 find_package(Nepomuk REQUIRED)
 
 include(KDE4Defaults)
 include(SopranoAddOntology)
+
+configure_file(nepomukshell-config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/nepomukshell-config.h)
 
 include_directories(
   ${QT_INCLUDES}
@@ -16,6 +24,7 @@ include_directories(
   ${nepomukextras_SOURCE_DIR}
   ${nepomuk_kde_SOURCE_DIR}/misc
   ${nepomukshell_SOURCE_DIR}/settings
+  ${nepomukshell_BINARY_DIR}
 )
 
 set( nepomukshell_BIN_SRCS
