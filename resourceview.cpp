@@ -69,8 +69,6 @@ ResourceView::ResourceView( QWidget* parent )
              m_resourceModel, SLOT(addResults(QList<Nepomuk::Query::Result>)) );
     connect( m_queryClient, SIGNAL(finishedListing()),
              this, SLOT(updatePageButtons()) );
-    connect( m_queryClient, SIGNAL(totalResultCount(int)),
-             this, SLOT(slotTotalResultCount(int)) );
 
     m_pageBackButton->setIcon( KIcon( QLatin1String("go-previous") ) );
     m_pageForwardButton->setIcon( KIcon( QLatin1String("go-next") ) );
