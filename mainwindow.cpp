@@ -22,11 +22,9 @@
 #include "pimo.h"
 #include "resourcepropertymodel.h"
 #include "resourceview.h"
-#include "resourcemodel.h"
 #include "resourcebrowserwidget.h"
 #include "resourceeditorwidget.h"
 #include "resourcequerywidget.h"
-
 #include "nepomukshellsettings.h"
 #include "resourcebrowsersettingspage.h"
 
@@ -35,6 +33,7 @@
 #include <nepomuk/class.h>
 #include <nepomuk/property.h>
 #include <nepomuk/resourcemanager.h>
+#include <nepomuk/resourcemodel.h>
 
 #include <KIcon>
 #include <KDebug>

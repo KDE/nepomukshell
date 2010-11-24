@@ -3,7 +3,7 @@ project(nepomukshell)
 ##################  Nepomukshell version  ################################
 set(CMAKE_NEPOMUKSHELL_VERSION_MAJOR 0)
 set(CMAKE_NEPOMUKSHELL_VERSION_MINOR 7)
-set(CMAKE_NEPOMUKSHELL_VERSION_RELEASE 0)
+set(CMAKE_NEPOMUKSHELL_VERSION_RELEASE 1)
 set(CMAKE_NEPOMUKSHELL_VERSION_STRING "${CMAKE_NEPOMUKSHELL_VERSION_MAJOR}.${CMAKE_NEPOMUKSHELL_VERSION_MINOR}.${CMAKE_NEPOMUKSHELL_VERSION_RELEASE}")
 
 find_package(KDE4 REQUIRED)
@@ -18,11 +18,7 @@ include_directories(
   ${QT_INCLUDES}
   ${KDE4_INCLUDES}
   ${SOPRANO_INCLUDE_DIR}
-  ${SOPRANO_INCLUDE_DIR}/soprano
   ${NEPOMUK_INCLUDE_DIR}
-  ${NEPOMUK_INCLUDE_DIR}/nepomuk
-  ${nepomukextras_SOURCE_DIR}
-  ${nepomuk_kde_SOURCE_DIR}/misc
   ${nepomukshell_SOURCE_DIR}/settings
   ${nepomukshell_BINARY_DIR}
 )

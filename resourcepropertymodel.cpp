@@ -19,7 +19,6 @@
  */
 
 #include "resourcepropertymodel.h"
-#include "nie.h"
 
 #include <nepomuk/resource.h>
 #include <nepomuk/resourcemanager.h>
@@ -27,6 +26,7 @@
 #include <nepomuk/property.h>
 #include <nepomuk/variant.h>
 #include <nepomuk/literal.h>
+#include <nepomuk/nie.h>
 
 #include <KIcon>
 #include <KDebug>
@@ -141,6 +141,7 @@ int Nepomuk::ResourcePropertyEditModel::columnCount( const QModelIndex& ) const
 
 int Nepomuk::ResourcePropertyEditModel::rowCount( const QModelIndex& index ) const
 {
+    Q_UNUSED(index);
     return d->m_properties.count();
 }
 
@@ -309,6 +310,7 @@ Soprano::Node Nepomuk::ResourcePropertyEditModel::nodeForIndex( const QModelInde
 
 QModelIndex Nepomuk::ResourcePropertyEditModel::parent( const QModelIndex& index ) const
 {
+    Q_UNUSED(index);
     return QModelIndex();
 }
 

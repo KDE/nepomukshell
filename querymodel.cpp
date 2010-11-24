@@ -84,6 +84,7 @@ Nepomuk::QueryModel::~QueryModel()
 
 int Nepomuk::QueryModel::columnCount( const QModelIndex& parent ) const
 {
+    Q_UNUSED(parent);
     if( d->m_bindings.isEmpty() )
         return 0;
     else
@@ -93,7 +94,10 @@ int Nepomuk::QueryModel::columnCount( const QModelIndex& parent ) const
 
 int Nepomuk::QueryModel::rowCount( const QModelIndex& parent ) const
 {
-    return d->m_bindings.count();
+    if( !parent.isValid() )
+        return d->m_bindings.count();
+    else
+        return 0;
 }
 
 
@@ -111,6 +115,7 @@ QVariant Nepomuk::QueryModel::data( const QModelIndex& index, int role ) const
 
 QModelIndex Nepomuk::QueryModel::parent( const QModelIndex& index ) const
 {
+    Q_UNUSED(index);
     return QModelIndex();
 }
 

@@ -26,8 +26,6 @@
 #include "nepomukshellsettings.h"
 #include "mainwindow.h"
 
-#include "resourcemodel.h"
-
 #include <QtGui/QTreeView>
 #include <QtGui/QListView>
 #include <QtGui/QVBoxLayout>
@@ -40,6 +38,7 @@
 #include <nepomuk/class.h>
 #include <nepomuk/property.h>
 #include <nepomuk/resourcemanager.h>
+#include <nepomuk/resourcemodel.h>
 #include <Nepomuk/Query/Query>
 #include <Nepomuk/Query/ResourceTerm>
 #include <Nepomuk/Query/ResourceTypeTerm>
