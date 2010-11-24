@@ -27,7 +27,6 @@
 
 #include <KDebug>
 #include <KLocale>
-#include <KTitleWidget>
 
 #include <QtGui/QTreeView>
 #include <QtGui/QHeaderView>
