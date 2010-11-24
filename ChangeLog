@@ -1,2 +1,6 @@
+0.7.1
+	* Properly set minimum kdelibs version in the build system.
+	* Cleaned up build system and includes.
+
 0.7.0
 	* First official release
