@@ -1,10 +1,18 @@
 [Desktop Entry]
 Name=NepSaK - The Nepomuk Shell
+Name[nl]=NepSaK - De shell van Nepomuk
+Name[pt]=NepSaK - A Consola do Nepomuk
+Name[pt_BR]=NepSaK - O shell do Nepomuk
 Name[uk]=NepSaK — оболонка Nepomuk
 Name[x-test]=xxNepSaK - The Nepomuk Shellxx
+Name[zh_TW]=NepSaK - The Nepomuk Shell
 Comment=The Nepomuk Swiss Army Knife Developer Shell
+Comment[nl]=De Nepomuk ontwikkelaarshell die van alle markten thuis is
+Comment[pt]=A Consola de Desenvolvimento do Nepomuk
+Comment[pt_BR]=O canivete suíço do desenvolvedor do Nepomuk
 Comment[uk]=Універсальний оболонка для розробників Nepomuk
 Comment[x-test]=xxThe Nepomuk Swiss Army Knife Developer Shellxx
+Comment[zh_TW]=Nepomuk 瑞士刀開發者 Shell
 Icon=nepomuk
 Exec=nepomukshell
 Type=Application
