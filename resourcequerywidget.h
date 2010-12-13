@@ -22,6 +22,7 @@
 #define _NEPOMUK_RESOURCE_QUERY_WIDGET_H_
 
 #include <QtGui/QWidget>
+#include <QtCore/QTime>
 
 #include <Nepomuk/Resource>
 #include <Nepomuk/Types/Class>
@@ -65,6 +66,8 @@ private:
     
     QStringList m_queryHistory;
     int m_queryHistoryIndex;
+
+    QTime m_queryTimer;
 };
 
 #endif

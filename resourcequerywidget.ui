@@ -52,12 +52,29 @@
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
-     <widget class="QueryEditor" name="m_queryEdit"/>
+     <widget class="QueryEditor" name="m_queryEdit" native="true"/>
      <widget class="QTableView" name="m_queryView"/>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="m_statusLabel">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
     </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QueryEditor</class>
+   <extends>QWidget</extends>
+   <header>queryeditor.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
