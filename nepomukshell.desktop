@@ -1,5 +1,7 @@
 [Desktop Entry]
 Name=NepSaK - The Nepomuk Shell
+Name[da]=NepSaK - Nepomuk-skal
+Name[nds]=NepSak - De Nepomuk-Konsool
 Name[nl]=NepSaK - De shell van Nepomuk
 Name[pt]=NepSaK - A Consola do Nepomuk
 Name[pt_BR]=NepSaK - O shell do Nepomuk
@@ -7,6 +9,7 @@ Name[uk]=NepSaK — оболонка Nepomuk
 Name[x-test]=xxNepSaK - The Nepomuk Shellxx
 Name[zh_TW]=NepSaK - The Nepomuk Shell
 Comment=The Nepomuk Swiss Army Knife Developer Shell
+Comment[da]=Nepomuks schweizerkniv af en udvikler-skal
 Comment[nl]=De Nepomuk ontwikkelaarshell die van alle markten thuis is
 Comment[pt]=A Consola de Desenvolvimento do Nepomuk
 Comment[pt_BR]=O canivete suíço do desenvolvedor do Nepomuk
