@@ -1,6 +1,7 @@
 0.8.0
 	* Show query time in status bar in query mode
 	* Use abbreviated namespaces in the query results
+	* A new dialog to show a resource in plain TURTLE encoding
 
 0.7.0
 	* First official release

@@ -29,6 +29,7 @@
 #include "resourcebrowsersettingspage.h"
 
 #include <QtGui/QStackedWidget>
+#include <QtGui/QTextBrowser>
 
 #include <nepomuk/class.h>
 #include <nepomuk/property.h>
@@ -49,6 +50,13 @@
 #include <KFileDialog>
 
 #include <Soprano/Vocabulary/RDFS>
+#include <Soprano/StatementIterator>
+#include <Soprano/Model>
+#include <Soprano/Serializer>
+#include <Soprano/PluginManager>
+#define USING_SOPRANO_NRLMODEL_UNSTABLE_API
+#include <Soprano/NRLModel>
+
 
 MainWindow* MainWindow::s_self = 0;
 
@@ -86,7 +94,7 @@ MainWindow::MainWindow()
     // init
     m_mainStack->setCurrentWidget( m_resourceBrowser );
     m_actionModeBrowse->setChecked( true );
-    m_actionDelete->setEnabled( false );
+    m_resourceActionGroup->setEnabled( false );
     slotResourcesSelected( QList<Nepomuk::Resource>() );
 
     readSettings();
@@ -184,11 +192,19 @@ void MainWindow::setupActions()
 
     // resource actions
     // =============================================
+    m_resourceActionGroup = new QActionGroup( actionCollection() );
     m_actionDelete = new KAction( actionCollection() );
     m_actionDelete->setText( i18nc("@action:button", "Delete Resource") );
     m_actionDelete->setIcon( KIcon( QLatin1String( "edit-delete" ) ) );
     actionCollection()->addAction( QLatin1String( "resource_delete" ), m_actionDelete );
     connect( m_actionDelete, SIGNAL(triggered()), this, SLOT(slotDeleteResource()) );
+    m_resourceActionGroup->addAction( m_actionDelete );
+
+    m_actionShowSource = new KAction( actionCollection() );
+    m_actionShowSource->setText( i18nc("@action:button", "Show Serialized Resource") );
+    actionCollection()->addAction( QLatin1String( "resource_show_source" ), m_actionShowSource );
+    connect( m_actionShowSource, SIGNAL(triggered()), this, SLOT(slotShowSource()) );
+    m_resourceActionGroup->addAction( m_actionShowSource );
 
 
     // misc actions
@@ -213,7 +229,7 @@ void MainWindow::slotModeQuery()
 {
     kDebug();
     m_mainStack->setCurrentWidget( m_resourceQueryWidget );
-    m_actionDelete->setEnabled( false );
+    m_resourceActionGroup->setEnabled( false );
 }
 
 
@@ -232,7 +248,7 @@ void MainWindow::slotModeEdit()
 void MainWindow::slotResourcesSelected( const QList<Nepomuk::Resource>& res )
 {
     m_actionModeEdit->setEnabled( res.count() == 1 || m_resourceEditor->resource().isValid() );
-    m_actionDelete->setEnabled( !res.isEmpty() );
+    m_resourceActionGroup->setEnabled( !res.isEmpty() );
 }
 
 
@@ -302,6 +318,43 @@ void MainWindow::slotOpen()
     if ( !url.isEmpty() ) {
         openResource( url );
     }
+}
+
+
+void MainWindow::slotShowSource()
+{
+    // TODO: create a dedicated dialog with buttons to change serialization and enable/disable bnames
+    //       for the latter put the NRLModel trick from the QueryModel into a helper class
+    Soprano::StatementIterator it = Nepomuk::ResourceManager::instance()->mainModel()->listStatements( selectedResources().first().resourceUri(),
+                                                                                                       Soprano::Node(),
+                                                                                                       Soprano::Node() );
+    const Soprano::Serializer* serializer = Soprano::PluginManager::instance()->discoverSerializerForSerialization( Soprano::SerializationTurtle );
+    if( !serializer ) {
+        KMessageBox::error( this, i18n("Could not find a useful Soprano serializer plugin."));
+        return;
+    }
+
+    // add query prefixes
+    // TODO: put this into a helper class
+    Soprano::NRLModel nrlModel( Nepomuk::ResourceManager::instance()->mainModel() );
+    nrlModel.setEnableQueryPrefixExpansion( true );
+    QHash<QString, QUrl> queryPrefixes = nrlModel.queryPrefixes();
+    for( QHash<QString, QUrl>::const_iterator it = queryPrefixes.constBegin();
+         it != queryPrefixes.constEnd(); ++it ) {
+        serializer->addPrefix( it.key(), it.value() );
+    }
+
+    QString s;
+    QTextStream stream( &s );
+    serializer->serialize( it, stream, Soprano::SerializationTurtle );
+
+    KDialog dlg(this);
+    dlg.setButtons(KDialog::Ok);
+    dlg.setCaption(i18n("Show Resource Source"));
+    QTextBrowser* browser = new QTextBrowser(&dlg);
+    browser->setPlainText(s);
+    dlg.setMainWidget(browser);
+    dlg.exec();
 }
 
 

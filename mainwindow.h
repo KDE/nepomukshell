@@ -57,6 +57,7 @@ private Q_SLOTS:
     void slotDeleteResource();
     void slotSettings();
     void slotOpen();
+    void slotShowSource();
 
 private:
     bool queryClose();
@@ -78,6 +79,8 @@ private:
     KAction* m_actionModeEdit;
 
     KAction* m_actionDelete;
+    KAction* m_actionShowSource;
+    QActionGroup* m_resourceActionGroup;
 
     static MainWindow* s_self;
 };
