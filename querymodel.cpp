@@ -30,8 +30,21 @@
 #include <Soprano/QueryResultIterator>
 #include <Soprano/Util/AsyncQuery>
 
+#define USING_SOPRANO_NRLMODEL_UNSTABLE_API
+#include <Soprano/NRLModel>
+
 #include <KDebug>
 
+
+namespace {
+void splitUri( const QUrl& uri, QUrl& ns, QString& name )
+{
+    const QString uriStr = uri.toString();
+    const int i = uriStr.lastIndexOf( QRegExp(QLatin1String("[/#]")) ) + 1;
+    ns = uriStr.left( i );
+    name = uriStr.mid( i );
+}
+}
 
 class Nepomuk::QueryModel::Private
 {
@@ -45,7 +58,10 @@ public:
     int m_queryTime;
     QTime m_queryTimer;
 
+    QHash<QUrl, QString> m_bnames;
+
     void updateQuery();
+    QString resourceToString( const QUrl& uri ) const;
 };
 
 
@@ -73,10 +89,32 @@ void Nepomuk::QueryModel::Private::updateQuery()
 }
 
 
+QString Nepomuk::QueryModel::Private::resourceToString(const QUrl &uri) const
+{
+    QUrl ns;
+    QString name;
+    splitUri( uri, ns, name );
+    QHash<QUrl, QString>::const_iterator it = m_bnames.constFind(ns);
+    if( it != m_bnames.constEnd() ) {
+        return QString::fromLatin1("%1:%2").arg( it.value(), name );
+    }
+    else {
+        return uri.toString();
+    }
+}
+
+
 Nepomuk::QueryModel::QueryModel( QObject* parent )
     : QAbstractTableModel( parent ),
       d(new Private( this ))
 {
+    Soprano::NRLModel nrlModel( ResourceManager::instance()->mainModel() );
+    nrlModel.setEnableQueryPrefixExpansion( true );
+    QHash<QString, QUrl> queryPrefixes = nrlModel.queryPrefixes();
+    for( QHash<QString, QUrl>::const_iterator it = queryPrefixes.constBegin();
+         it != queryPrefixes.constEnd(); ++it ) {
+        d->m_bnames.insert( it.value(), it.key() );
+    }
 }
 
 
@@ -108,9 +146,20 @@ int Nepomuk::QueryModel::rowCount( const QModelIndex& parent ) const
 QVariant Nepomuk::QueryModel::data( const QModelIndex& index, int role ) const
 {
     if( index.isValid() &&
-        index.row() < d->m_bindings.count() &&
-        role == Qt::DisplayRole ) {
-        return d->m_bindings[index.row()][index.column()].toString();
+        index.row() < d->m_bindings.count() ) {
+        const Soprano::Node node = d->m_bindings[index.row()][index.column()];
+            switch( role ) {
+            case Qt::DisplayRole:
+                if( node.isResource() ) {
+                    return d->resourceToString(node.uri());
+                }
+                else {
+                    return node.toString();
+                }
+
+            case Qt::ToolTipRole:
+                return node.toString();
+            }
     }
 
     return QVariant();
