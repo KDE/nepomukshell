@@ -70,7 +70,7 @@ void Nepomuk::SparqlSyntaxHighlighter::init()
     // Literals
     QTextCharFormat literalFormat;
     literalFormat.setForeground( Qt::red );
-    QRegExp literalRegex( QLatin1String( "\".*\"" ) );
+    QRegExp literalRegex( QLatin1String( "(\"[^\"]*\")|(\'[^\']*\')" ) );
     m_rules.append( Rule( literalRegex, literalFormat ) );
 
     // Comments
