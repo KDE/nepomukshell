@@ -25,6 +25,7 @@
 #include <QtCore/QList>
 
 #include <Soprano/Node>
+#include <Soprano/Error/ErrorCode>
 
 namespace Nepomuk {
 
@@ -44,6 +45,8 @@ namespace Nepomuk {
         QVariant headerData( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 
         Soprano::Node nodeForIndex( const QModelIndex& index ) const;
+        
+        Soprano::Error::Error lastError();
 
     public Q_SLOTS:
         void setQuery( const QString& query );

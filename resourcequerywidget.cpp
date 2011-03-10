@@ -29,6 +29,7 @@
 #include <KConfigGroup>
 #include <KGlobal>
 #include <KLocale>
+#include <KMessageBox>
 
 #include <Soprano/Node>
 
@@ -115,6 +116,10 @@ void ResourceQueryWidget::slotQueryButtonClicked()
     updateHistoryButtonStates();
     m_statusLabel->setText( i18n("Elapsed: %1", KGlobal::locale()->formatDuration(m_queryTimer.elapsed())) );
     QApplication::restoreOverrideCursor();
+    
+    if( m_queryModel->lastError() != Soprano::Error::ErrorNone ) {
+        KMessageBox::error( 0, m_queryModel->lastError().message(), i18n("Query error") );
+    }
 }
 
 

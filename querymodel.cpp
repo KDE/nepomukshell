@@ -35,17 +35,24 @@ class Nepomuk::QueryModel::Private
 public:
     QString m_query;
     QList<Soprano::BindingSet> m_bindings;
+    Soprano::Error::Error m_lastError;
 
-    void updateQuery();
+    Soprano::Error::Error updateQuery();
 };
 
 
-void Nepomuk::QueryModel::Private::updateQuery()
+Soprano::Error::Error Nepomuk::QueryModel::Private::updateQuery()
 {
     m_bindings.clear();
 
     if( !m_query.isEmpty() ) {
-        Soprano::QueryResultIterator it = ResourceManager::instance()->mainModel()->executeQuery( m_query, Soprano::Query::QueryLanguageSparql );
+        Soprano::Model* model = ResourceManager::instance()->mainModel();
+        Soprano::QueryResultIterator it = model->executeQuery( m_query, Soprano::Query::QueryLanguageSparql );
+        m_lastError = model->lastError();
+        
+        if( m_lastError != Soprano::Error::ErrorNone )
+            return m_lastError;
+        
         if ( it.isBool() ) {
             Soprano::BindingSet set;
             set.insert( QLatin1String( "result" ), Soprano::LiteralValue( it.boolValue() ) );
@@ -66,6 +73,8 @@ void Nepomuk::QueryModel::Private::updateQuery()
             m_bindings = it.allBindings();
         }
     }
+    
+    return Soprano::Error::Error();
 }
 
 
@@ -154,6 +163,12 @@ Soprano::Node Nepomuk::QueryModel::nodeForIndex( const QModelIndex& index ) cons
         return d->m_bindings[index.row()][index.column()];
     }
     return Soprano::Node();
+}
+
+
+Soprano::Error::Error Nepomuk::QueryModel::lastError()
+{
+    return d->m_lastError;
 }
 
 #include "querymodel.moc"
