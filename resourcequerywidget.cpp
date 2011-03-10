@@ -59,6 +59,10 @@ ResourceQueryWidget::ResourceQueryWidget( QWidget* parent )
             this, SLOT(slotQueryHistoryNext()) );
     connect( m_queryView, SIGNAL(doubleClicked(QModelIndex)),
              this, SLOT(slotNodeActivated(QModelIndex)) );
+    Q_ASSERT( connect( m_queryModel, SIGNAL(queryError(Soprano::Error::Error)),
+             this, SLOT(slotQueryError(Soprano::Error::Error)) ) );
+    connect( m_queryModel, SIGNAL(queryFinished()),
+             this, SLOT(slotQueryFinished()) );
 
     m_buttonForward->setEnabled( false );
     m_buttonBack->setEnabled( false );
@@ -110,16 +114,9 @@ void ResourceQueryWidget::slotQueryButtonClicked()
         m_queryHistoryIndex = m_queryHistory.count();
         m_queryHistory.insert(m_queryHistory.count()-1, m_queryEdit->toPlainText() );
     }
-    m_queryTimer.start();
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     m_queryModel->setQuery( query );
     updateHistoryButtonStates();
-    m_statusLabel->setText( i18n("Elapsed: %1", KGlobal::locale()->formatDuration(m_queryTimer.elapsed())) );
-    QApplication::restoreOverrideCursor();
-    
-    if( m_queryModel->lastError() != Soprano::Error::ErrorNone ) {
-        KMessageBox::error( 0, m_queryModel->lastError().message(), i18n("Query error") );
-    }
 }
 
 
@@ -181,5 +178,18 @@ bool ResourceQueryWidget::eventFilter( QObject* watched, QEvent* event )
 
     return QWidget::eventFilter( watched, event );
 }
+
+void ResourceQueryWidget::slotQueryError(const Soprano::Error::Error& error)
+{
+    KMessageBox::error( 0, error.message(), i18n("Query error") );
+}
+
+void ResourceQueryWidget::slotQueryFinished()
+{
+    m_statusLabel->setText( i18n("Elapsed: %1", KGlobal::locale()->formatDuration(m_queryModel->queryTime())) );
+    QApplication::restoreOverrideCursor();
+}
+
+
 
 #include "resourcequerywidget.moc"

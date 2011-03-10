@@ -26,6 +26,7 @@
 
 #include <Soprano/Node>
 #include <Soprano/Error/ErrorCode>
+#include <Soprano/Util/AsyncQuery>
 
 namespace Nepomuk {
 
@@ -45,12 +46,19 @@ namespace Nepomuk {
         QVariant headerData( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 
         Soprano::Node nodeForIndex( const QModelIndex& index ) const;
-        
-        Soprano::Error::Error lastError();
+
+        int queryTime() const;
+    Q_SIGNALS:
+        void queryError( const Soprano::Error::Error & error ); 
+        void queryFinished();
 
     public Q_SLOTS:
         void setQuery( const QString& query );
 
+    private Q_SLOTS:
+        void slotNextResultReady( Soprano::Util::AsyncQuery* query );
+        void slotQueryFinished( Soprano::Util::AsyncQuery* );
+        
     private:
         class Private;
         Private* const d;

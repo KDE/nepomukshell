@@ -27,6 +27,8 @@
 #include <Nepomuk/Resource>
 #include <Nepomuk/Types/Class>
 
+#include <Soprano/Error/Error>
+
 #include "ui_resourcequerywidget.h"
 
 class KConfigGroup;
@@ -58,6 +60,8 @@ private Q_SLOTS:
     void slotNodeActivated( const QModelIndex& index );
     void slotQueryHistoryPrevious();
     void slotQueryHistoryNext();
+    void slotQueryError( const Soprano::Error::Error & error );
+    void slotQueryFinished();
 
 private:
     void updateHistoryButtonStates();
@@ -66,8 +70,6 @@ private:
     
     QStringList m_queryHistory;
     int m_queryHistoryIndex;
-
-    QTime m_queryTimer;
 };
 
 #endif

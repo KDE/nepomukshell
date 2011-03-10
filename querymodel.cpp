@@ -1,5 +1,6 @@
 /*
    Copyright (c) 2010 Sebastian Trueg <trueg@kde.org>
+   Copyright (c) 2011 Vishesh Handa <handa.vish@gmail.com>
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License as
@@ -20,67 +21,61 @@
 
 #include "querymodel.h"
 
+#include <QtCore/QTime>
+
 #include <Nepomuk/ResourceManager>
 
 #include <Soprano/Model>
 #include <Soprano/Node>
 #include <Soprano/QueryResultIterator>
+#include <Soprano/Util/AsyncQuery>
 
 #include <KDebug>
 
-// FIXME: load not everything in one go using fetchMore and friends
 
 class Nepomuk::QueryModel::Private
 {
 public:
+    Private( Nepomuk::QueryModel * parent );
+    
+    Nepomuk::QueryModel * q;
+    
     QString m_query;
     QList<Soprano::BindingSet> m_bindings;
-    Soprano::Error::Error m_lastError;
+    int m_queryTime;
+    QTime m_queryTimer;
 
-    Soprano::Error::Error updateQuery();
+    void updateQuery();
 };
 
 
-Soprano::Error::Error Nepomuk::QueryModel::Private::updateQuery()
+Nepomuk::QueryModel::Private::Private(Nepomuk::QueryModel* parent)
+    : q( parent )
+{
+}
+
+
+void Nepomuk::QueryModel::Private::updateQuery()
 {
     m_bindings.clear();
 
     if( !m_query.isEmpty() ) {
         Soprano::Model* model = ResourceManager::instance()->mainModel();
-        Soprano::QueryResultIterator it = model->executeQuery( m_query, Soprano::Query::QueryLanguageSparql );
-        m_lastError = model->lastError();
-        
-        if( m_lastError != Soprano::Error::ErrorNone )
-            return m_lastError;
-        
-        if ( it.isBool() ) {
-            Soprano::BindingSet set;
-            set.insert( QLatin1String( "result" ), Soprano::LiteralValue( it.boolValue() ) );
-            m_bindings.append( set );
-        }
-        else if ( it.isGraph() ) {
-            while ( it.next() ) {
-                const Soprano::Statement s = it.currentStatement();
-                Soprano::BindingSet set;
-                set.insert( QLatin1String( "subject" ), s.subject() );
-                set.insert( QLatin1String( "predicate" ), s.predicate() );
-                set.insert( QLatin1String( "object" ), s.object() );
-                set.insert( QLatin1String( "context" ), s.context() );
-                m_bindings << set;
-            }
-        }
-        else {
-            m_bindings = it.allBindings();
-        }
+        m_queryTimer.start();
+        Soprano::Util::AsyncQuery* asynQuery = Soprano::Util::AsyncQuery::executeQuery( model, m_query, Soprano::Query::QueryLanguageSparql );
+        connect( asynQuery, SIGNAL(nextReady(Soprano::Util::AsyncQuery*)),
+                 q, SLOT(slotNextResultReady(Soprano::Util::AsyncQuery*)) );
+        connect( asynQuery, SIGNAL(finished(Soprano::Util::AsyncQuery*)),
+                 q, SLOT(slotQueryFinished(Soprano::Util::AsyncQuery*)) );
     }
     
-    return Soprano::Error::Error();
+    return;
 }
 
 
 Nepomuk::QueryModel::QueryModel( QObject* parent )
     : QAbstractTableModel( parent ),
-      d(new Private())
+      d(new Private( this ))
 {
 }
 
@@ -165,10 +160,50 @@ Soprano::Node Nepomuk::QueryModel::nodeForIndex( const QModelIndex& index ) cons
     return Soprano::Node();
 }
 
-
-Soprano::Error::Error Nepomuk::QueryModel::lastError()
+void Nepomuk::QueryModel::slotNextResultReady(Soprano::Util::AsyncQuery* query)
 {
-    return d->m_lastError;
+    //FIXME: emit the rowsAboutToBeInserted() signal
+    emit layoutAboutToBeChanged();
+    if( query->isBool() ) {
+        Soprano::BindingSet set;
+        set.insert( QLatin1String( "result" ), Soprano::LiteralValue( query->boolValue() ) );
+        d->m_bindings.append( set );
+    }
+    else if ( query->isGraph() ) {
+        query->next();
+        
+        const Soprano::Statement s = query->currentStatement();
+        Soprano::BindingSet set;
+        set.insert( QLatin1String( "subject" ), s.subject() );
+        set.insert( QLatin1String( "predicate" ), s.predicate() );
+        set.insert( QLatin1String( "object" ), s.object() );
+        set.insert( QLatin1String( "context" ), s.context() );
+        d->m_bindings << set;
+    }
+    else {
+        query->next();
+        d->m_bindings << query->currentBindings();
+    }
+    emit layoutChanged();
 }
+
+void Nepomuk::QueryModel::slotQueryFinished(Soprano::Util::AsyncQuery* query)
+{
+    //FIXME: This doesn't work!
+    Soprano::Model* model = ResourceManager::instance()->mainModel();
+    kDebug() << model->lastError().message();
+    kDebug() << query->lastError().message();
+    if( query->lastError() != Soprano::Error::ErrorNone )
+        emit queryError( query->lastError() );
+    
+    d->m_queryTime = d->m_queryTimer.elapsed();
+    emit queryFinished();
+}
+
+int Nepomuk::QueryModel::queryTime() const
+{
+    return d->m_queryTime;
+}
+
 
 #include "querymodel.moc"
