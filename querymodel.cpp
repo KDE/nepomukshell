@@ -57,6 +57,8 @@ public:
     QList<Soprano::BindingSet> m_bindings;
     int m_queryTime;
     QTime m_queryTimer;
+    
+    Soprano::Util::AsyncQuery * m_currentQuery;
 
     QHash<QUrl, QString> m_bnames;
 
@@ -78,10 +80,10 @@ void Nepomuk::QueryModel::Private::updateQuery()
     if( !m_query.isEmpty() ) {
         Soprano::Model* model = ResourceManager::instance()->mainModel();
         m_queryTimer.start();
-        Soprano::Util::AsyncQuery* asynQuery = Soprano::Util::AsyncQuery::executeQuery( model, m_query, Soprano::Query::QueryLanguageSparql );
-        connect( asynQuery, SIGNAL(nextReady(Soprano::Util::AsyncQuery*)),
+        m_currentQuery = Soprano::Util::AsyncQuery::executeQuery( model, m_query, Soprano::Query::QueryLanguageSparql );
+        connect( m_currentQuery, SIGNAL(nextReady(Soprano::Util::AsyncQuery*)),
                  q, SLOT(slotNextResultReady(Soprano::Util::AsyncQuery*)) );
-        connect( asynQuery, SIGNAL(finished(Soprano::Util::AsyncQuery*)),
+        connect( m_currentQuery, SIGNAL(finished(Soprano::Util::AsyncQuery*)),
                  q, SLOT(slotQueryFinished(Soprano::Util::AsyncQuery*)) );
     }
     
@@ -211,6 +213,11 @@ Soprano::Node Nepomuk::QueryModel::nodeForIndex( const QModelIndex& index ) cons
 
 void Nepomuk::QueryModel::slotNextResultReady(Soprano::Util::AsyncQuery* query)
 {
+    if( query != d->m_currentQuery ) {
+        query->close();
+        return;
+    }
+    
     //FIXME: emit the rowsAboutToBeInserted() signal
     emit layoutAboutToBeChanged();
     if( query->isBool() ) {
