@@ -57,7 +57,7 @@ void Nepomuk::SparqlSyntaxHighlighter::init()
     // URI
     QTextCharFormat uriFormat;
     uriFormat.setForeground( Qt::darkGreen );
-    QRegExp uriRegex( QLatin1String( "<.*>" ) );
+    QRegExp uriRegex( QLatin1String( "<[^ >]*>" ) );
     m_rules.append( Rule( uriRegex, uriFormat ) );
 
     // Abbreviated uris --> uri:word
