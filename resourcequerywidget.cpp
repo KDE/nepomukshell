@@ -114,7 +114,6 @@ void ResourceQueryWidget::slotQueryButtonClicked()
         m_queryHistoryIndex = m_queryHistory.count();
         m_queryHistory.insert(m_queryHistory.count()-1, m_queryEdit->toPlainText() );
     }
-    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     m_queryModel->setQuery( query );
     updateHistoryButtonStates();
 }
@@ -187,7 +186,6 @@ void ResourceQueryWidget::slotQueryError(const Soprano::Error::Error& error)
 void ResourceQueryWidget::slotQueryFinished()
 {
     m_statusLabel->setText( i18n("Elapsed: %1", KGlobal::locale()->formatDuration(m_queryModel->queryTime())) );
-    QApplication::restoreOverrideCursor();
 }
 
 
