@@ -54,6 +54,7 @@ namespace Nepomuk {
 
     public Q_SLOTS:
         void setQuery( const QString& query );
+        void stopQuery();
 
     private Q_SLOTS:
         void slotNextResultReady( Soprano::Util::AsyncQuery* query );

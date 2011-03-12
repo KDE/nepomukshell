@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>ResourceQueryWidget</class>
  <widget class="QWidget" name="ResourceQueryWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>357</width>
+    <height>248</height>
+   </rect>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -42,6 +50,13 @@
       <widget class="QPushButton" name="m_queryButton">
        <property name="text">
         <string>Run Query</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_stopQueryButton">
+       <property name="text">
+        <string>Stop Query</string>
        </property>
       </widget>
      </item>

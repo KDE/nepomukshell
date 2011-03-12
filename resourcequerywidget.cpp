@@ -59,8 +59,10 @@ ResourceQueryWidget::ResourceQueryWidget( QWidget* parent )
             this, SLOT(slotQueryHistoryNext()) );
     connect( m_queryView, SIGNAL(doubleClicked(QModelIndex)),
              this, SLOT(slotNodeActivated(QModelIndex)) );
-    Q_ASSERT( connect( m_queryModel, SIGNAL(queryError(Soprano::Error::Error)),
-             this, SLOT(slotQueryError(Soprano::Error::Error)) ) );
+    connect( m_stopQueryButton, SIGNAL(clicked()),
+             this, SLOT(slotQueryStopButtonClicked()) );
+    connect( m_queryModel, SIGNAL(queryError(Soprano::Error::Error)),
+             this, SLOT(slotQueryError(Soprano::Error::Error)) );
     connect( m_queryModel, SIGNAL(queryFinished()),
              this, SLOT(slotQueryFinished()) );
 
@@ -186,6 +188,11 @@ void ResourceQueryWidget::slotQueryError(const Soprano::Error::Error& error)
 void ResourceQueryWidget::slotQueryFinished()
 {
     m_statusLabel->setText( i18n("Elapsed: %1", KGlobal::locale()->formatDuration(m_queryModel->queryTime())) );
+}
+
+void ResourceQueryWidget::slotQueryStopButtonClicked()
+{
+    m_queryModel->stopQuery();
 }
 
 

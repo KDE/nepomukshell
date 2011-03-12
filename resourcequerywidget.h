@@ -57,6 +57,7 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void slotQueryButtonClicked();
+    void slotQueryStopButtonClicked();
     void slotNodeActivated( const QModelIndex& index );
     void slotQueryHistoryPrevious();
     void slotQueryHistoryNext();

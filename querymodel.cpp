@@ -261,5 +261,11 @@ int Nepomuk::QueryModel::queryTime() const
     return d->m_queryTime;
 }
 
+void Nepomuk::QueryModel::stopQuery()
+{
+    d->m_currentQuery = 0;
+}
+
+
 
 #include "querymodel.moc"
