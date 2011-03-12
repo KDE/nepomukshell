@@ -218,8 +218,8 @@ void Nepomuk::QueryModel::slotNextResultReady(Soprano::Util::AsyncQuery* query)
         return;
     }
     
-    //FIXME: emit the rowsAboutToBeInserted() signal
-    emit layoutAboutToBeChanged();
+    beginInsertRows( QModelIndex(), d->m_bindings.size(), d->m_bindings.size() );
+    
     if( query->isBool() ) {
         Soprano::BindingSet set;
         set.insert( QLatin1String( "result" ), Soprano::LiteralValue( query->boolValue() ) );
@@ -240,7 +240,14 @@ void Nepomuk::QueryModel::slotNextResultReady(Soprano::Util::AsyncQuery* query)
         query->next();
         d->m_bindings << query->currentBindings();
     }
-    emit layoutChanged();
+    
+    endInsertRows();
+    
+    // This is called because columnCount would return 0 initially
+    if( d->m_bindings.size() == 1 ) {
+        emit layoutAboutToBeChanged();
+        emit layoutChanged();
+    }
 }
 
 void Nepomuk::QueryModel::slotQueryFinished(Soprano::Util::AsyncQuery* query)
