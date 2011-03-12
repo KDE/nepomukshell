@@ -1,0 +1,57 @@
+diff --git a/resourcequerywidget.cpp b/resourcequerywidget.cpp
+index aaaea8b..a6d7085 100644
+--- a/resourcequerywidget.cpp
++++ b/resourcequerywidget.cpp
+@@ -65,7 +65,7 @@ ResourceQueryWidget::ResourceQueryWidget( QWidget* parent )
+              this, SLOT(slotQueryError(Soprano::Error::Error)) );
+     connect( m_queryModel, SIGNAL(queryFinished()),
+              this, SLOT(slotQueryFinished()) );
+-
++    connect( m_shorten, SIGNAL(clicked()),this,SLOT(slotQueryShortenButtonClicked()));
+     m_buttonForward->setEnabled( false );
+     m_buttonBack->setEnabled( false );
+ 
+@@ -195,6 +195,12 @@ void ResourceQueryWidget::slotQueryStopButtonClicked()
+     m_queryModel->stopQuery();
+ }
+ 
++void ResourceQueryWidget::slotQueryShortenButtonClicked()
++{
++                    QString query =  m_queryEdit->toPlainText();
++                  query= query.simplified();
++                m_queryEdit->setPlainText( query );
+ 
++}
+ 
+ #include "resourcequerywidget.moc"
+diff --git a/resourcequerywidget.h b/resourcequerywidget.h
+index ff9105d..a91e41b 100644
+--- a/resourcequerywidget.h
++++ b/resourcequerywidget.h
+@@ -63,7 +63,7 @@ private Q_SLOTS:
+     void slotQueryHistoryNext();
+     void slotQueryError( const Soprano::Error::Error & error );
+     void slotQueryFinished();
+-
++    void slotQueryShortenButtonClicked();
+ private:
+     void updateHistoryButtonStates();
+ 
+diff --git a/resourcequerywidget.ui b/resourcequerywidget.ui
+index 0282271..d257ba6 100644
+--- a/resourcequerywidget.ui
++++ b/resourcequerywidget.ui
+@@ -47,6 +68,13 @@
+       </widget>
+      </item>
+      <item>
++      <widget class="QPushButton" name="m_shorten">
++       <property name="text">
++        <string>Shorten Query</string>
++       </property>
++      </widget>
++     </item>
++     <item>
+       <widget class="QPushButton" name="m_queryButton">
+        <property name="text">
+         <string>Run Query</string>

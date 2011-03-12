@@ -65,7 +65,7 @@ ResourceQueryWidget::ResourceQueryWidget( QWidget* parent )
              this, SLOT(slotQueryError(Soprano::Error::Error)) );
     connect( m_queryModel, SIGNAL(queryFinished()),
              this, SLOT(slotQueryFinished()) );
-
+    connect( m_shorten, SIGNAL(clicked()),this,SLOT(slotQueryShortenButtonClicked()));
     m_buttonForward->setEnabled( false );
     m_buttonBack->setEnabled( false );
 
@@ -195,6 +195,11 @@ void ResourceQueryWidget::slotQueryStopButtonClicked()
     m_queryModel->stopQuery();
 }
 
-
+void ResourceQueryWidget::slotQueryShortenButtonClicked()
+{
+    QString query = m_queryEdit->toPlainText();
+    query= query.simplified();
+    m_queryEdit->setPlainText( query );
+}
 
 #include "resourcequerywidget.moc"

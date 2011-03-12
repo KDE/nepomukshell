@@ -63,7 +63,7 @@ private Q_SLOTS:
     void slotQueryHistoryNext();
     void slotQueryError( const Soprano::Error::Error & error );
     void slotQueryFinished();
-
+    void slotQueryShortenButtonClicked();
 private:
     void updateHistoryButtonStates();
 
