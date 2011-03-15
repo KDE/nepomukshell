@@ -35,7 +35,7 @@
 
 #include <Nepomuk/ResourceManager>
 
-QueryEditor::QueryEditor(QWidget* parent): QTextEdit(parent)
+QueryEditor::QueryEditor(QWidget* parent): KTextEdit(parent)
 {
     setFont( KGlobalSettings::fixedFont() );
     setAcceptRichText( false );

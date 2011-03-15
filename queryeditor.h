@@ -22,14 +22,14 @@
 #ifndef QUERYEDITOR_H
 #define QUERYEDITOR_H
 
-#include <QtGui/QTextEdit>
+#include <KTextEdit>
 #include <QtGui/QCompleter>
 
 namespace Nepomuk {
     class SparqlSyntaxHighlighter;
 }
 
-class QueryEditor : public QTextEdit
+class QueryEditor : public KTextEdit
 {
     Q_OBJECT
 public:
