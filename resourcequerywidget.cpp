@@ -198,6 +198,8 @@ void ResourceQueryWidget::slotQueryStopButtonClicked()
 void ResourceQueryWidget::slotQueryShortenButtonClicked()
 {
     QString query = m_queryEdit->toPlainText();
+    QRegExp rx("<[\\w]+://[\\w\\d-_.]+(/[\\d\\w/-._]+/)*([\\w\\d-._]+)#([\\w\\d]+)>");
+    query.replace(rx,"\\2:\\3");
     query= query.simplified();
     m_queryEdit->setPlainText( query );
 }
