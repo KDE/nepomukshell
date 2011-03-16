@@ -68,6 +68,7 @@ ResourceQueryWidget::ResourceQueryWidget( QWidget* parent )
     connect( m_shorten, SIGNAL(clicked()),this,SLOT(slotQueryShortenButtonClicked()));
     m_buttonForward->setEnabled( false );
     m_buttonBack->setEnabled( false );
+    m_stopQueryButton->setEnabled(false);
 
     // the empty string representing the current query
     m_queryHistory << QString();
@@ -117,6 +118,7 @@ void ResourceQueryWidget::slotQueryButtonClicked()
         m_queryHistory.insert(m_queryHistory.count()-1, m_queryEdit->toPlainText() );
     }
     m_queryModel->setQuery( query );
+    m_stopQueryButton->setEnabled(true);
     updateHistoryButtonStates();
 }
 
@@ -188,11 +190,13 @@ void ResourceQueryWidget::slotQueryError(const Soprano::Error::Error& error)
 void ResourceQueryWidget::slotQueryFinished()
 {
     m_statusLabel->setText( i18n("Elapsed: %1", KGlobal::locale()->formatDuration(m_queryModel->queryTime())) );
+    m_stopQueryButton->setEnabled(false);
 }
 
 void ResourceQueryWidget::slotQueryStopButtonClicked()
 {
     m_queryModel->stopQuery();
+    m_stopQueryButton->setEnabled(false);
 }
 
 void ResourceQueryWidget::slotQueryShortenButtonClicked()
