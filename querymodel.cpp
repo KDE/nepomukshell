@@ -70,6 +70,7 @@ public:
 Nepomuk::QueryModel::Private::Private(Nepomuk::QueryModel* parent)
     : q( parent )
 {
+    m_currentQuery = 0;
 }
 
 
@@ -213,6 +214,11 @@ Soprano::Node Nepomuk::QueryModel::nodeForIndex( const QModelIndex& index ) cons
 
 void Nepomuk::QueryModel::slotNextResultReady(Soprano::Util::AsyncQuery* query)
 {
+     if( query != d->m_currentQuery ) {
+         query->close();
+         return;
+     }
+    
     beginInsertRows( QModelIndex(), d->m_bindings.size(), d->m_bindings.size() );
     
     if( query->isBool() ) {
@@ -267,7 +273,7 @@ void Nepomuk::QueryModel::stopQuery()
 {
     if(d->m_currentQuery) {
         d->m_currentQuery->close();
-        d->m_currentQuery->disconnect(this);
+        d->m_currentQuery = 0;
         d->m_queryTime = d->m_queryTimer.elapsed();
         emit queryFinished();
     }
