@@ -213,11 +213,6 @@ Soprano::Node Nepomuk::QueryModel::nodeForIndex( const QModelIndex& index ) cons
 
 void Nepomuk::QueryModel::slotNextResultReady(Soprano::Util::AsyncQuery* query)
 {
-    if( query != d->m_currentQuery ) {
-        query->close();
-        return;
-    }
-    
     beginInsertRows( QModelIndex(), d->m_bindings.size(), d->m_bindings.size() );
     
     if( query->isBool() ) {
@@ -270,9 +265,12 @@ int Nepomuk::QueryModel::queryTime() const
 
 void Nepomuk::QueryModel::stopQuery()
 {
-    d->m_currentQuery = 0;
+    if(d->m_currentQuery) {
+        d->m_currentQuery->close();
+        d->m_currentQuery->disconnect(this);
+        d->m_queryTime = d->m_queryTimer.elapsed();
+        emit queryFinished();
+    }
 }
-
-
 
 #include "querymodel.moc"
