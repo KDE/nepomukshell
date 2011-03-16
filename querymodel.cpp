@@ -255,11 +255,7 @@ void Nepomuk::QueryModel::slotQueryFinished(Soprano::Util::AsyncQuery* query)
 {
     d->m_currentQuery = 0;
 
-    //FIXME: This doesn't work!
-    Soprano::Model* model = ResourceManager::instance()->mainModel();
-    kDebug() << model->lastError().message();
-    kDebug() << query->lastError().message();
-    if( query->lastError() != Soprano::Error::ErrorNone )
+    if( query->lastError() )
         emit queryError( query->lastError() );
     
     d->m_queryTime = d->m_queryTimer.elapsed();
