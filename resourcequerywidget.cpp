@@ -49,6 +49,7 @@ ResourceQueryWidget::ResourceQueryWidget( QWidget* parent )
     m_queryEdit->installEventFilter( this );
 
     m_queryModel = new Nepomuk::QueryModel( this );
+    m_queryView->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
     m_queryView->setModel( m_queryModel );
 
     connect(m_queryButton, SIGNAL(clicked()),
