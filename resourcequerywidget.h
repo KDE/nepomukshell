@@ -65,6 +65,9 @@ private Q_SLOTS:
     void slotQueryFinished();
     void slotQueryShortenButtonClicked();
 
+public Q_SLOTS:
+    void autoIndentQuery();
+
 private:
     void updateHistoryButtonStates();
 

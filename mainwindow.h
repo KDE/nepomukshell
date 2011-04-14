@@ -58,6 +58,7 @@ private Q_SLOTS:
     void slotSettings();
     void slotOpen();
     void slotShowSource();
+    void slotAutoIndentQuery();
 
 private:
     bool queryClose();
@@ -73,7 +74,8 @@ private:
     KAction* m_actionNewSubClass;
     KAction* m_actionNewProperty;
     KAction* m_actionNewResource;
-
+    KAction* m_actionAutoIndentQuery;
+    
     KAction* m_actionModeBrowse;
     KAction* m_actionModeQuery;
     KAction* m_actionModeEdit;

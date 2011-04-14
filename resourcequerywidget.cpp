@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2010 Sebastian Trueg <trueg@kde.org>
+Copyright (c) 2010 Sebastian Trueg <trueg@kde.org>
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License as
@@ -17,6 +17,7 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 
 #include "resourcequerywidget.h"
 #include "querymodel.h"
@@ -38,7 +39,7 @@
 
 ResourceQueryWidget::ResourceQueryWidget( QWidget* parent )
     : QWidget( parent ),
-      m_queryHistoryIndex( 0 )
+    m_queryHistoryIndex( 0 )
 {
     setupUi( this );
 
@@ -207,6 +208,71 @@ void ResourceQueryWidget::slotQueryShortenButtonClicked()
     query.replace(rx,"\\2:\\3");
     query= query.simplified();
     m_queryEdit->setPlainText( query );
+}
+
+void ResourceQueryWidget::autoIndentQuery()
+{
+    QString query = m_queryEdit->toPlainText();
+    query= query.simplified();
+    QString newQuery;
+    int i = 0;
+    int indent = 0;
+    int space = 4;
+
+    while(i < query.size()) {
+        newQuery.append(query[i]);
+        if(query[i] != QLatin1Char('"') && query[i] != QLatin1Char('<') && query[i] != QLatin1Char('\'')) {
+            if(query[i] == QLatin1Char('{')) {
+                indent++;
+                newQuery.append('\n');
+                newQuery.append(QString().fill(QLatin1Char(' '), indent*space));
+            }
+            else if (query[i] == QLatin1Char('.')) {
+                if(i+2<query.size()) {
+                    if(query[i+1] == QLatin1Char('}')||query[i+2] == QLatin1Char('}')) {
+                        newQuery.append('\n');
+                        newQuery.append(QString().fill(QLatin1Char(' '), (indent-1)*space));
+                    }
+                    else {
+                        newQuery.append('\n');
+                        newQuery.append(QString().fill(QLatin1Char(' '), indent*space));
+                    }
+                }
+                else {
+                    newQuery.append('\n');
+                    newQuery.append(QString().fill(QLatin1Char(' '), indent*space));
+                }
+            }
+            else if (query[i] == QLatin1Char('}')) {
+                indent--;
+                if(i+2<query.size()) {
+                    if(query[i+2] == QLatin1Char('.')||query[i+1] == QLatin1Char('.'))
+                        newQuery.append(QString().fill(QLatin1Char(' '), 1));
+                    else {
+                        newQuery.append('\n');
+                        newQuery.append(QString().fill(QLatin1Char(' '), indent*space));
+                    }
+                }
+                else {
+                    newQuery.append('\n');
+                    newQuery.append(QString().fill(QLatin1Char(' '), indent*space));
+                }
+            }
+        }
+        else {
+            i++;
+            while(i < query.size()) {
+                if(query[i] == QLatin1Char('"') || query[i] == QLatin1Char('>') || query[i] == QLatin1Char('\'')) {
+                    newQuery.append(query[i]);
+                    break;
+                }
+                newQuery.append(query[i]);
+                i++;
+            }
+        }
+        i++;
+    }
+    m_queryEdit->setPlainText( newQuery );
 }
 
 #include "resourcequerywidget.moc"

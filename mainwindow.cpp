@@ -211,6 +211,12 @@ void MainWindow::setupActions()
     // =============================================
     KStandardAction::preferences( this, SLOT( slotSettings() ), actionCollection() );
     KStandardAction::open( this, SLOT( slotOpen() ), actionCollection() );
+
+    m_actionAutoIndentQuery= new KAction( i18nc( "@action:auto indents a query", "Auto Indent Query" ), actionCollection() );
+    m_actionAutoIndentQuery->setShortcut(Qt::ALT + Qt::Key_A);
+    connect( m_actionAutoIndentQuery, SIGNAL(triggered()), this, SLOT(slotAutoIndentQuery()) );
+    actionCollection()->addAction( QLatin1String( "auto_indent" ), m_actionAutoIndentQuery );
+
     KStandardAction::quit( kapp, SLOT( quit() ), actionCollection() );
 
     setupGUI( Keys|Save|Create );
@@ -320,6 +326,10 @@ void MainWindow::slotOpen()
     }
 }
 
+void MainWindow::slotAutoIndentQuery()
+{
+    m_resourceQueryWidget->autoIndentQuery();
+}
 
 void MainWindow::slotShowSource()
 {
