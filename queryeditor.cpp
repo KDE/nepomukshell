@@ -39,6 +39,7 @@ QueryEditor::QueryEditor(QWidget* parent): KTextEdit(parent)
 {
     setFont( KGlobalSettings::fixedFont() );
     setAcceptRichText( false );
+    setCheckSpellingEnabled( false );
     setFocus();
 
     m_highlighter = new Nepomuk::SparqlSyntaxHighlighter( document() );
