@@ -1,5 +1,6 @@
 [Desktop Entry]
 Name=NepSaK - The Nepomuk Shell
+Name[bs]=NepSaK - Nepomuk školjka
 Name[cs]=NepSaK - Shell Nepomuku
 Name[da]=NepSaK - Nepomuk-skal
 Name[en_GB]=NepSaK - The Nepomuk Shell
@@ -16,6 +17,7 @@ Name[uk]=NepSaK — оболонка Nepomuk
 Name[x-test]=xxNepSaK - The Nepomuk Shellxx
 Name[zh_TW]=NepSaK - The Nepomuk Shell
 Comment=The Nepomuk Swiss Army Knife Developer Shell
+Comment[bs]=Nepomuk razvojna školjka poput švicarskog noža
 Comment[da]=Nepomuks schweizerkniv af en udvikler-skal
 Comment[en_GB]=The Nepomuk Swiss Army Knife Developer Shell
 Comment[et]=Nepomuki ülivõimas arendajate shell
