@@ -83,6 +83,12 @@ void Nepomuk::ResourcePropertyEditModel::Private::rebuild()
             s = Soprano::Statement( m_resource.resourceUri(), it[QLatin1String("p")], it[QLatin1String("o")], it[QLatin1String("g")] );
         else
             s = Soprano::Statement( it[QLatin1String("s")], it[QLatin1String("p")], m_resource.resourceUri(), it[QLatin1String("g")] );
+        
+        // Make sure the string is not too long
+        if( s.object().literal().isString() ) {
+            QString string = s.object().literal().variant().toString().mid(0, 50);
+            s.setObject( Soprano::LiteralValue( string ) );
+        }
         m_properties.append( qMakePair( s, it[QLatin1String("d")].literal().toDateTime() ) );
     }
 }
