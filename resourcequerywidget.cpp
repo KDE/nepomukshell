@@ -208,6 +208,7 @@ void ResourceQueryWidget::slotQueryShortenButtonClicked()
     query.replace(rx,"\\2:\\3");
     query.replace( QLatin1String("rdf-schema:"), QLatin1String("rdfs:") );
     query.replace( QLatin1String("22-rdf-syntax-ns:"), QLatin1String("rdf:") );
+    query.replace( QLatin1String("XMLSchema:"), QLatin1String("xsd:") );
     query= query.simplified();
     m_queryEdit->setPlainText( query );
 }
