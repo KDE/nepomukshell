@@ -50,14 +50,14 @@ class Nepomuk::QueryModel::Private
 {
 public:
     Private( Nepomuk::QueryModel * parent );
-    
+
     Nepomuk::QueryModel * q;
-    
+
     QString m_query;
     QList<Soprano::BindingSet> m_bindings;
     int m_queryTime;
     QTime m_queryTimer;
-    
+
     Soprano::Util::AsyncQuery * m_currentQuery;
 
     QHash<QUrl, QString> m_bnames;
@@ -87,7 +87,7 @@ void Nepomuk::QueryModel::Private::updateQuery()
         connect( m_currentQuery, SIGNAL(finished(Soprano::Util::AsyncQuery*)),
                  q, SLOT(slotQueryFinished(Soprano::Util::AsyncQuery*)) );
     }
-    
+
     return;
 }
 
@@ -220,15 +220,10 @@ Soprano::Node Nepomuk::QueryModel::nodeForIndex( const QModelIndex& index ) cons
 void Nepomuk::QueryModel::slotNextResultReady(Soprano::Util::AsyncQuery* query)
 {
     beginInsertRows( QModelIndex(), d->m_bindings.size(), d->m_bindings.size() );
-    
-    if( query->isBool() ) {
-        Soprano::BindingSet set;
-        set.insert( QLatin1String( "result" ), Soprano::LiteralValue( query->boolValue() ) );
-        d->m_bindings.append( set );
-    }
-    else if ( query->isGraph() ) {
+
+    if ( query->isGraph() ) {
         query->next();
-        
+
         const Soprano::Statement s = query->currentStatement();
         Soprano::BindingSet set;
         set.insert( QLatin1String( "subject" ), s.subject() );
@@ -241,9 +236,9 @@ void Nepomuk::QueryModel::slotNextResultReady(Soprano::Util::AsyncQuery* query)
         query->next();
         d->m_bindings << query->currentBindings();
     }
-    
+
     endInsertRows();
-    
+
     // This is called because columnCount would return 0 initially
     if( d->m_bindings.size() == 1 ) {
         emit layoutAboutToBeChanged();
@@ -253,11 +248,24 @@ void Nepomuk::QueryModel::slotNextResultReady(Soprano::Util::AsyncQuery* query)
 
 void Nepomuk::QueryModel::slotQueryFinished(Soprano::Util::AsyncQuery* query)
 {
+    if( query->isBool() ) {
+        beginInsertRows( QModelIndex(), d->m_bindings.size(), d->m_bindings.size() );
+
+        Soprano::BindingSet set;
+        set.insert( QLatin1String( "result" ), Soprano::LiteralValue( query->boolValue() ) );
+        d->m_bindings.append( set );
+
+        endInsertRows();
+
+        emit layoutAboutToBeChanged();
+        emit layoutChanged();
+    }
+
     d->m_currentQuery = 0;
 
     if( query->lastError() )
         emit queryError( query->lastError() );
-    
+
     d->m_queryTime = d->m_queryTimer.elapsed();
     emit queryFinished();
 }
