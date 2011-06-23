@@ -15,7 +15,7 @@ then run cmake:
 (a typical cmake option that is often used is: -DCMAKE_INSTALL_PREFIX=<prefix>)
 
 Nepomukshell then presents a configuration summary. At this point you may
-want to install missing dependancies and run cmake again.
+want to install missing dependencies and run cmake again.
 
 Finally build Nepomukshell:
 
