@@ -56,12 +56,12 @@ ResourceView::ResourceView( QWidget* parent )
     m_resourceView->setModel( m_resourceModel );
     //m_resourceView->setSpacing( KDialog::spacingHint() );
 
-    connect( m_resourceView->selectionModel(), SIGNAL( selectionChanged( const QItemSelection&, const QItemSelection& ) ),
-             this, SLOT( slotCurrentResourceChanged( const QItemSelection&, const QItemSelection& ) ) );
+    connect( m_resourceView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
+             this, SLOT(slotCurrentResourceChanged(QItemSelection,QItemSelection)) );
     connect( m_resourceView, SIGNAL(doubleClicked(QModelIndex)),
              this, SLOT(slotIndexActivated(QModelIndex)) );
-    connect( m_resourceView, SIGNAL( customContextMenuRequested( const QPoint& ) ),
-             this, SLOT( slotResourceViewContextMenu( const QPoint& ) ) );
+    connect( m_resourceView, SIGNAL(customContextMenuRequested(QPoint)),
+             this, SLOT(slotResourceViewContextMenu(QPoint)) );
 
     m_queryClient = new Nepomuk::Query::QueryServiceClient( this );
     connect( m_queryClient, SIGNAL(newEntries(QList<Nepomuk::Query::Result>)),
@@ -214,7 +214,7 @@ void ResourceView::listQuery()
     // show busy thingi
     KPixmapSequenceOverlayPainter* op = new KPixmapSequenceOverlayPainter( this );
     op->setWidget( m_resourceView->viewport() );
-    connect( m_queryClient, SIGNAL(finishedListing()), op, SLOT( deleteLater() ) );
+    connect( m_queryClient, SIGNAL(finishedListing()), op, SLOT(deleteLater()) );
     op->start();
 
     // start the query

@@ -83,14 +83,14 @@ ResourceBrowserWidget::ResourceBrowserWidget( QWidget* parent )
     m_baseClassCombo->addItem( i18nc( "@item:inlistbox Referring to all RDF classes in the Nepomuk PIMO ontology", "PIMO Classes" ), QVariant( Nepomuk::Vocabulary::PIMO::Thing() ) );
     m_baseClassCombo->addItem( i18nc( "@item:inlistbox Referring to all RDF classes in the Nepomuk db", "All Classes" ), QVariant( Soprano::Vocabulary::RDFS::Resource() ) );
 
-    connect( m_pimoView, SIGNAL( customContextMenuRequested( const QPoint& ) ),
-             this, SLOT( slotPIMOViewContextMenu( const QPoint& ) ) );
-    connect( m_pimoView->selectionModel(), SIGNAL( currentChanged( const QModelIndex&, const QModelIndex& ) ),
-             this, SLOT( slotCurrentPIMOClassChanged( const QModelIndex&, const QModelIndex& ) ) );
+    connect( m_pimoView, SIGNAL(customContextMenuRequested(QPoint)),
+             this, SLOT(slotPIMOViewContextMenu(QPoint)) );
+    connect( m_pimoView->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)),
+             this, SLOT(slotCurrentPIMOClassChanged(QModelIndex,QModelIndex)) );
     connect( m_resourceView, SIGNAL(selectionChanged(QList<Nepomuk::Resource>)),
              this, SIGNAL(resourcesSelected(QList<Nepomuk::Resource>)) );
-    connect( m_baseClassCombo, SIGNAL( activated( int ) ),
-             this, SLOT( slotBaseClassChanged( int ) ) );
+    connect( m_baseClassCombo, SIGNAL(activated(int)),
+             this, SLOT(slotBaseClassChanged(int)) );
     connect( m_resourceView, SIGNAL(resourceActivated(Nepomuk::Resource)),
              this, SIGNAL(resourceActivated(Nepomuk::Resource)) );
     connect( m_resourceView, SIGNAL(resourceTypeActivated(Nepomuk::Types::Class)),

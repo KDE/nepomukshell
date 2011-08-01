@@ -47,10 +47,10 @@ ResourceEditorWidget::ResourceEditorWidget( QWidget* parent )
     m_backlinksView->setModel( m_backlinksModel );
     m_backlinksView->setContextMenuPolicy( Qt::CustomContextMenu );
 
-    connect( m_propertyView, SIGNAL( customContextMenuRequested( const QPoint& ) ),
-             this, SLOT( slotPropertyContextMenu( const QPoint& ) ) );
-    connect( m_backlinksView, SIGNAL( customContextMenuRequested( const QPoint& ) ),
-             this, SLOT( slotPropertyContextMenu( const QPoint& ) ) );
+    connect( m_propertyView, SIGNAL(customContextMenuRequested(QPoint)),
+             this, SLOT(slotPropertyContextMenu(QPoint)) );
+    connect( m_backlinksView, SIGNAL(customContextMenuRequested(QPoint)),
+             this, SLOT(slotPropertyContextMenu(QPoint)) );
     connect( m_propertyView, SIGNAL(doubleClicked(QModelIndex)),
              this, SLOT(slotNodeActivated(QModelIndex)) );
     connect( m_backlinksView, SIGNAL(doubleClicked(QModelIndex)),
