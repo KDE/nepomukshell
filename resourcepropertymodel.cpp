@@ -172,7 +172,7 @@ QVariant Nepomuk::ResourcePropertyEditModel::data( const QModelIndex& index, int
                 return property.icon();
 
             case Qt::ToolTipRole:
-                return QLatin1String( "<p>" ) + property.comment() + QLatin1String( "<br><i>" ) + property.uri().toString() + QLatin1String( "</i>" );
+                return QString(QLatin1String( "<p>" ) + property.comment() + QLatin1String( "<br><i>" ) + property.uri().toString() + QLatin1String( "</i>" ));
             }
 
         case 1:

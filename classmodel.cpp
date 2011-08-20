@@ -279,7 +279,7 @@ QVariant Nepomuk::Utils::ClassModel::data( const QModelIndex& index, int role ) 
             }
 
         case Qt::ToolTipRole:
-            return QLatin1String( "<p>" ) + node->type.comment() + QLatin1String( "<br><i>" ) + node->type.uri().toString() + QLatin1String( "</i>" );
+            return QString(QLatin1String( "<p>" ) + node->type.comment() + QLatin1String( "<br><i>" ) + node->type.uri().toString() + QLatin1String( "</i>" ));
 
         case Qt::DecorationRole: {
             QIcon icon = node->type.icon();

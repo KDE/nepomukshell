@@ -63,7 +63,7 @@ QUrl Nepomuk::PimoModel::Private::createUniqueUri( QString name )
 {
     if ( !name.isEmpty() ) {
         QString normalizedName = name.replace( QRegExp( QLatin1String("[^\\w\\.\\-_:]") ), QString() );
-        QUrl s = QLatin1String("nepomuk:/") + normalizedName;
+        QUrl s = QString(QLatin1String("nepomuk:/") + normalizedName);
         while( 1 ) {
             if ( !q->executeQuery( QString::fromLatin1("ask where { { <%1> ?p1 ?o1 . } UNION { ?r2 <%1> ?o2 . } UNION { ?r3 ?p3 <%1> . } }")
                                    .arg( QString::fromAscii( s.toEncoded() ) ), Soprano::Query::QueryLanguageSparql ).boolValue() ) {

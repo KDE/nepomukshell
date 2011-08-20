@@ -16,6 +16,9 @@ include(SopranoAddOntology)
 
 configure_file(nepomukshell-config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/nepomukshell-config.h)
 
+add_definitions(-DQT_USE_FAST_CONCATENATION -DQT_USE_FAST_OPERATOR_PLUS)
+
+
 include_directories(
   ${QT_INCLUDES}
   ${KDE4_INCLUDES}
