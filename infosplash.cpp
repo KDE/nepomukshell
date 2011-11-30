@@ -24,6 +24,7 @@
 #include <KIcon>
 #include <KComponentData>
 #include <KAboutData>
+#include <KDebug>
 
 #include <QtGui/QLabel>
 #include <QtGui/QVBoxLayout>
@@ -42,6 +43,9 @@ InfoSplash::InfoSplash( QWidget* parent )
     iconLabel->setPixmap( KIcon(QLatin1String("nepomuk")).pixmap( 64, 64 ) );
     iconLabel->setAlignment( Qt::AlignCenter );
 
+    m_checkDontShow = new QCheckBox( w );
+    m_checkDontShow->setText( i18n("Don't show this message anymore") );
+
     QLabel* label
         = new QLabel( i18n("<h2>NepSaK</h2>"
                            "<p>The <b>Nep</b>omuk <b>S</b>wiss <b>A</b>rmy <b>K</b>nife</p> %1"
@@ -58,6 +62,7 @@ InfoSplash::InfoSplash( QWidget* parent )
 
     lay->addWidget( iconLabel );
     lay->addWidget( label );
+    lay->addWidget( m_checkDontShow );
 
     setMainWidget(w);
 }
@@ -65,6 +70,7 @@ InfoSplash::InfoSplash( QWidget* parent )
 
 InfoSplash::~InfoSplash()
 {
+    kDebug() << m_checkDontShow->isChecked() << "destr";
 }
 
 #include "infosplash.moc"

@@ -22,6 +22,7 @@
 #define _INFO_SPLASH_H_
 
 #include <KDialog>
+#include <QCheckBox>
 
 class InfoSplash : public KDialog
 {
@@ -30,6 +31,9 @@ class InfoSplash : public KDialog
 public:
     InfoSplash( QWidget* parent );
     ~InfoSplash();
+
+private:
+    QCheckBox * m_checkDontShow;
 };
 
 #endif
