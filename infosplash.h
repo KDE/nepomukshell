@@ -22,18 +22,25 @@
 #define _INFO_SPLASH_H_
 
 #include <KDialog>
-#include <QCheckBox>
+
+class QCheckBox;
+class KConfigGroup;
 
 class InfoSplash : public KDialog
 {
     Q_OBJECT
 
 public:
+    static void showSplash( QWidget* parent );
+
+private:
     InfoSplash( QWidget* parent );
     ~InfoSplash();
 
-private:
     QCheckBox * m_checkDontShow;
+
+    static KConfig * s_config;
+    static KConfigGroup * s_configGroup;
 };
 
 #endif

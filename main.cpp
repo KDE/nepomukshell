@@ -55,9 +55,7 @@ int main( int argc, char *argv[] )
     if ( args->count() )
         mainWin->openResource( args->url( 0 ) );
 
-    InfoSplash* splash = new InfoSplash( mainWin );
-    splash->exec();
-    delete splash;
+    InfoSplash::showSplash( mainWin );
 
     return app.exec();
 }

@@ -26,13 +26,38 @@
 #include <KAboutData>
 #include <KDebug>
 
+#include <KConfig>
+#include <KConfigGroup>
+
 #include <QtGui/QLabel>
 #include <QtGui/QVBoxLayout>
+#include <QtGui/QCheckBox>
+
+
+KConfig * InfoSplash::s_config = NULL;
+KConfigGroup * InfoSplash::s_configGroup = NULL;
+
+
+void InfoSplash::showSplash( QWidget* parent )
+{
+    s_config = new KConfig("nepomukshellrc");
+    s_configGroup = new KConfigGroup(s_config, "General");
+
+    if (!s_configGroup->readEntry("dontShowIntroMessage", false)) {
+        InfoSplash* splash = new InfoSplash( parent );
+        splash->exec();
+        delete splash;
+    }
+
+    delete s_configGroup;
+    delete s_config;
+}
 
 
 InfoSplash::InfoSplash( QWidget* parent )
     : KDialog( parent )
 {
+
     setButtons( Ok );
     setCaption( i18n("Welcome") );
 
@@ -70,7 +95,7 @@ InfoSplash::InfoSplash( QWidget* parent )
 
 InfoSplash::~InfoSplash()
 {
-    kDebug() << m_checkDontShow->isChecked() << "destr";
+    s_configGroup->writeEntry("dontShowIntroMessage", m_checkDontShow->isChecked());
 }
 
 #include "infosplash.moc"
