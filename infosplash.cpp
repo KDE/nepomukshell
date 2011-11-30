@@ -24,14 +24,40 @@
 #include <KIcon>
 #include <KComponentData>
 #include <KAboutData>
+#include <KDebug>
+
+#include <KConfig>
+#include <KConfigGroup>
 
 #include <QtGui/QLabel>
 #include <QtGui/QVBoxLayout>
+#include <QtGui/QCheckBox>
+
+
+KConfig * InfoSplash::s_config = NULL;
+KConfigGroup * InfoSplash::s_configGroup = NULL;
+
+
+void InfoSplash::showSplash( QWidget* parent )
+{
+    s_config = new KConfig("nepomukshellrc");
+    s_configGroup = new KConfigGroup(s_config, "General");
+
+    if (!s_configGroup->readEntry("dontShowIntroMessage", false)) {
+        InfoSplash* splash = new InfoSplash( parent );
+        splash->exec();
+        delete splash;
+    }
+
+    delete s_configGroup;
+    delete s_config;
+}
 
 
 InfoSplash::InfoSplash( QWidget* parent )
     : KDialog( parent )
 {
+
     setButtons( Ok );
     setCaption( i18n("Welcome") );
 
@@ -41,6 +67,9 @@ InfoSplash::InfoSplash( QWidget* parent )
     QLabel* iconLabel = new QLabel( w );
     iconLabel->setPixmap( KIcon(QLatin1String("nepomuk")).pixmap( 64, 64 ) );
     iconLabel->setAlignment( Qt::AlignCenter );
+
+    m_checkDontShow = new QCheckBox( w );
+    m_checkDontShow->setText( i18n("Don't show this message anymore") );
 
     QLabel* label
         = new QLabel( i18n("<h2>NepSaK</h2>"
@@ -58,6 +87,7 @@ InfoSplash::InfoSplash( QWidget* parent )
 
     lay->addWidget( iconLabel );
     lay->addWidget( label );
+    lay->addWidget( m_checkDontShow );
 
     setMainWidget(w);
 }
@@ -65,6 +95,7 @@ InfoSplash::InfoSplash( QWidget* parent )
 
 InfoSplash::~InfoSplash()
 {
+    s_configGroup->writeEntry("dontShowIntroMessage", m_checkDontShow->isChecked());
 }
 
 #include "infosplash.moc"
