@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>357</width>
-    <height>248</height>
+    <width>829</width>
+    <height>541</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -57,6 +57,16 @@
       <widget class="QPushButton" name="m_queryButton">
        <property name="text">
         <string>Run Query</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_querySelectionButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Run Selection</string>
        </property>
       </widget>
      </item>

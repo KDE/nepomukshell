@@ -57,7 +57,9 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void slotQueryButtonClicked();
+    void slotQuerySelectionButtonClicked();
     void slotQueryStopButtonClicked();
+    void slotQueryEditSelectionChanged();
     void slotNodeActivated( const QModelIndex& index );
     void slotQueryHistoryPrevious();
     void slotQueryHistoryNext();
@@ -72,7 +74,7 @@ private:
     void updateHistoryButtonStates();
 
     Nepomuk::QueryModel* m_queryModel;
-    
+
     QStringList m_queryHistory;
     int m_queryHistoryIndex;
 };

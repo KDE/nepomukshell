@@ -55,10 +55,15 @@ ResourceQueryWidget::ResourceQueryWidget( QWidget* parent )
 
     connect(m_queryButton, SIGNAL(clicked()),
             this, SLOT(slotQueryButtonClicked()) );
+    connect(m_querySelectionButton, SIGNAL(clicked()),
+            this, SLOT(slotQuerySelectionButtonClicked()) );
     connect(m_buttonBack, SIGNAL(clicked()),
             this, SLOT(slotQueryHistoryPrevious()) );
     connect(m_buttonForward, SIGNAL(clicked()),
             this, SLOT(slotQueryHistoryNext()) );
+    connect(m_queryEdit, SIGNAL(selectionChanged()),
+            this, SLOT(slotQueryEditSelectionChanged()));
+
     connect( m_queryView, SIGNAL(doubleClicked(QModelIndex)),
              this, SLOT(slotNodeActivated(QModelIndex)) );
     connect( m_stopQueryButton, SIGNAL(clicked()),
@@ -122,6 +127,25 @@ void ResourceQueryWidget::slotQueryButtonClicked()
     m_queryModel->setQuery( query );
     m_stopQueryButton->setEnabled(true);
     updateHistoryButtonStates();
+}
+
+
+void ResourceQueryWidget::slotQuerySelectionButtonClicked()
+{
+    const QString query = m_queryEdit->textCursor().selectedText();
+    if( m_queryHistory.count() == 1 || m_queryHistory[m_queryHistory.count()-2] != query ) {
+        m_queryHistoryIndex = m_queryHistory.count();
+        m_queryHistory.insert(m_queryHistory.count()-1, m_queryEdit->toPlainText() );
+    }
+    m_queryModel->setQuery( query );
+    m_stopQueryButton->setEnabled(true);
+    updateHistoryButtonStates();
+}
+
+
+void ResourceQueryWidget::slotQueryEditSelectionChanged()
+{
+    m_querySelectionButton->setEnabled(m_queryEdit->textCursor().hasSelection());
 }
 
 
