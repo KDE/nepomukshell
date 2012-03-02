@@ -19,7 +19,6 @@
  */
 
 #include "classmodel.h"
-#include "pimo.h"
 
 #include <nepomuk/ontology.h>
 #include <nepomuk/resourcemanager.h>
@@ -36,6 +35,7 @@
 #include <Soprano/Vocabulary/RDFS>
 #include <Soprano/Vocabulary/NAO>
 #include <Soprano/Vocabulary/NRL>
+#include <Nepomuk/Vocabulary/PIMO>
 
 #define USING_SOPRANO_NRLMODEL_UNSTABLE_API
 #include <Soprano/NRLModel>

@@ -17,7 +17,6 @@
 */
 
 #include "pimomodel.h"
-#include "pimo.h"
 
 #include <Soprano/QueryResultIterator>
 #include <Soprano/Vocabulary/RDF>
@@ -33,6 +32,7 @@
 #include <Nepomuk/Types/Class>
 #include <Nepomuk/ResourceManager>
 #include <Nepomuk/Thing>
+#include <Nepomuk/Vocabulary/PIMO>
 
 #include <krandom.h>
 

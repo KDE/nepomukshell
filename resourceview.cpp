@@ -22,14 +22,13 @@
 #include "nepomukshellsettings.h"
 #include "mainwindow.h"
 
-#include "pimo.h"
-
 #include <Nepomuk/Thing>
 #include <Nepomuk/Variant>
 #include <Nepomuk/Types/Class>
 #include <Nepomuk/ResourceManager>
 #include <Nepomuk/Query/QueryServiceClient>
 #include <Nepomuk/Utils/SimpleResourceModel>
+#include <Nepomuk/Vocabulary/PIMO>
 
 #include <kpixmapsequenceoverlaypainter.h>
 #include <KDialog>

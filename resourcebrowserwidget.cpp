@@ -20,7 +20,6 @@
 
 #include "resourcebrowserwidget.h"
 #include "classmodel.h"
-#include "pimo.h"
 #include "resourcepropertymodel.h"
 #include "newclassdialog.h"
 #include "nepomukshellsettings.h"
@@ -43,6 +42,7 @@
 #include <Nepomuk/Query/ResourceTerm>
 #include <Nepomuk/Query/ResourceTypeTerm>
 #include <Nepomuk/Query/ComparisonTerm>
+#include <Nepomuk/Vocabulary/PIMO>
 
 #include <KDebug>
 #include <krecursivefilterproxymodel.h>

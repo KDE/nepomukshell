@@ -45,8 +45,6 @@ set( nepomukshell_BIN_SRCS
   pimomodel.cpp
 )
 
-soprano_add_ontology(nepomukshell_BIN_SRCS ${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/pimo/pimo.trig "PIMO" "Nepomuk::Vocabulary" "trig")
-
 kde4_add_ui_files(nepomukshell_BIN_SRCS 
   mainwindow.ui
   resourceview.ui

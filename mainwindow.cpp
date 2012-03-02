@@ -19,7 +19,6 @@
  */
 
 #include "mainwindow.h"
-#include "pimo.h"
 #include "resourcepropertymodel.h"
 #include "resourceview.h"
 #include "resourcebrowserwidget.h"
@@ -50,6 +49,7 @@
 #include <KFileDialog>
 
 #include <Soprano/Vocabulary/RDFS>
+#include <Nepomuk/Vocabulary/PIMO>
 #include <Soprano/StatementIterator>
 #include <Soprano/Model>
 #include <Soprano/Serializer>

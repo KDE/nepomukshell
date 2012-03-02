@@ -18,7 +18,6 @@
 
 #include "newclassdialog.h"
 #include "pimomodel.h"
-#include "pimo.h"
 
 #include <nepomuk/class.h>
 #include <nepomuk/property.h>
@@ -32,6 +31,7 @@
 #include <QtGui/QHeaderView>
 
 #include <Soprano/Vocabulary/RDFS>
+#include <Nepomuk/Vocabulary/PIMO>
 
 
 NewClassDialog::NewClassDialog( QWidget* parent )
