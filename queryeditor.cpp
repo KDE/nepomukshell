@@ -100,10 +100,16 @@ void QueryEditor::keyPressEvent(QKeyEvent* e)
     QTextEdit::keyPressEvent(e);
 
     QString text = wordUnderCursor();
-    if( text.length() < 2 ) // min 2 char for completion
+    //Minimum 2 characters to show completion list. Hide list when moving around between text.
+    if (e->text().isEmpty()|| text.length() < 2) {
+        m_completer->popup()->hide();
         return;
-
-    m_completer->setCompletionPrefix( text );
+    }
+    // Select first completion as default completion in the list.
+    if (text != m_completer->completionPrefix()) {
+        m_completer->setCompletionPrefix(text);
+        m_completer->popup()->setCurrentIndex(m_completer->completionModel()->index(0, 0));
+    }
 
     QRect cr = cursorRect();
     cr.setWidth( m_completer->popup()->sizeHintForColumn(0)
