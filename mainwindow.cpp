@@ -279,7 +279,7 @@ void MainWindow::slotDeleteResource()
         if( KMessageBox::questionYesNoList( this,
                                             i18n("Do you really want to delete these resources?"),
                                             resNames,
-                                            i18n("Deleting Resources") ) == KMessageBox::Yes ) {
+                                            i18nc("@title:window for a confirmation question", "Deleting Resources") ) == KMessageBox::Yes ) {
             Q_FOREACH( Nepomuk::Resource res, rl ) {
                 res.remove();
             }

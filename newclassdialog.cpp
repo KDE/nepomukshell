@@ -65,7 +65,8 @@ Nepomuk::Types::Class NewClassDialog::createClass( Nepomuk::Types::Class parentC
 {
     NewClassDialog dlg( parent );
     dlg.m_labelTitle->setText( i18n( "Create New Type" ) );
-    dlg.m_labelTitle->setComment( i18n( "based on <i>%1</i>", parentClass.label() )  );
+    dlg.m_labelTitle->setComment( i18nc( "Continuation of the previous message. %1 = name of class",
+                                         "based on <i>%1</i>", parentClass.label() )  );
     dlg.m_rangeWidget->hide();
     QIcon icon = parentClass.icon();
     if ( icon.isNull() ) {
@@ -94,7 +95,8 @@ Nepomuk::Types::Property NewClassDialog::createProperty( Nepomuk::Types::Class p
 {
     NewClassDialog dlg( parent );
     dlg.m_labelTitle->setText( i18n( "Create New Property" ) );
-    dlg.m_labelTitle->setComment( i18n( "for <i>%1</i>", parentClass.label() )  );
+    dlg.m_labelTitle->setComment( i18nc( "Continuation of the previous message. %1 = name of class",
+                                         "for <i>%1</i>", parentClass.label() )  );
     QIcon icon = parentClass.icon();
     if ( icon.isNull() ) {
         icon = KIcon( QLatin1String( "nepomuk" ) );
@@ -132,7 +134,7 @@ Nepomuk::Resource NewClassDialog::createResource( Nepomuk::Types::Class type, QW
 {
     NewClassDialog dlg( parent );
     dlg.m_labelTitle->setText( i18n( "Create New Resource" ) );
-    dlg.m_labelTitle->setComment( i18n( "of type <i>%1</i>", type.label() )  );
+    dlg.m_labelTitle->setComment( i18nc( "Continuation of the previous message", "of type <i>%1</i>", type.label() )  );
     dlg.m_rangeWidget->hide();
     QIcon icon = type.icon();
     if ( icon.isNull() ) {
