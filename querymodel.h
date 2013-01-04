@@ -28,7 +28,7 @@
 #include <Soprano/Error/ErrorCode>
 #include <Soprano/Util/AsyncQuery>
 
-namespace Nepomuk {
+namespace Nepomuk2 {
 
     class QueryModel : public QAbstractTableModel
     {

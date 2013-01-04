@@ -24,8 +24,8 @@
 #include <QtGui/QWidget>
 #include <QtCore/QTime>
 
-#include <Nepomuk/Resource>
-#include <Nepomuk/Types/Class>
+#include <Nepomuk2/Resource>
+#include <Nepomuk2/Types/Class>
 
 #include <Soprano/Error/Error>
 
@@ -33,7 +33,7 @@
 
 class KConfigGroup;
 class QEvent;
-namespace Nepomuk {
+namespace Nepomuk2 {
     class QueryModel;
 }
 
@@ -53,7 +53,7 @@ public:
     bool eventFilter( QObject* watched, QEvent* event );
 
 Q_SIGNALS:
-    void resourceActivated( const Nepomuk::Resource& res );
+    void resourceActivated( const Nepomuk2::Resource& res );
 
 private Q_SLOTS:
     void slotQueryButtonClicked();
@@ -73,7 +73,7 @@ public Q_SLOTS:
 private:
     void updateHistoryButtonStates();
 
-    Nepomuk::QueryModel* m_queryModel;
+    Nepomuk2::QueryModel* m_queryModel;
 
     QStringList m_queryHistory;
     int m_queryHistoryIndex;

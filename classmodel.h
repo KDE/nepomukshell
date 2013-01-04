@@ -23,7 +23,7 @@
 
 #include <QtCore/QAbstractItemModel>
 
-namespace Nepomuk {
+namespace Nepomuk2 {
     namespace Types {
         class Class;
     }
@@ -67,7 +67,7 @@ namespace Nepomuk {
             enum CustomRoles {
                 /**
                  * The type the node represents, provided as a
-                 * Nepomuk::Types::Class instance.
+                 * Nepomuk2::Types::Class instance.
                  */
                 TypeRole = 7777
             };
@@ -76,7 +76,7 @@ namespace Nepomuk {
              * \return The list of root classes as added via addRootClass() or
              * setRootClasses().
              */
-            QList<Nepomuk::Types::Class> rootClasses() const;
+            QList<Nepomuk2::Types::Class> rootClasses() const;
 
             /**
              * Matches a model index to the corresponding resource type.
@@ -87,7 +87,7 @@ namespace Nepomuk {
 
             /**
              * Method for getting the QModelIndex corresponding to the node
-             * with the specified Nepomuk::Types::Class.
+             * with the specified Nepomuk2::Types::Class.
              * This will expand the type tree until it gets the node; if that
              * node does not exist, the return value will be an empty index.
              *
@@ -176,7 +176,7 @@ namespace Nepomuk {
             void clear();
 
             /**
-             * For performance reasons Nepomuk::Types does not support automatic updates. Thus,
+             * For performance reasons Nepomuk2::Types does not support automatic updates. Thus,
              * we have to be informed about a change through this method.
              */
             void updateClass( const Types::Class& type );

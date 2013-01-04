@@ -27,13 +27,15 @@
 #include "nepomukshellsettings.h"
 #include "resourcebrowsersettingspage.h"
 
+// Migrated classes
+#include "utils/resourcemodel.h"
+
 #include <QtGui/QStackedWidget>
 #include <QtGui/QTextBrowser>
 
-#include <nepomuk/class.h>
-#include <nepomuk/property.h>
-#include <nepomuk/resourcemanager.h>
-#include <nepomuk/resourcemodel.h>
+#include <nepomuk2/class.h>
+#include <nepomuk2/property.h>
+#include <nepomuk2/resourcemanager.h>
 
 #include <KIcon>
 #include <KDebug>
@@ -49,7 +51,7 @@
 #include <KFileDialog>
 
 #include <Soprano/Vocabulary/RDFS>
-#include <Nepomuk/Vocabulary/PIMO>
+#include <Nepomuk2/Vocabulary/PIMO>
 #include <Soprano/StatementIterator>
 #include <Soprano/Model>
 #include <Soprano/Serializer>
@@ -81,21 +83,21 @@ MainWindow::MainWindow()
 
     setupActions();
 
-    connect( m_resourceBrowser, SIGNAL(resourcesSelected(QList<Nepomuk::Resource>)),
-             this, SLOT(slotResourcesSelected(QList<Nepomuk::Resource>)) );
+    connect( m_resourceBrowser, SIGNAL(resourcesSelected(QList<Nepomuk2::Resource>)),
+             this, SLOT(slotResourcesSelected(QList<Nepomuk2::Resource>)) );
 
-    connect( m_resourceBrowser, SIGNAL(resourceActivated(Nepomuk::Resource)),
-             this, SLOT(slotResourceActivated(Nepomuk::Resource)) );
-    connect( m_resourceQueryWidget, SIGNAL(resourceActivated(Nepomuk::Resource)),
-             this, SLOT(slotResourceActivated(Nepomuk::Resource)) );
-    connect( m_resourceEditor, SIGNAL(resourceActivated(Nepomuk::Resource)),
-             this, SLOT(slotResourceActivated(Nepomuk::Resource)) );
+    connect( m_resourceBrowser, SIGNAL(resourceActivated(Nepomuk2::Resource)),
+             this, SLOT(slotResourceActivated(Nepomuk2::Resource)) );
+    connect( m_resourceQueryWidget, SIGNAL(resourceActivated(Nepomuk2::Resource)),
+             this, SLOT(slotResourceActivated(Nepomuk2::Resource)) );
+    connect( m_resourceEditor, SIGNAL(resourceActivated(Nepomuk2::Resource)),
+             this, SLOT(slotResourceActivated(Nepomuk2::Resource)) );
 
     // init
     m_mainStack->setCurrentWidget( m_resourceBrowser );
     m_actionModeBrowse->setChecked( true );
     m_resourceActionGroup->setEnabled( false );
-    slotResourcesSelected( QList<Nepomuk::Resource>() );
+    slotResourcesSelected( QList<Nepomuk2::Resource>() );
 
     readSettings();
 }
@@ -106,7 +108,7 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::openResource( const Nepomuk::Resource& res )
+void MainWindow::openResource( const Nepomuk2::Resource& res )
 {
     m_resourceEditor->setResource( res );
     m_actionModeEdit->setChecked( true );
@@ -117,7 +119,7 @@ void MainWindow::openResource( const Nepomuk::Resource& res )
 
 void MainWindow::openResource( const KUrl& url )
 {
-    openResource( Nepomuk::Resource( url ) );
+    openResource( Nepomuk2::Resource( url ) );
 }
 
 
@@ -128,11 +130,11 @@ bool MainWindow::queryClose()
 }
 
 
-QList<Nepomuk::Resource> MainWindow::selectedResources() const
+QList<Nepomuk2::Resource> MainWindow::selectedResources() const
 {
     if( m_mainStack->currentWidget() == m_resourceEditor ) {
-        QList<Nepomuk::Resource> rl;
-        Nepomuk::Resource res = m_resourceEditor->resource();
+        QList<Nepomuk2::Resource> rl;
+        Nepomuk2::Resource res = m_resourceEditor->resource();
         if( res.exists() )
             rl << res;
         return rl;
@@ -251,36 +253,36 @@ void MainWindow::slotModeEdit()
 }
 
 
-void MainWindow::slotResourcesSelected( const QList<Nepomuk::Resource>& res )
+void MainWindow::slotResourcesSelected( const QList<Nepomuk2::Resource>& res )
 {
     m_actionModeEdit->setEnabled( res.count() == 1 || m_resourceEditor->resource().isValid() );
     m_resourceActionGroup->setEnabled( !res.isEmpty() );
 }
 
 
-void MainWindow::slotResourceActivated( const Nepomuk::Resource& res )
+void MainWindow::slotResourceActivated( const Nepomuk2::Resource& res )
 {
-    kDebug() << res.resourceUri();
+    kDebug() << res.uri();
     openResource( res );
 }
 
 
 void MainWindow::slotDeleteResource()
 {
-    QList<Nepomuk::Resource> rl = selectedResources();
+    QList<Nepomuk2::Resource> rl = selectedResources();
     if( rl.isEmpty() ) {
         KMessageBox::sorry( this, i18n("No Resource to delete selected.") );
     }
     else {
         QStringList resNames;
-        Q_FOREACH( Nepomuk::Resource res, rl ) {
+        Q_FOREACH( Nepomuk2::Resource res, rl ) {
             resNames << res.genericLabel();
         }
         if( KMessageBox::questionYesNoList( this,
                                             i18n("Do you really want to delete these resources?"),
                                             resNames,
                                             i18nc("@title:window for a confirmation question", "Deleting Resources") ) == KMessageBox::Yes ) {
-            Q_FOREACH( Nepomuk::Resource res, rl ) {
+            Q_FOREACH( Nepomuk2::Resource res, rl ) {
                 res.remove();
             }
         }
@@ -335,7 +337,7 @@ void MainWindow::slotShowSource()
 {
     // TODO: create a dedicated dialog with buttons to change serialization and enable/disable bnames
     //       for the latter put the NRLModel trick from the QueryModel into a helper class
-    Soprano::StatementIterator it = Nepomuk::ResourceManager::instance()->mainModel()->listStatements( selectedResources().first().resourceUri(),
+    Soprano::StatementIterator it = Nepomuk2::ResourceManager::instance()->mainModel()->listStatements( selectedResources().first().uri(),
                                                                                                        Soprano::Node(),
                                                                                                        Soprano::Node() );
     const Soprano::Serializer* serializer = Soprano::PluginManager::instance()->discoverSerializerForSerialization( Soprano::SerializationTurtle );
@@ -346,7 +348,7 @@ void MainWindow::slotShowSource()
 
     // add query prefixes
     // TODO: put this into a helper class
-    Soprano::NRLModel nrlModel( Nepomuk::ResourceManager::instance()->mainModel() );
+    Soprano::NRLModel nrlModel( Nepomuk2::ResourceManager::instance()->mainModel() );
     nrlModel.setEnableQueryPrefixExpansion( true );
     QHash<QString, QUrl> queryPrefixes = nrlModel.queryPrefixes();
     for( QHash<QString, QUrl>::const_iterator it = queryPrefixes.constBegin();

@@ -20,13 +20,13 @@
 
 #include "resourcepropertymodel.h"
 
-#include <nepomuk/resource.h>
-#include <nepomuk/resourcemanager.h>
-#include <nepomuk/class.h>
-#include <nepomuk/property.h>
-#include <nepomuk/variant.h>
-#include <nepomuk/literal.h>
-#include <nepomuk/nie.h>
+#include <nepomuk2/resource.h>
+#include <nepomuk2/resourcemanager.h>
+#include <nepomuk2/class.h>
+#include <nepomuk2/property.h>
+#include <nepomuk2/variant.h>
+#include <nepomuk2/literal.h>
+#include <nepomuk2/nie.h>
 
 #include <KDebug>
 
@@ -43,11 +43,11 @@
 #include <Soprano/QueryResultIterator>
 
 
-Q_DECLARE_METATYPE( Nepomuk::Types::Property )
-Q_DECLARE_METATYPE( Nepomuk::Variant )
+Q_DECLARE_METATYPE( Nepomuk2::Types::Property )
+Q_DECLARE_METATYPE( Nepomuk2::Variant )
 
 
-class Nepomuk::ResourcePropertyEditModel::Private
+class Nepomuk2::ResourcePropertyEditModel::Private
 {
 public:
     Resource m_resource;
@@ -59,7 +59,7 @@ public:
 };
 
 
-void Nepomuk::ResourcePropertyEditModel::Private::rebuild()
+void Nepomuk2::ResourcePropertyEditModel::Private::rebuild()
 {
     m_properties.clear();
 
@@ -67,12 +67,12 @@ void Nepomuk::ResourcePropertyEditModel::Private::rebuild()
     QString query;
     if ( m_mode == ResourcePropertyEditModel::PropertiesMode ) {
         query = QString::fromLatin1("select ?p ?o ?g ?d where { graph ?g { %1 ?p ?o } . OPTIONAL { ?g %2 ?d . } }")
-                .arg(Soprano::Node::resourceToN3(m_resource.resourceUri()),
+                .arg(Soprano::Node::resourceToN3(m_resource.uri()),
                      Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::created()));
     }
     else {
         query = QString::fromLatin1("select ?s ?p ?g ?d where { graph ?g { ?s ?p %1 } . OPTIONAL { ?g %2 ?d . } }")
-                .arg(Soprano::Node::resourceToN3(m_resource.resourceUri()),
+                .arg(Soprano::Node::resourceToN3(m_resource.uri()),
                      Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::created()));
     }
 
@@ -80,9 +80,9 @@ void Nepomuk::ResourcePropertyEditModel::Private::rebuild()
     while( it.next() ) {
         Soprano::Statement s;
         if ( m_mode == ResourcePropertyEditModel::PropertiesMode )
-            s = Soprano::Statement( m_resource.resourceUri(), it[QLatin1String("p")], it[QLatin1String("o")], it[QLatin1String("g")] );
+            s = Soprano::Statement( m_resource.uri(), it[QLatin1String("p")], it[QLatin1String("o")], it[QLatin1String("g")] );
         else
-            s = Soprano::Statement( it[QLatin1String("s")], it[QLatin1String("p")], m_resource.resourceUri(), it[QLatin1String("g")] );
+            s = Soprano::Statement( it[QLatin1String("s")], it[QLatin1String("p")], m_resource.uri(), it[QLatin1String("g")] );
         
         // Make sure the string is not too long
         if( s.object().literal().isString() ) {
@@ -94,7 +94,7 @@ void Nepomuk::ResourcePropertyEditModel::Private::rebuild()
 }
 
 
-Nepomuk::ResourcePropertyEditModel::ResourcePropertyEditModel( QObject* parent )
+Nepomuk2::ResourcePropertyEditModel::ResourcePropertyEditModel( QObject* parent )
     : QAbstractTableModel( parent ),
       d( new Private() )
 {
@@ -102,13 +102,13 @@ Nepomuk::ResourcePropertyEditModel::ResourcePropertyEditModel( QObject* parent )
 }
 
 
-Nepomuk::ResourcePropertyEditModel::~ResourcePropertyEditModel()
+Nepomuk2::ResourcePropertyEditModel::~ResourcePropertyEditModel()
 {
     delete d;
 }
 
 
-void Nepomuk::ResourcePropertyEditModel::setMode( Mode mode )
+void Nepomuk2::ResourcePropertyEditModel::setMode( Mode mode )
 {
     if ( d->m_mode != mode ) {
         d->m_mode = mode;
@@ -118,19 +118,19 @@ void Nepomuk::ResourcePropertyEditModel::setMode( Mode mode )
 }
 
 
-Nepomuk::ResourcePropertyEditModel::Mode Nepomuk::ResourcePropertyEditModel::mode() const
+Nepomuk2::ResourcePropertyEditModel::Mode Nepomuk2::ResourcePropertyEditModel::mode() const
 {
     return d->m_mode;
 }
 
 
-Nepomuk::Resource Nepomuk::ResourcePropertyEditModel::resource() const
+Nepomuk2::Resource Nepomuk2::ResourcePropertyEditModel::resource() const
 {
     return d->m_resource;
 }
 
 
-void Nepomuk::ResourcePropertyEditModel::setResource( const Nepomuk::Resource& resource )
+void Nepomuk2::ResourcePropertyEditModel::setResource( const Nepomuk2::Resource& resource )
 {
     d->m_resource = resource;
     d->rebuild();
@@ -138,23 +138,23 @@ void Nepomuk::ResourcePropertyEditModel::setResource( const Nepomuk::Resource& r
 }
 
 
-int Nepomuk::ResourcePropertyEditModel::columnCount( const QModelIndex& ) const
+int Nepomuk2::ResourcePropertyEditModel::columnCount( const QModelIndex& ) const
 {
     return 3;
 }
 
 
-int Nepomuk::ResourcePropertyEditModel::rowCount( const QModelIndex& index ) const
+int Nepomuk2::ResourcePropertyEditModel::rowCount( const QModelIndex& index ) const
 {
     Q_UNUSED(index);
     return d->m_properties.count();
 }
 
 
-QVariant Nepomuk::ResourcePropertyEditModel::data( const QModelIndex& index, int role ) const
+QVariant Nepomuk2::ResourcePropertyEditModel::data( const QModelIndex& index, int role ) const
 {
     if ( index.isValid() and index.row() < d->m_properties.count() ) {
-        const Nepomuk::Types::Property property = d->m_properties[index.row()].first.predicate().uri();
+        const Nepomuk2::Types::Property property = d->m_properties[index.row()].first.predicate().uri();
         const Soprano::Node value = nodeForIndex( index );
         const QDateTime date = d->m_properties[index.row()].second;
 
@@ -180,7 +180,7 @@ QVariant Nepomuk::ResourcePropertyEditModel::data( const QModelIndex& index, int
             case Qt::DisplayRole:
                 if( value.isResource() ) {
                     Resource res = Resource::fromResourceUri( value.uri() );
-                    if ( property == Nepomuk::Vocabulary::NIE::url() ) {
+                    if ( property == Nepomuk2::Vocabulary::NIE::url() ) {
                         return KUrl( value.uri() ).prettyUrl();
                     }
                     else {
@@ -192,13 +192,13 @@ QVariant Nepomuk::ResourcePropertyEditModel::data( const QModelIndex& index, int
 
             case Qt::EditRole:
                 if( value.isResource() )
-                    return QVariant::fromValue(Nepomuk::Resource(value.uri()));
+                    return QVariant::fromValue(Nepomuk2::Resource(value.uri()));
                 else
                     return value.literal().variant();
 
             case Qt::DecorationRole:
                 if( value.isResource() )
-                    return Nepomuk::Resource(value.uri()).genericIcon();
+                    return Nepomuk2::Resource(value.uri()).genericIcon();
                 break;
 
             case Qt::ToolTipRole:
@@ -225,7 +225,7 @@ QVariant Nepomuk::ResourcePropertyEditModel::data( const QModelIndex& index, int
 }
 
 
-QVariant Nepomuk::ResourcePropertyEditModel::headerData( int section, Qt::Orientation orientation, int role ) const
+QVariant Nepomuk2::ResourcePropertyEditModel::headerData( int section, Qt::Orientation orientation, int role ) const
 {
     if( orientation == Qt::Horizontal &&
         role == Qt::DisplayRole ) {
@@ -243,7 +243,7 @@ QVariant Nepomuk::ResourcePropertyEditModel::headerData( int section, Qt::Orient
 }
 
 
-bool Nepomuk::ResourcePropertyEditModel::removeRows( int row, int count, const QModelIndex& parent )
+bool Nepomuk2::ResourcePropertyEditModel::removeRows( int row, int count, const QModelIndex& parent )
 {
     kDebug() << row << count;
     if( !parent.isValid() && row+count <= d->m_properties.count() ) {
@@ -261,13 +261,13 @@ bool Nepomuk::ResourcePropertyEditModel::removeRows( int row, int count, const Q
 }
 
 
-bool Nepomuk::ResourcePropertyEditModel::setData( const QModelIndex& index, const QVariant& value, int role )
+bool Nepomuk2::ResourcePropertyEditModel::setData( const QModelIndex& index, const QVariant& value, int role )
 {
     kDebug() << index << value << role;
 
     if ( d->m_resource.isValid() ) {
         if ( index.isValid() ) {
-            const Nepomuk::Types::Property property = d->m_properties[index.row()].first.predicate().uri();
+            const Nepomuk2::Types::Property property = d->m_properties[index.row()].first.predicate().uri();
             Soprano::Node newObjectNode;
             if( property.range().isValid() ) {
                 newObjectNode = value.toUrl();
@@ -292,7 +292,7 @@ bool Nepomuk::ResourcePropertyEditModel::setData( const QModelIndex& index, cons
 }
 
 
-Soprano::Node Nepomuk::ResourcePropertyEditModel::nodeForIndex( const QModelIndex& index ) const
+Soprano::Node Nepomuk2::ResourcePropertyEditModel::nodeForIndex( const QModelIndex& index ) const
 {
     if( index.isValid() &&
         index.row() < d->m_properties.count() ) {
@@ -313,14 +313,14 @@ Soprano::Node Nepomuk::ResourcePropertyEditModel::nodeForIndex( const QModelInde
 }
 
 
-QModelIndex Nepomuk::ResourcePropertyEditModel::parent( const QModelIndex& index ) const
+QModelIndex Nepomuk2::ResourcePropertyEditModel::parent( const QModelIndex& index ) const
 {
     Q_UNUSED(index);
     return QModelIndex();
 }
 
 
-Qt::ItemFlags Nepomuk::ResourcePropertyEditModel::flags( const QModelIndex& index ) const
+Qt::ItemFlags Nepomuk2::ResourcePropertyEditModel::flags( const QModelIndex& index ) const
 {
     Qt::ItemFlags flags = QAbstractItemModel::flags( index );
     // FIXME: implement resource range editing

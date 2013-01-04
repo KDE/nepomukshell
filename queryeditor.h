@@ -25,7 +25,7 @@
 #include <KTextEdit>
 #include <QtGui/QCompleter>
 
-namespace Nepomuk {
+namespace Nepomuk2 {
     class SparqlSyntaxHighlighter;
 }
 
@@ -42,7 +42,7 @@ private slots:
     
 private:
     QCompleter * m_completer;
-    Nepomuk::SparqlSyntaxHighlighter* m_highlighter;
+    Nepomuk2::SparqlSyntaxHighlighter* m_highlighter;
 
     QString wordUnderCursor();
 };

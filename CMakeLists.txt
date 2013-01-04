@@ -8,8 +8,9 @@ set(CMAKE_NEPOMUKSHELL_VERSION_STRING "${CMAKE_NEPOMUKSHELL_VERSION_MAJOR}.${CMA
 
 
 set(KDE_MIN_VERSION "4.5.80")  # for the < 4.2 macro
-find_package(KDE4 4.5.80 REQUIRED)
-find_package(Nepomuk REQUIRED)
+find_package(KDE4 4.8 REQUIRED)
+find_package(NepomukCore REQUIRED)
+find_package(Soprano REQUIRED)
 
 include(KDE4Defaults)
 include(SopranoAddOntology)
@@ -23,7 +24,7 @@ include_directories(
   ${QT_INCLUDES}
   ${KDE4_INCLUDES}
   ${SOPRANO_INCLUDE_DIR}
-  ${NEPOMUK_INCLUDE_DIR}
+  ${NEPOMUK_CORE_INCLUDE_DIR}
   ${nepomukshell_SOURCE_DIR}/settings
   ${nepomukshell_BINARY_DIR}
 )
@@ -43,6 +44,10 @@ set( nepomukshell_BIN_SRCS
   queryeditor.cpp
   classmodel.cpp
   pimomodel.cpp
+
+  # Utils
+  utils/resourcemodel.cpp
+  utils/simpleresourcemodel.cpp
 )
 
 kde4_add_ui_files(nepomukshell_BIN_SRCS 
@@ -60,12 +65,11 @@ kde4_add_kcfg_files(nepomukshell_BIN_SRCS
 kde4_add_executable(nepomukshell ${nepomukshell_BIN_SRCS})
 
 target_link_libraries(nepomukshell
-  ${NEPOMUK_LIBRARIES}
+  ${NEPOMUK_CORE_LIBRARY}
   ${QT_QTGUI_LIBRARY}
   ${KDE4_KDEUI_LIBS}
   ${KDE4_KIO_LIBS}
   ${SOPRANO_LIBRARIES}
-  ${NEPOMUK_QUERY_LIBRARIES}
   nepomukutils
 )
 

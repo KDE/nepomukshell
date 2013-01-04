@@ -20,12 +20,12 @@
 #include "sparqlsyntaxhighlighter.h"
 #include <KDebug>
 
-Nepomuk::SparqlSyntaxHighlighter::SparqlSyntaxHighlighter(QTextDocument* parent): QSyntaxHighlighter(parent)
+Nepomuk2::SparqlSyntaxHighlighter::SparqlSyntaxHighlighter(QTextDocument* parent): QSyntaxHighlighter(parent)
 {
     init();
 }
 
-void Nepomuk::SparqlSyntaxHighlighter::init()
+void Nepomuk2::SparqlSyntaxHighlighter::init()
 {
     // Keywords
     QTextCharFormat keywordFormat;
@@ -80,7 +80,7 @@ void Nepomuk::SparqlSyntaxHighlighter::init()
     m_rules.append( Rule( commentRegex, commentFormat ) );
 }
 
-void Nepomuk::SparqlSyntaxHighlighter::highlightBlock(const QString& text)
+void Nepomuk2::SparqlSyntaxHighlighter::highlightBlock(const QString& text)
 {
     //kDebug();
     //int i=0;

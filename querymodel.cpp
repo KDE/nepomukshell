@@ -23,7 +23,7 @@
 
 #include <QtCore/QTime>
 
-#include <Nepomuk/ResourceManager>
+#include <Nepomuk2/ResourceManager>
 
 #include <Soprano/Model>
 #include <Soprano/Node>
@@ -46,12 +46,12 @@ void splitUri( const QUrl& uri, QUrl& ns, QString& name )
 }
 }
 
-class Nepomuk::QueryModel::Private
+class Nepomuk2::QueryModel::Private
 {
 public:
-    Private( Nepomuk::QueryModel * parent );
+    Private( Nepomuk2::QueryModel * parent );
 
-    Nepomuk::QueryModel * q;
+    Nepomuk2::QueryModel * q;
 
     QString m_query;
     QList<Soprano::BindingSet> m_bindings;
@@ -67,14 +67,14 @@ public:
 };
 
 
-Nepomuk::QueryModel::Private::Private(Nepomuk::QueryModel* parent)
+Nepomuk2::QueryModel::Private::Private(Nepomuk2::QueryModel* parent)
     : q( parent ),
       m_currentQuery(0)
 {
 }
 
 
-void Nepomuk::QueryModel::Private::updateQuery()
+void Nepomuk2::QueryModel::Private::updateQuery()
 {
     m_bindings.clear();
 
@@ -92,7 +92,7 @@ void Nepomuk::QueryModel::Private::updateQuery()
 }
 
 
-QString Nepomuk::QueryModel::Private::resourceToString(const QUrl &uri) const
+QString Nepomuk2::QueryModel::Private::resourceToString(const QUrl &uri) const
 {
     QUrl ns;
     QString name;
@@ -107,7 +107,7 @@ QString Nepomuk::QueryModel::Private::resourceToString(const QUrl &uri) const
 }
 
 
-Nepomuk::QueryModel::QueryModel( QObject* parent )
+Nepomuk2::QueryModel::QueryModel( QObject* parent )
     : QAbstractTableModel( parent ),
       d(new Private( this ))
 {
@@ -121,13 +121,13 @@ Nepomuk::QueryModel::QueryModel( QObject* parent )
 }
 
 
-Nepomuk::QueryModel::~QueryModel()
+Nepomuk2::QueryModel::~QueryModel()
 {
     delete d;
 }
 
 
-int Nepomuk::QueryModel::columnCount( const QModelIndex& parent ) const
+int Nepomuk2::QueryModel::columnCount( const QModelIndex& parent ) const
 {
     Q_UNUSED(parent);
     if( d->m_bindings.isEmpty() )
@@ -137,7 +137,7 @@ int Nepomuk::QueryModel::columnCount( const QModelIndex& parent ) const
 }
 
 
-int Nepomuk::QueryModel::rowCount( const QModelIndex& parent ) const
+int Nepomuk2::QueryModel::rowCount( const QModelIndex& parent ) const
 {
     if( !parent.isValid() )
         return d->m_bindings.count();
@@ -146,7 +146,7 @@ int Nepomuk::QueryModel::rowCount( const QModelIndex& parent ) const
 }
 
 
-QVariant Nepomuk::QueryModel::data( const QModelIndex& index, int role ) const
+QVariant Nepomuk2::QueryModel::data( const QModelIndex& index, int role ) const
 {
     if( index.isValid() &&
         index.row() < d->m_bindings.count() ) {
@@ -169,20 +169,20 @@ QVariant Nepomuk::QueryModel::data( const QModelIndex& index, int role ) const
 }
 
 
-QModelIndex Nepomuk::QueryModel::parent( const QModelIndex& index ) const
+QModelIndex Nepomuk2::QueryModel::parent( const QModelIndex& index ) const
 {
     Q_UNUSED(index);
     return QModelIndex();
 }
 
 
-Qt::ItemFlags Nepomuk::QueryModel::flags( const QModelIndex& index ) const
+Qt::ItemFlags Nepomuk2::QueryModel::flags( const QModelIndex& index ) const
 {
     return QAbstractTableModel::flags( index );
 }
 
 
-QVariant Nepomuk::QueryModel::headerData( int section, Qt::Orientation orientation, int role ) const
+QVariant Nepomuk2::QueryModel::headerData( int section, Qt::Orientation orientation, int role ) const
 {
     if( !d->m_bindings.isEmpty() &&
         section < d->m_bindings.first().count() &&
@@ -196,7 +196,7 @@ QVariant Nepomuk::QueryModel::headerData( int section, Qt::Orientation orientati
 }
 
 
-void Nepomuk::QueryModel::setQuery( const QString& query )
+void Nepomuk2::QueryModel::setQuery( const QString& query )
 {
     if(d->m_currentQuery) {
         d->m_currentQuery->close();
@@ -209,7 +209,7 @@ void Nepomuk::QueryModel::setQuery( const QString& query )
 }
 
 
-Soprano::Node Nepomuk::QueryModel::nodeForIndex( const QModelIndex& index ) const
+Soprano::Node Nepomuk2::QueryModel::nodeForIndex( const QModelIndex& index ) const
 {
     if( index.isValid() ) {
         return d->m_bindings[index.row()][index.column()];
@@ -217,7 +217,7 @@ Soprano::Node Nepomuk::QueryModel::nodeForIndex( const QModelIndex& index ) cons
     return Soprano::Node();
 }
 
-void Nepomuk::QueryModel::slotNextResultReady(Soprano::Util::AsyncQuery* query)
+void Nepomuk2::QueryModel::slotNextResultReady(Soprano::Util::AsyncQuery* query)
 {
     beginInsertRows( QModelIndex(), d->m_bindings.size(), d->m_bindings.size() );
 
@@ -246,7 +246,7 @@ void Nepomuk::QueryModel::slotNextResultReady(Soprano::Util::AsyncQuery* query)
     }
 }
 
-void Nepomuk::QueryModel::slotQueryFinished(Soprano::Util::AsyncQuery* query)
+void Nepomuk2::QueryModel::slotQueryFinished(Soprano::Util::AsyncQuery* query)
 {
     if( query->isBool() ) {
         beginInsertRows( QModelIndex(), d->m_bindings.size(), d->m_bindings.size() );
@@ -270,12 +270,12 @@ void Nepomuk::QueryModel::slotQueryFinished(Soprano::Util::AsyncQuery* query)
     emit queryFinished();
 }
 
-int Nepomuk::QueryModel::queryTime() const
+int Nepomuk2::QueryModel::queryTime() const
 {
     return d->m_queryTime;
 }
 
-void Nepomuk::QueryModel::stopQuery()
+void Nepomuk2::QueryModel::stopQuery()
 {
     if(d->m_currentQuery) {
         d->m_currentQuery->close();

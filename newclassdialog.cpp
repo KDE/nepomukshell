@@ -19,10 +19,10 @@
 #include "newclassdialog.h"
 #include "pimomodel.h"
 
-#include <nepomuk/class.h>
-#include <nepomuk/property.h>
-#include <nepomuk/thing.h>
-#include <nepomuk/resourcemanager.h>
+#include <nepomuk2/class.h>
+#include <nepomuk2/property.h>
+#include <nepomuk2/resource.h>
+#include <nepomuk2/resourcemanager.h>
 
 #include <KDebug>
 #include <KLocale>
@@ -31,7 +31,7 @@
 #include <QtGui/QHeaderView>
 
 #include <Soprano/Vocabulary/RDFS>
-#include <Nepomuk/Vocabulary/PIMO>
+#include <Nepomuk2/Vocabulary/PIMO>
 
 
 NewClassDialog::NewClassDialog( QWidget* parent )
@@ -61,7 +61,7 @@ void NewClassDialog::slotLabelChanged( const QString& text )
 }
 
 
-Nepomuk::Types::Class NewClassDialog::createClass( Nepomuk::Types::Class parentClass, QWidget* parent )
+Nepomuk2::Types::Class NewClassDialog::createClass( Nepomuk2::Types::Class parentClass, QWidget* parent )
 {
     NewClassDialog dlg( parent );
     dlg.m_labelTitle->setText( i18n( "Create New Type" ) );
@@ -79,19 +79,19 @@ Nepomuk::Types::Class NewClassDialog::createClass( Nepomuk::Types::Class parentC
         QString comment = dlg.m_editClassComment->text();
         QString icon = dlg.m_buttonClassIcon->icon();
 
-        Nepomuk::PimoModel pimoModel( Nepomuk::ResourceManager::instance()->mainModel() );
+        Nepomuk2::PimoModel pimoModel( Nepomuk2::ResourceManager::instance()->mainModel() );
         return pimoModel.createClass( parentClass.uri(),
                                       name,
                                       comment,
                                       icon != QLatin1String( "unknown" ) ? icon : QString() );
     }
     else {
-        return Nepomuk::Types::Class();
+        return Nepomuk2::Types::Class();
     }
 }
 
 
-Nepomuk::Types::Property NewClassDialog::createProperty( Nepomuk::Types::Class parentClass, QWidget* parent )
+Nepomuk2::Types::Property NewClassDialog::createProperty( Nepomuk2::Types::Class parentClass, QWidget* parent )
 {
     NewClassDialog dlg( parent );
     dlg.m_labelTitle->setText( i18n( "Create New Property" ) );
@@ -105,9 +105,9 @@ Nepomuk::Types::Property NewClassDialog::createProperty( Nepomuk::Types::Class p
 
     // FIXME: hopefully at some point QComboBox will support QTreeView
     // we can then use the PIMOItemModel.
-    Nepomuk::Types::Class base( Nepomuk::Vocabulary::PIMO::Thing() );
+    Nepomuk2::Types::Class base( Nepomuk2::Vocabulary::PIMO::Thing() );
     dlg.m_propertyRangeCombo->addItem( base.label(), base.uri() );
-    foreach( Nepomuk::Types::Class c, base.allSubClasses() ) {
+    foreach( Nepomuk2::Types::Class c, base.allSubClasses() ) {
         dlg.m_propertyRangeCombo->addItem( c.label(), c.uri() );
     }
     // FIXME: add literal ranges: string, int, double, datetime
@@ -117,7 +117,7 @@ Nepomuk::Types::Property NewClassDialog::createProperty( Nepomuk::Types::Class p
         QString comment = dlg.m_editClassComment->text();
         QString icon = dlg.m_buttonClassIcon->icon();
 
-        Nepomuk::PimoModel pimoModel( Nepomuk::ResourceManager::instance()->mainModel() );
+        Nepomuk2::PimoModel pimoModel( Nepomuk2::ResourceManager::instance()->mainModel() );
         return pimoModel.createProperty( parentClass.uri(),
                                          dlg.m_propertyRangeCombo->itemData( dlg.m_propertyRangeCombo->currentIndex() ).toUrl(),
                                          name,
@@ -125,12 +125,12 @@ Nepomuk::Types::Property NewClassDialog::createProperty( Nepomuk::Types::Class p
                                          icon != QLatin1String( "unknown" ) ? icon : QString() );
     }
     else {
-        return Nepomuk::Types::Property();
+        return Nepomuk2::Types::Property();
     }
 }
 
 
-Nepomuk::Resource NewClassDialog::createResource( Nepomuk::Types::Class type, QWidget* parent )
+Nepomuk2::Resource NewClassDialog::createResource( Nepomuk2::Types::Class type, QWidget* parent )
 {
     NewClassDialog dlg( parent );
     dlg.m_labelTitle->setText( i18n( "Create New Resource" ) );
@@ -147,19 +147,19 @@ Nepomuk::Resource NewClassDialog::createResource( Nepomuk::Types::Class type, QW
         const QString comment = dlg.m_editClassComment->text();
         const QString icon = dlg.m_buttonClassIcon->icon();
 
-        Nepomuk::Thing newThing( QUrl(), type.uri() );
-        newThing.setLabel( name );
+        Nepomuk2::Resource newResource( QUrl(), type.uri() );
+        newResource.setLabel( name );
         if ( !comment.isEmpty() ) {
-            newThing.setDescription( comment );
+            newResource.setDescription( comment );
         }
         if ( !icon.isEmpty() ) {
             // FIXME: create a proper Symbol object, if possible maybe a subclass DesktopIcon if its a standard icon
-            newThing.addSymbol( icon );
+            newResource.addSymbol( icon );
         }
-        return newThing;
+        return newResource;
     }
     else {
-        return Nepomuk::Resource();
+        return Nepomuk2::Resource();
     }
 }
 

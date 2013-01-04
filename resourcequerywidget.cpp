@@ -34,7 +34,7 @@ Copyright (c) 2010 Sebastian Trueg <trueg@kde.org>
 
 #include <Soprano/Node>
 
-#include <Nepomuk/Resource>
+#include <Nepomuk2/Resource>
 
 
 ResourceQueryWidget::ResourceQueryWidget( QWidget* parent )
@@ -49,7 +49,7 @@ ResourceQueryWidget::ResourceQueryWidget( QWidget* parent )
     // we install an event filter to catch Ctrl+Return for quick query execution
     m_queryEdit->installEventFilter( this );
 
-    m_queryModel = new Nepomuk::QueryModel( this );
+    m_queryModel = new Nepomuk2::QueryModel( this );
     m_queryView->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
     m_queryView->setModel( m_queryModel );
 
@@ -153,7 +153,7 @@ void ResourceQueryWidget::slotNodeActivated( const QModelIndex& index )
 {
     Soprano::Node node = m_queryModel->nodeForIndex( index );
     if ( node.isValid() && node.isResource() ) {
-        Nepomuk::Resource res( node.uri() );
+        Nepomuk2::Resource res( node.uri() );
         if( res.exists() ) {
             emit resourceActivated( res );
         }

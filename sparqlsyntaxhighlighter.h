@@ -24,7 +24,7 @@
 #include <QtCore/QRegExp>
 #include <QtGui/QSyntaxHighlighter>
 
-namespace Nepomuk {
+namespace Nepomuk2 {
     
     class SparqlSyntaxHighlighter : public QSyntaxHighlighter
     {

@@ -22,13 +22,15 @@
 #include "nepomukshellsettings.h"
 #include "mainwindow.h"
 
-#include <Nepomuk/Thing>
-#include <Nepomuk/Variant>
-#include <Nepomuk/Types/Class>
-#include <Nepomuk/ResourceManager>
-#include <Nepomuk/Query/QueryServiceClient>
-#include <Nepomuk/Utils/SimpleResourceModel>
-#include <Nepomuk/Vocabulary/PIMO>
+// Migrated classes
+#include "utils/resourcemodel.h"
+#include "utils/simpleresourcemodel.h"
+
+#include <Nepomuk2/Variant>
+#include <Nepomuk2/Types/Class>
+#include <Nepomuk2/ResourceManager>
+#include <Nepomuk2/Query/QueryServiceClient>
+#include <Nepomuk2/Vocabulary/PIMO>
 
 #include <kpixmapsequenceoverlaypainter.h>
 #include <KDialog>
@@ -41,7 +43,7 @@
 #include <QtGui/QDropEvent>
 #include <QtCore/QMimeData>
 
-Q_DECLARE_METATYPE(Nepomuk::Types::Class)
+Q_DECLARE_METATYPE(Nepomuk2::Types::Class)
 
 
 ResourceView::ResourceView( QWidget* parent )
@@ -51,7 +53,7 @@ ResourceView::ResourceView( QWidget* parent )
 {
     setupUi(this);
 
-    m_resourceModel = new Nepomuk::Utils::SimpleResourceModel( this );
+    m_resourceModel = new Nepomuk2::Utils::SimpleResourceModel( this );
     m_resourceView->setModel( m_resourceModel );
     //m_resourceView->setSpacing( KDialog::spacingHint() );
 
@@ -62,9 +64,9 @@ ResourceView::ResourceView( QWidget* parent )
     connect( m_resourceView, SIGNAL(customContextMenuRequested(QPoint)),
              this, SLOT(slotResourceViewContextMenu(QPoint)) );
 
-    m_queryClient = new Nepomuk::Query::QueryServiceClient( this );
-    connect( m_queryClient, SIGNAL(newEntries(QList<Nepomuk::Query::Result>)),
-             m_resourceModel, SLOT(addResults(QList<Nepomuk::Query::Result>)) );
+    m_queryClient = new Nepomuk2::Query::QueryServiceClient( this );
+    connect( m_queryClient, SIGNAL(newEntries(QList<Nepomuk2::Query::Result>)),
+             m_resourceModel, SLOT(addResults(QList<Nepomuk2::Query::Result>)) );
     connect( m_queryClient, SIGNAL(finishedListing()),
              this, SLOT(updatePageButtons()) );
 
@@ -101,7 +103,7 @@ bool ResourceView::atEnd() const
 }
 
 
-void ResourceView::setQuery( const Nepomuk::Query::Query& query )
+void ResourceView::setQuery( const Nepomuk2::Query::Query& query )
 {
     // reset
     m_queryCount = -1;
@@ -118,7 +120,7 @@ void ResourceView::setQuery( const Nepomuk::Query::Query& query )
 }
 
 
-void ResourceView::addResource( const Nepomuk::Resource& res )
+void ResourceView::addResource( const Nepomuk2::Resource& res )
 {
     m_resourceModel->addResource( res );
 }
@@ -165,23 +167,23 @@ void ResourceView::slotCurrentResourceChanged( const QItemSelection&, const QIte
 }
 
 
-QList<Nepomuk::Resource> ResourceView::selectedResources() const
+QList<Nepomuk2::Resource> ResourceView::selectedResources() const
 {
-    QList<Nepomuk::Resource> rl;
+    QList<Nepomuk2::Resource> rl;
     QModelIndexList selection = m_resourceView->selectionModel()->selectedIndexes();
     Q_FOREACH( const QModelIndex& index, selection )
-        rl << index.data( Nepomuk::Utils::ResourceModel::ResourceRole ).value<Nepomuk::Resource>();
+        rl << index.data( Nepomuk2::Utils::ResourceModel::ResourceRole ).value<Nepomuk2::Resource>();
     return rl;
 }
 
 
 void ResourceView::slotIndexActivated( const QModelIndex& index )
 {
-    if( index.column() == Nepomuk::Utils::ResourceModel::ResourceTypeColumn ) {
-        emit resourceTypeActivated( index.data( Nepomuk::Utils::ResourceModel::ResourceTypeRole ).value<Nepomuk::Types::Class>() );
+    if( index.column() == Nepomuk2::Utils::ResourceModel::ResourceTypeColumn ) {
+        emit resourceTypeActivated( index.data( Nepomuk2::Utils::ResourceModel::ResourceTypeRole ).value<Nepomuk2::Types::Class>() );
     }
     else {
-        emit resourceActivated( index.data( Nepomuk::Utils::ResourceModel::ResourceRole ).value<Nepomuk::Resource>() );
+        emit resourceActivated( index.data( Nepomuk2::Utils::ResourceModel::ResourceRole ).value<Nepomuk2::Resource>() );
     }
 }
 

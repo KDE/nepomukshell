@@ -23,7 +23,7 @@
 
 #include <KXmlGuiWindow>
 
-#include <Nepomuk/Resource>
+#include <Nepomuk2/Resource>
 
 #include "ui_mainwindow.h"
 
@@ -40,20 +40,20 @@ public:
     MainWindow();
     ~MainWindow();
 
-    QList<Nepomuk::Resource> selectedResources() const;
+    QList<Nepomuk2::Resource> selectedResources() const;
 
     static MainWindow* nepomukShellMain();
 
 public Q_SLOTS:
-    void openResource( const Nepomuk::Resource& res );
+    void openResource( const Nepomuk2::Resource& res );
     void openResource( const KUrl& url );
 
 private Q_SLOTS:
     void slotModeBrowse();
     void slotModeQuery();
     void slotModeEdit();
-    void slotResourcesSelected( const QList<Nepomuk::Resource>& res );
-    void slotResourceActivated( const Nepomuk::Resource& res );
+    void slotResourcesSelected( const QList<Nepomuk2::Resource>& res );
+    void slotResourceActivated( const Nepomuk2::Resource& res );
     void slotDeleteResource();
     void slotSettings();
     void slotOpen();

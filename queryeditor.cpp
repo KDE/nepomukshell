@@ -33,7 +33,7 @@
 #include <Soprano/Model>
 #include <Soprano/QueryResultIterator>
 
-#include <Nepomuk/ResourceManager>
+#include <Nepomuk2/ResourceManager>
 
 QueryEditor::QueryEditor(QWidget* parent): KTextEdit(parent)
 {
@@ -42,14 +42,14 @@ QueryEditor::QueryEditor(QWidget* parent): KTextEdit(parent)
     setCheckSpellingEnabled( false );
     setFocus();
 
-    m_highlighter = new Nepomuk::SparqlSyntaxHighlighter( document() );
+    m_highlighter = new Nepomuk2::SparqlSyntaxHighlighter( document() );
 
     //
     // Completion
     //
     QString query = QString::fromLatin1("select ?pre ?r where { graph ?g {?r a ?t.} ?g nao:hasDefaultNamespaceAbbreviation ?pre. }");
 
-    Soprano::Model * model = Nepomuk::ResourceManager::instance()->mainModel();
+    Soprano::Model * model = Nepomuk2::ResourceManager::instance()->mainModel();
     Soprano::QueryResultIterator it = model->executeQuery( query, Soprano::Query::QueryLanguageSparql );
 
     QStringList candidates;

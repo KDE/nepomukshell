@@ -22,7 +22,7 @@
 #include <KDialog>
 #include "ui_newclassdialog.h"
 
-namespace Nepomuk {
+namespace Nepomuk2 {
     class Resource;
     namespace Types {
         class Class;
@@ -37,9 +37,9 @@ class NewClassDialog : public KDialog, public Ui_NewClassDialog
 public:
     ~NewClassDialog();
 
-    static Nepomuk::Types::Class createClass( Nepomuk::Types::Class parentClass, QWidget* parent = 0 );
-    static Nepomuk::Types::Property createProperty( Nepomuk::Types::Class parentClass, QWidget* parent = 0 );
-    static Nepomuk::Resource createResource( Nepomuk::Types::Class type, QWidget* parent = 0 );
+    static Nepomuk2::Types::Class createClass( Nepomuk2::Types::Class parentClass, QWidget* parent = 0 );
+    static Nepomuk2::Types::Property createProperty( Nepomuk2::Types::Class parentClass, QWidget* parent = 0 );
+    static Nepomuk2::Resource createResource( Nepomuk2::Types::Class type, QWidget* parent = 0 );
 
 private Q_SLOTS:
     void slotLabelChanged( const QString& text );

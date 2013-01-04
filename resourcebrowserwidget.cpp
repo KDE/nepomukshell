@@ -25,6 +25,9 @@
 #include "nepomukshellsettings.h"
 #include "mainwindow.h"
 
+// Migrated classes
+#include "utils/resourcemodel.h"
+
 #include <QtGui/QTreeView>
 #include <QtGui/QListView>
 #include <QtGui/QVBoxLayout>
@@ -34,15 +37,14 @@
 #include <QtGui/QItemSelectionModel>
 #include <QtGui/QSortFilterProxyModel>
 
-#include <nepomuk/class.h>
-#include <nepomuk/property.h>
-#include <nepomuk/resourcemanager.h>
-#include <nepomuk/resourcemodel.h>
-#include <Nepomuk/Query/Query>
-#include <Nepomuk/Query/ResourceTerm>
-#include <Nepomuk/Query/ResourceTypeTerm>
-#include <Nepomuk/Query/ComparisonTerm>
-#include <Nepomuk/Vocabulary/PIMO>
+#include <nepomuk2/class.h>
+#include <nepomuk2/property.h>
+#include <nepomuk2/resourcemanager.h>
+#include <Nepomuk2/Query/Query>
+#include <Nepomuk2/Query/ResourceTerm>
+#include <Nepomuk2/Query/ResourceTypeTerm>
+#include <Nepomuk2/Query/ComparisonTerm>
+#include <Nepomuk2/Vocabulary/PIMO>
 
 #include <KDebug>
 #include <krecursivefilterproxymodel.h>
@@ -52,8 +54,8 @@
 #include <Soprano/Vocabulary/RDFS>
 
 
-Q_DECLARE_METATYPE( Nepomuk::Resource )
-Q_DECLARE_METATYPE( Nepomuk::Types::Class )
+Q_DECLARE_METATYPE( Nepomuk2::Resource )
+Q_DECLARE_METATYPE( Nepomuk2::Types::Class )
 
 
 ResourceBrowserWidget::ResourceBrowserWidget( QWidget* parent )
@@ -64,8 +66,8 @@ ResourceBrowserWidget::ResourceBrowserWidget( QWidget* parent )
     m_pimoView->header()->hide();
     m_pimoView->setSelectionMode( QAbstractItemView::SingleSelection );
 
-    m_pimoModel = new Nepomuk::Utils::ClassModel( m_pimoView );
-    m_pimoModel->addRootClass( Nepomuk::Vocabulary::PIMO::Thing() );
+    m_pimoModel = new Nepomuk2::Utils::ClassModel( m_pimoView );
+    m_pimoModel->addRootClass( Nepomuk2::Vocabulary::PIMO::Thing() );
     m_pimoSortModel = new KRecursiveFilterProxyModel( m_pimoView );
     m_pimoSortModel->setSourceModel( m_pimoModel );
     m_pimoSortModel->setSortCaseSensitivity( Qt::CaseInsensitive );
@@ -80,21 +82,21 @@ ResourceBrowserWidget::ResourceBrowserWidget( QWidget* parent )
 
     m_classFilter->setProxy( m_pimoSortModel );
 
-    m_baseClassCombo->addItem( i18nc( "@item:inlistbox Referring to all RDF classes in the Nepomuk PIMO ontology", "PIMO Classes" ), QVariant( Nepomuk::Vocabulary::PIMO::Thing() ) );
+    m_baseClassCombo->addItem( i18nc( "@item:inlistbox Referring to all RDF classes in the Nepomuk PIMO ontology", "PIMO Classes" ), QVariant( Nepomuk2::Vocabulary::PIMO::Thing() ) );
     m_baseClassCombo->addItem( i18nc( "@item:inlistbox Referring to all RDF classes in the Nepomuk db", "All Classes" ), QVariant( Soprano::Vocabulary::RDFS::Resource() ) );
 
     connect( m_pimoView, SIGNAL(customContextMenuRequested(QPoint)),
              this, SLOT(slotPIMOViewContextMenu(QPoint)) );
     connect( m_pimoView->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)),
              this, SLOT(slotCurrentPIMOClassChanged(QModelIndex,QModelIndex)) );
-    connect( m_resourceView, SIGNAL(selectionChanged(QList<Nepomuk::Resource>)),
-             this, SIGNAL(resourcesSelected(QList<Nepomuk::Resource>)) );
+    connect( m_resourceView, SIGNAL(selectionChanged(QList<Nepomuk2::Resource>)),
+             this, SIGNAL(resourcesSelected(QList<Nepomuk2::Resource>)) );
     connect( m_baseClassCombo, SIGNAL(activated(int)),
              this, SLOT(slotBaseClassChanged(int)) );
-    connect( m_resourceView, SIGNAL(resourceActivated(Nepomuk::Resource)),
-             this, SIGNAL(resourceActivated(Nepomuk::Resource)) );
-    connect( m_resourceView, SIGNAL(resourceTypeActivated(Nepomuk::Types::Class)),
-             this, SLOT(setSelectedClass(Nepomuk::Types::Class)) );
+    connect( m_resourceView, SIGNAL(resourceActivated(Nepomuk2::Resource)),
+             this, SIGNAL(resourceActivated(Nepomuk2::Resource)) );
+    connect( m_resourceView, SIGNAL(resourceTypeActivated(Nepomuk2::Types::Class)),
+             this, SLOT(setSelectedClass(Nepomuk2::Types::Class)) );
 }
 
 
@@ -108,7 +110,7 @@ void ResourceBrowserWidget::slotPIMOViewContextMenu( const QPoint& pos )
     kDebug();
     QModelIndex index = m_pimoView->indexAt( pos );
     if ( index.isValid() ) {
-        Nepomuk::Types::Class type = index.data( Nepomuk::Utils::ClassModel::TypeRole ).value<Nepomuk::Types::Class>();
+        Nepomuk2::Types::Class type = index.data( Nepomuk2::Utils::ClassModel::TypeRole ).value<Nepomuk2::Types::Class>();
 
         QMenu::exec( QList<QAction*>()
                      << MainWindow::nepomukShellMain()->actionCollection()->action( QLatin1String( "create_class" ) )
@@ -122,7 +124,7 @@ void ResourceBrowserWidget::slotPIMOViewContextMenu( const QPoint& pos )
 void ResourceBrowserWidget::slotCurrentPIMOClassChanged( const QModelIndex& current, const QModelIndex& )
 {
     if ( current.isValid() ) {
-        Nepomuk::Types::Class type = current.data( Nepomuk::Utils::ClassModel::TypeRole ).value<Nepomuk::Types::Class>();
+        Nepomuk2::Types::Class type = current.data( Nepomuk2::Utils::ClassModel::TypeRole ).value<Nepomuk2::Types::Class>();
         kDebug() << "Selection changed:" << type.label();
         setSelectedClass(type);
     }
@@ -137,7 +139,7 @@ void ResourceBrowserWidget::slotBaseClassChanged( int index )
 
 void ResourceBrowserWidget::createClass()
 {
-    Nepomuk::Types::Class newClass = NewClassDialog::createClass( selectedClass(), this );
+    Nepomuk2::Types::Class newClass = NewClassDialog::createClass( selectedClass(), this );
     if ( newClass.isValid() ) {
         // update the model
         m_pimoModel->updateClass( selectedClass() );
@@ -158,7 +160,7 @@ void ResourceBrowserWidget::createProperty()
 void ResourceBrowserWidget::createResource()
 {
     // create a new resource
-    Nepomuk::Resource res = NewClassDialog::createResource( selectedClass(), this );
+    Nepomuk2::Resource res = NewClassDialog::createResource( selectedClass(), this );
     if ( res.isValid() ) {
         // update
         m_resourceView->addResource( res );
@@ -166,17 +168,17 @@ void ResourceBrowserWidget::createResource()
 }
 
 
-QList<Nepomuk::Resource> ResourceBrowserWidget::selectedResources() const
+QList<Nepomuk2::Resource> ResourceBrowserWidget::selectedResources() const
 {
     return m_resourceView->selectedResources();
 }
 
 
-Nepomuk::Types::Class ResourceBrowserWidget::selectedClass() const
+Nepomuk2::Types::Class ResourceBrowserWidget::selectedClass() const
 {
     QModelIndex current = m_pimoView->selectionModel()->currentIndex();
     if ( current.isValid() )
-        return current.data( Nepomuk::Utils::ClassModel::TypeRole ).value<Nepomuk::Types::Class>();
+        return current.data( Nepomuk2::Utils::ClassModel::TypeRole ).value<Nepomuk2::Types::Class>();
     else
         return m_pimoModel->rootClasses().first();
 }
@@ -192,20 +194,20 @@ void setIndexVisible( QTreeView* view, const QModelIndex& index ) {
 }
 }
 
-void ResourceBrowserWidget::setSelectedClass( const Nepomuk::Types::Class& type )
+void ResourceBrowserWidget::setSelectedClass( const Nepomuk2::Types::Class& type )
 {
     kDebug() << type;
 
     QModelIndex index = m_pimoSortModel->mapFromSource(m_pimoModel->indexForClass(type));
     setIndexVisible( m_pimoView, index );
-    kDebug() << index << index.data(Nepomuk::Utils::ClassModel::TypeRole).value<Nepomuk::Types::Class>();
+    kDebug() << index << index.data(Nepomuk2::Utils::ClassModel::TypeRole).value<Nepomuk2::Types::Class>();
     m_pimoView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Clear|QItemSelectionModel::SelectCurrent);
 
     if( Settings::self()->recursiveQuery() ) {
-        m_resourceView->setQuery( Nepomuk::Query::Query( Nepomuk::Query::ResourceTypeTerm( selectedClass() ) ) );
+        m_resourceView->setQuery( Nepomuk2::Query::Query( Nepomuk2::Query::ResourceTypeTerm( selectedClass() ) ) );
     }
     else {
-        m_resourceView->setQuery( Nepomuk::Query::Query( Nepomuk::Query::ComparisonTerm( Soprano::Vocabulary::RDF::type(), Nepomuk::Query::ResourceTerm( selectedClass().uri() ) ) ) );
+        m_resourceView->setQuery( Nepomuk2::Query::Query( Nepomuk2::Query::ComparisonTerm( Soprano::Vocabulary::RDF::type(), Nepomuk2::Query::ResourceTerm( selectedClass().uri() ) ) ) );
     }
 }
 

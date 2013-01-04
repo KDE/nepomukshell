@@ -21,7 +21,7 @@
 
 #include <Soprano/RdfSchemaModel>
 
-namespace Nepomuk {
+namespace Nepomuk2 {
     /**
      * \class PimoModel pimomodel.h pimomodel.h
      *

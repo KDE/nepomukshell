@@ -29,10 +29,10 @@
 #include <Soprano/LiteralValue>
 #include <Soprano/QueryResultIterator>
 
-#include <Nepomuk/Types/Class>
-#include <Nepomuk/ResourceManager>
-#include <Nepomuk/Thing>
-#include <Nepomuk/Vocabulary/PIMO>
+#include <Nepomuk2/Types/Class>
+#include <Nepomuk2/ResourceManager>
+#include <Nepomuk2/Resource>
+#include <Nepomuk2/Vocabulary/PIMO>
 
 #include <krandom.h>
 
@@ -43,7 +43,7 @@
 
 using namespace Soprano;
 
-class Nepomuk::PimoModel::Private
+class Nepomuk2::PimoModel::Private
 {
 public:
     Private( PimoModel* parent )
@@ -59,7 +59,7 @@ private:
 };
 
 
-QUrl Nepomuk::PimoModel::Private::createUniqueUri( QString name )
+QUrl Nepomuk2::PimoModel::Private::createUniqueUri( QString name )
 {
     if ( !name.isEmpty() ) {
         QString normalizedName = name.replace( QRegExp( QLatin1String("[^\\w\\.\\-_:]") ), QString() );
@@ -78,20 +78,20 @@ QUrl Nepomuk::PimoModel::Private::createUniqueUri( QString name )
 }
 
 
-Nepomuk::PimoModel::PimoModel( Soprano::Model* parentModel )
+Nepomuk2::PimoModel::PimoModel( Soprano::Model* parentModel )
     : RdfSchemaModel( parentModel ),
       d( new Private(this) )
 {
 }
 
 
-Nepomuk::PimoModel::~PimoModel()
+Nepomuk2::PimoModel::~PimoModel()
 {
     delete d;
 }
 
 
-QUrl Nepomuk::PimoModel::pimoContext()
+QUrl Nepomuk2::PimoModel::pimoContext()
 {
     //
     // TODO: so far we have only one local PIMO, thus there is no real need
@@ -136,19 +136,19 @@ QUrl Nepomuk::PimoModel::pimoContext()
 }
 
 
-QUrl Nepomuk::PimoModel::newClassUri( const QString& name )
+QUrl Nepomuk2::PimoModel::newClassUri( const QString& name )
 {
     return d->createUniqueUri( name );
 }
 
 
-QUrl Nepomuk::PimoModel::newPropertyUri( const QString& name )
+QUrl Nepomuk2::PimoModel::newPropertyUri( const QString& name )
 {
     return d->createUniqueUri( name );
 }
 
 
-Soprano::Error::ErrorCode Nepomuk::PimoModel::addPimoStatements( const QList<Soprano::Statement>& sl )
+Soprano::Error::ErrorCode Nepomuk2::PimoModel::addPimoStatements( const QList<Soprano::Statement>& sl )
 {
     QUrl c = pimoContext();
     QList<Soprano::Statement> newSl;
@@ -160,10 +160,10 @@ Soprano::Error::ErrorCode Nepomuk::PimoModel::addPimoStatements( const QList<Sop
 }
 
 
-QUrl Nepomuk::PimoModel::createClass( const QUrl& parentClassUri,
-                                      const QString& label,
-                                      const QString& comment,
-                                      const QString& icon )
+QUrl Nepomuk2::PimoModel::createClass( const QUrl& parentClassUri,
+                                       const QString& label,
+                                       const QString& comment,
+                                       const QString& icon )
 {
     if ( label.isEmpty() ) {
         setError( QLatin1String("No label for new class set.") );
@@ -172,7 +172,7 @@ QUrl Nepomuk::PimoModel::createClass( const QUrl& parentClassUri,
 
     Types::Class parentClass( parentClassUri );
     if( parentClassUri != Vocabulary::PIMO::Thing() &&
-        !parentClass.isSubClassOf( Vocabulary::PIMO::Thing() ) ) {
+            !parentClass.isSubClassOf( Vocabulary::PIMO::Thing() ) ) {
         setError( QLatin1String("New PIMO class needs to be subclass of pimo:Thing.") );
         return QUrl();
     }
@@ -201,7 +201,7 @@ QUrl Nepomuk::PimoModel::createClass( const QUrl& parentClassUri,
 }
 
 
-bool Nepomuk::PimoModel::createSubClassRelation( const QUrl& classUri, const QUrl& newParentClassUri, bool singleParent )
+bool Nepomuk2::PimoModel::createSubClassRelation( const QUrl& classUri, const QUrl& newParentClassUri, bool singleParent )
 {
     if ( classUri == newParentClassUri ) {
         setError( QLatin1String("Cannot make a class sub class of itself") );
@@ -212,8 +212,8 @@ bool Nepomuk::PimoModel::createSubClassRelation( const QUrl& classUri, const QUr
     // presence of nao:created
     Types::Class type( classUri );
     if( classUri != Vocabulary::PIMO::Thing() &&
-        !type.isSubClassOf( Vocabulary::PIMO::Thing() ) &&
-        !containsAnyStatement( classUri, Soprano::Vocabulary::NAO::created(), Soprano::Node() ) ) {
+            !type.isSubClassOf( Vocabulary::PIMO::Thing() ) &&
+            !containsAnyStatement( classUri, Soprano::Vocabulary::NAO::created(), Soprano::Node() ) ) {
         setError( QLatin1String("Only pimo:Thing subclasses created by the user can be changed.") );
         return false;
     }
@@ -237,11 +237,11 @@ bool Nepomuk::PimoModel::createSubClassRelation( const QUrl& classUri, const QUr
 }
 
 
-QUrl Nepomuk::PimoModel::createProperty ( const QUrl& domainUri,
-                                          const QUrl& range,
-                                          const QString label,
-                                          const QString& comment,
-                                          const QString& icon )
+QUrl Nepomuk2::PimoModel::createProperty ( const QUrl& domainUri,
+        const QUrl& range,
+        const QString label,
+        const QString& comment,
+        const QString& icon )
 {
     if ( !range.isValid() ) {
         setError( QLatin1String("Invalid range") );
@@ -254,7 +254,7 @@ QUrl Nepomuk::PimoModel::createProperty ( const QUrl& domainUri,
 
     Types::Class domain( domainUri );
     if( domainUri != Vocabulary::PIMO::Thing() &&
-        !domain.isSubClassOf( Vocabulary::PIMO::Thing() ) ) {
+            !domain.isSubClassOf( Vocabulary::PIMO::Thing() ) ) {
         setError( QLatin1String("New PIMO properties need to have a pimo:Thing related domain.") );
         return QUrl();
     }
@@ -285,14 +285,14 @@ QUrl Nepomuk::PimoModel::createProperty ( const QUrl& domainUri,
 }
 
 
-QUrl Nepomuk::PimoModel::createThing( const QUrl& typeUri,
-                                      const QString& label,
-                                      const QString& comment,
-                                      const QString& icon )
+QUrl Nepomuk2::PimoModel::createThing( const QUrl& typeUri,
+                                       const QString& label,
+                                       const QString& comment,
+                                       const QString& icon )
 {
     Types::Class type( typeUri );
     if( typeUri != Vocabulary::PIMO::Thing() &&
-        !type.isSubClassOf( Vocabulary::PIMO::Thing() ) ) {
+            !type.isSubClassOf( Vocabulary::PIMO::Thing() ) ) {
         setError( QLatin1String("New PIMO resources need to have a pimo:Thing related type.") );
         return QUrl();
     }
@@ -302,20 +302,20 @@ QUrl Nepomuk::PimoModel::createThing( const QUrl& typeUri,
         return QUrl();
     }
 
-    Nepomuk::Thing thing( QUrl(), typeUri );
-    thing.setLabel( label );
+    Nepomuk2::Resource resource( QUrl(), typeUri );
+    resource.setLabel( label );
     if ( !comment.isEmpty() ) {
-        thing.setDescription( comment );
+        resource.setDescription( comment );
     }
     if ( !icon.isEmpty() ) {
         // FIXME: create a proper Symbol object, if possible maybe a subclass DesktopIcon if its a standard icon
-        thing.addSymbol( icon );
+        resource.addSymbol( icon );
     }
 
-    return thing.resourceUri();
+    return resource.uri();
 }
 
-// void Nepomuk::PimoModel::findMatches( const QString& text )
+// void Nepomuk2::PimoModel::findMatches( const QString& text )
 // {
 //     // Find a direct match Things
 //     // FIXME: This does only work with inference!

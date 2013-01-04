@@ -38,12 +38,12 @@ ResourceEditorWidget::ResourceEditorWidget( QWidget* parent )
     m_buttonBack->setIcon( KIcon( QLatin1String( "go-previous" ) ) );
     m_buttonForward->setIcon( KIcon( QLatin1String( "go-next" ) ) );
 
-    m_propertyModel = new Nepomuk::ResourcePropertyEditModel( m_propertyView );
+    m_propertyModel = new Nepomuk2::ResourcePropertyEditModel( m_propertyView );
     m_propertyView->setModel( m_propertyModel );
     m_propertyView->setContextMenuPolicy( Qt::CustomContextMenu );
 
-    m_backlinksModel = new Nepomuk::ResourcePropertyEditModel( m_backlinksView );
-    m_backlinksModel->setMode( Nepomuk::ResourcePropertyEditModel::BacklinksMode );
+    m_backlinksModel = new Nepomuk2::ResourcePropertyEditModel( m_backlinksView );
+    m_backlinksModel->setMode( Nepomuk2::ResourcePropertyEditModel::BacklinksMode );
     m_backlinksView->setModel( m_backlinksModel );
     m_backlinksView->setContextMenuPolicy( Qt::CustomContextMenu );
 
@@ -69,10 +69,10 @@ ResourceEditorWidget::~ResourceEditorWidget()
 }
 
 
-void ResourceEditorWidget::setResource( const Nepomuk::Resource& res )
+void ResourceEditorWidget::setResource( const Nepomuk2::Resource& res )
 {
     if( resource().isValid() )
-        m_backStack.push( resource().resourceUri() );
+        m_backStack.push( resource().uri() );
     m_forwardStack.clear();
     setResourceInternal( res );
     updateResourceHistoryButtonStates();
@@ -104,9 +104,9 @@ void ResourceEditorWidget::slotPropertyContextMenu( const QPoint& pos )
 
 void ResourceEditorWidget::slotNodeActivated( const QModelIndex& index )
 {
-    Soprano::Node node = qobject_cast<const Nepomuk::ResourcePropertyEditModel*>( index.model() )->nodeForIndex( index );
+    Soprano::Node node = qobject_cast<const Nepomuk2::ResourcePropertyEditModel*>( index.model() )->nodeForIndex( index );
     if ( node.isValid() && node.isResource() ) {
-        Nepomuk::Resource res = Nepomuk::Resource::fromResourceUri( node.uri() );
+        Nepomuk2::Resource res = Nepomuk2::Resource::fromResourceUri( node.uri() );
         if( res.exists() ) {
             emit resourceActivated( res );
         }
@@ -117,7 +117,7 @@ void ResourceEditorWidget::slotNodeActivated( const QModelIndex& index )
 void ResourceEditorWidget::slotResourceHistoryBack()
 {
     if( !m_backStack.isEmpty() ) {
-        m_forwardStack.push( resource().resourceUri() );
+        m_forwardStack.push( resource().uri() );
         setResourceInternal( m_backStack.pop() );
         updateResourceHistoryButtonStates();
     }
@@ -127,20 +127,20 @@ void ResourceEditorWidget::slotResourceHistoryBack()
 void ResourceEditorWidget::slotResourceHistoryForward()
 {
     if( !m_forwardStack.isEmpty() ) {
-        m_backStack.push( resource().resourceUri() );
+        m_backStack.push( resource().uri() );
         setResourceInternal( m_forwardStack.pop() );
         updateResourceHistoryButtonStates();
     }
 }
 
 
-void ResourceEditorWidget::setResourceInternal( const Nepomuk::Resource& res )
+void ResourceEditorWidget::setResourceInternal( const Nepomuk2::Resource& res )
 {
     if( m_resource != res ) {
         m_resource = res;
         m_propertyModel->setResource( res );
         m_backlinksModel->setResource( res );
-        m_uriLabel->setText( KUrl(res.resourceUri()).url() );
+        m_uriLabel->setText( KUrl(res.uri()).url() );
     }
 }
 

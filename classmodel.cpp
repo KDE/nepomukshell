@@ -20,10 +20,10 @@
 
 #include "classmodel.h"
 
-#include <nepomuk/ontology.h>
-#include <nepomuk/resourcemanager.h>
-#include <nepomuk/resource.h>
-#include <nepomuk/class.h>
+#include <nepomuk2/ontology.h>
+#include <nepomuk2/resourcemanager.h>
+#include <nepomuk2/resource.h>
+#include <nepomuk2/class.h>
 
 #include <kicon.h>
 #include <kdebug.h>
@@ -35,18 +35,18 @@
 #include <Soprano/Vocabulary/RDFS>
 #include <Soprano/Vocabulary/NAO>
 #include <Soprano/Vocabulary/NRL>
-#include <Nepomuk/Vocabulary/PIMO>
+#include <Nepomuk2/Vocabulary/PIMO>
 
 #define USING_SOPRANO_NRLMODEL_UNSTABLE_API
 #include <Soprano/NRLModel>
 
 
-Q_DECLARE_METATYPE( Nepomuk::Types::Class )
+Q_DECLARE_METATYPE( Nepomuk2::Types::Class )
 
-class Nepomuk::Utils::ClassModel::ClassNode
+class Nepomuk2::Utils::ClassModel::ClassNode
 {
 public:
-    ClassNode( ClassModel* model, const Nepomuk::Types::Class& t, int _row, ClassNode* parentNode = 0 )
+    ClassNode( ClassModel* model, const Nepomuk2::Types::Class& t, int _row, ClassNode* parentNode = 0 )
         : parent( parentNode ),
           updating( false ),
           row( _row ),
@@ -67,7 +67,7 @@ public:
         }
     }
 
-    ClassNode* findNode( const Nepomuk::Types::Class& type, bool autoUpdate = false ) {
+    ClassNode* findNode( const Nepomuk2::Types::Class& type, bool autoUpdate = false ) {
         if ( type == this->type ) {
             return this;
         }
@@ -96,8 +96,8 @@ public:
         }
 
         // 2. add the nodes that are not there yet (in one batch)
-        QList<Nepomuk::Types::Class> classesToAdd;
-        Q_FOREACH( const Nepomuk::Types::Class& subClass, type.subClasses() ) {
+        QList<Nepomuk2::Types::Class> classesToAdd;
+        Q_FOREACH( const Nepomuk2::Types::Class& subClass, type.subClasses() ) {
             bool haveSubClass = false;
             // check if we already have a node for that subclass
             Q_FOREACH( ClassModel::ClassNode* node, children ) {
@@ -112,7 +112,7 @@ public:
         if ( !classesToAdd.isEmpty() ) {
             m_model->beginInsertRows( m_model->createIndex( row, 0, this ), children.count(), type.subClasses().count()-1 );
             int i = children.count();
-            foreach( const Nepomuk::Types::Class& subType, classesToAdd ) {
+            foreach( const Nepomuk2::Types::Class& subType, classesToAdd ) {
                 children << new ClassNode( m_model, subType, i++, this );
             }
             m_model->endInsertRows();
@@ -127,7 +127,7 @@ public:
     bool updating;
 
     int row;
-    Nepomuk::Types::Class type;
+    Nepomuk2::Types::Class type;
     QList<ClassNode*> children;
 
 private:
@@ -135,7 +135,7 @@ private:
 };
 
 
-class Nepomuk::Utils::ClassModel::Private
+class Nepomuk2::Utils::ClassModel::Private
 {
 public:
     Private( ClassModel* parent )
@@ -155,7 +155,7 @@ private:
 
 
 
-bool Nepomuk::Utils::ClassModel::Private::createSubClassRelation( const Types::Class& theClass, const Types::Class& newParentClass, bool singleParent )
+bool Nepomuk2::Utils::ClassModel::Private::createSubClassRelation( const Types::Class& theClass, const Types::Class& newParentClass, bool singleParent )
 {
     if ( theClass == newParentClass ) {
         kDebug() << "Cannot make a class sub class of itself";
@@ -193,7 +193,7 @@ bool Nepomuk::Utils::ClassModel::Private::createSubClassRelation( const Types::C
 }
 
 
-Nepomuk::Utils::ClassModel::ClassNode* Nepomuk::Utils::ClassModel::Private::findNode( const Types::Class& type, bool autoUpdate )
+Nepomuk2::Utils::ClassModel::ClassNode* Nepomuk2::Utils::ClassModel::Private::findNode( const Types::Class& type, bool autoUpdate )
 {
     Q_FOREACH( ClassModel::ClassNode* root, baseClassNodes ) {
         if ( ClassModel::ClassNode* n = root->findNode( type, autoUpdate ) ) {
@@ -204,20 +204,20 @@ Nepomuk::Utils::ClassModel::ClassNode* Nepomuk::Utils::ClassModel::Private::find
 }
 
 
-Nepomuk::Utils::ClassModel::ClassModel( QObject* parent )
+Nepomuk2::Utils::ClassModel::ClassModel( QObject* parent )
     : QAbstractItemModel( parent ),
       d( new Private( this ) )
 {
 }
 
 
-Nepomuk::Utils::ClassModel::~ClassModel()
+Nepomuk2::Utils::ClassModel::~ClassModel()
 {
     delete d;
 }
 
 
-void Nepomuk::Utils::ClassModel::addRootClass( const Types::Class& type )
+void Nepomuk2::Utils::ClassModel::addRootClass( const Types::Class& type )
 {
     beginInsertRows( QModelIndex(), d->baseClassNodes.count(), d->baseClassNodes.count()+1 );
     d->baseClassNodes.append( new ClassNode( this, type, 0 ) );
@@ -225,13 +225,13 @@ void Nepomuk::Utils::ClassModel::addRootClass( const Types::Class& type )
 }
 
 
-void Nepomuk::Utils::ClassModel::setRootClass( const Types::Class& type )
+void Nepomuk2::Utils::ClassModel::setRootClass( const Types::Class& type )
 {
     setRootClasses( QList<Types::Class>() << type );
 }
 
 
-void Nepomuk::Utils::ClassModel::setRootClasses( const QList<Types::Class>& types )
+void Nepomuk2::Utils::ClassModel::setRootClasses( const QList<Types::Class>& types )
 {
     qDeleteAll( d->baseClassNodes );
     d->baseClassNodes.clear();
@@ -242,28 +242,28 @@ void Nepomuk::Utils::ClassModel::setRootClasses( const QList<Types::Class>& type
 }
 
 
-void Nepomuk::Utils::ClassModel::clear()
+void Nepomuk2::Utils::ClassModel::clear()
 {
     setRootClasses( QList<Types::Class>() );
 }
 
 
-QList<Nepomuk::Types::Class> Nepomuk::Utils::ClassModel::rootClasses() const
+QList<Nepomuk2::Types::Class> Nepomuk2::Utils::ClassModel::rootClasses() const
 {
-    QList<Nepomuk::Types::Class> types;
+    QList<Nepomuk2::Types::Class> types;
     Q_FOREACH( ClassNode* n, d->baseClassNodes )
         types.append( n->type );
     return types;
 }
 
 
-int Nepomuk::Utils::ClassModel::columnCount( const QModelIndex& ) const
+int Nepomuk2::Utils::ClassModel::columnCount( const QModelIndex& ) const
 {
     return 1;
 }
 
 
-QVariant Nepomuk::Utils::ClassModel::data( const QModelIndex& index, int role ) const
+QVariant Nepomuk2::Utils::ClassModel::data( const QModelIndex& index, int role ) const
 {
     if ( index.isValid() ) {
         ClassNode* node = ( ClassNode* )index.internalPointer();
@@ -302,7 +302,7 @@ QVariant Nepomuk::Utils::ClassModel::data( const QModelIndex& index, int role ) 
 }
 
 
-QModelIndex Nepomuk::Utils::ClassModel::index( int row, int column, const QModelIndex& parent ) const
+QModelIndex Nepomuk2::Utils::ClassModel::index( int row, int column, const QModelIndex& parent ) const
 {
     if ( parent.isValid() ) {
         ClassNode* parentNode = ( ClassNode* )parent.internalPointer();
@@ -322,7 +322,7 @@ QModelIndex Nepomuk::Utils::ClassModel::index( int row, int column, const QModel
 }
 
 
-QModelIndex Nepomuk::Utils::ClassModel::parent( const QModelIndex& index ) const
+QModelIndex Nepomuk2::Utils::ClassModel::parent( const QModelIndex& index ) const
 {
     if ( index.isValid() ) {
         ClassNode* node = ( ClassNode* )index.internalPointer();
@@ -336,7 +336,7 @@ QModelIndex Nepomuk::Utils::ClassModel::parent( const QModelIndex& index ) const
 }
 
 
-bool Nepomuk::Utils::ClassModel::hasChildren( const QModelIndex& parent ) const
+bool Nepomuk2::Utils::ClassModel::hasChildren( const QModelIndex& parent ) const
 {
     if ( parent.isValid() ) {
         ClassNode* parentNode = ( ClassNode* )parent.internalPointer();
@@ -349,7 +349,7 @@ bool Nepomuk::Utils::ClassModel::hasChildren( const QModelIndex& parent ) const
 }
 
 
-int Nepomuk::Utils::ClassModel::rowCount( const QModelIndex& parent ) const
+int Nepomuk2::Utils::ClassModel::rowCount( const QModelIndex& parent ) const
 {
     if ( parent.isValid() ) {
         ClassNode* parentNode = ( ClassNode* )parent.internalPointer();
@@ -362,7 +362,7 @@ int Nepomuk::Utils::ClassModel::rowCount( const QModelIndex& parent ) const
 }
 
 
-Qt::ItemFlags Nepomuk::Utils::ClassModel::flags( const QModelIndex& index ) const
+Qt::ItemFlags Nepomuk2::Utils::ClassModel::flags( const QModelIndex& index ) const
 {
     if ( index.isValid() ) {
         Qt::ItemFlags f = Qt::ItemIsSelectable|Qt::ItemIsDropEnabled|Qt::ItemIsEnabled;
@@ -380,13 +380,13 @@ Qt::ItemFlags Nepomuk::Utils::ClassModel::flags( const QModelIndex& index ) cons
 }
 
 
-Qt::DropActions Nepomuk::Utils::ClassModel::supportedDropActions() const
+Qt::DropActions Nepomuk2::Utils::ClassModel::supportedDropActions() const
 {
     return Qt::CopyAction | Qt::MoveAction;
 }
 
 
-QStringList Nepomuk::Utils::ClassModel::mimeTypes() const
+QStringList Nepomuk2::Utils::ClassModel::mimeTypes() const
 {
     return( QStringList()
             << QLatin1String( "application/x-nepomuk-class-uri" )
@@ -394,7 +394,7 @@ QStringList Nepomuk::Utils::ClassModel::mimeTypes() const
 }
 
 
-QMimeData* Nepomuk::Utils::ClassModel::mimeData( const QModelIndexList& indexes ) const
+QMimeData* Nepomuk2::Utils::ClassModel::mimeData( const QModelIndexList& indexes ) const
 {
     KUrl::List classUris;
     foreach ( const QModelIndex& index, indexes ) {
@@ -415,7 +415,7 @@ QMimeData* Nepomuk::Utils::ClassModel::mimeData( const QModelIndexList& indexes 
 }
 
 
-bool Nepomuk::Utils::ClassModel::dropMimeData( const QMimeData* data, Qt::DropAction action, int row, int, const QModelIndex& parent )
+bool Nepomuk2::Utils::ClassModel::dropMimeData( const QMimeData* data, Qt::DropAction action, int row, int, const QModelIndex& parent )
 {
     ClassNode* parentNode = 0;
     if ( parent.isValid() ) {
@@ -459,7 +459,7 @@ bool Nepomuk::Utils::ClassModel::dropMimeData( const QMimeData* data, Qt::DropAc
 }
 
 
-Nepomuk::Types::Class Nepomuk::Utils::ClassModel::classForIndex( const QModelIndex& index ) const
+Nepomuk2::Types::Class Nepomuk2::Utils::ClassModel::classForIndex( const QModelIndex& index ) const
 {
     if ( index.isValid() ) {
         ClassNode* node = ( ClassNode* )index.internalPointer();
@@ -472,7 +472,7 @@ Nepomuk::Types::Class Nepomuk::Utils::ClassModel::classForIndex( const QModelInd
 }
 
 
-QModelIndex Nepomuk::Utils::ClassModel::indexForClass( const Nepomuk::Types::Class& cls ) const
+QModelIndex Nepomuk2::Utils::ClassModel::indexForClass( const Nepomuk2::Types::Class& cls ) const
 {
     if ( ClassNode* node = d->findNode( cls, true ) ) {
         return createIndex( node->row, 0, node );
@@ -483,7 +483,7 @@ QModelIndex Nepomuk::Utils::ClassModel::indexForClass( const Nepomuk::Types::Cla
 }
 
 
-bool Nepomuk::Utils::ClassModel::canFetchMore( const QModelIndex& parent ) const
+bool Nepomuk2::Utils::ClassModel::canFetchMore( const QModelIndex& parent ) const
 {
     if ( parent.isValid() ) {
         ClassNode* parentNode = static_cast<ClassNode*>( parent.internalPointer() );
@@ -495,7 +495,7 @@ bool Nepomuk::Utils::ClassModel::canFetchMore( const QModelIndex& parent ) const
 }
 
 
-void Nepomuk::Utils::ClassModel::fetchMore( const QModelIndex& parent )
+void Nepomuk2::Utils::ClassModel::fetchMore( const QModelIndex& parent )
 {
     if ( parent.isValid() ) {
         ClassNode* parentNode = static_cast<ClassNode*>( parent.internalPointer() );
@@ -506,7 +506,7 @@ void Nepomuk::Utils::ClassModel::fetchMore( const QModelIndex& parent )
 }
 
 
-void Nepomuk::Utils::ClassModel::updateClass( const Types::Class& type )
+void Nepomuk2::Utils::ClassModel::updateClass( const Types::Class& type )
 {
     if ( ClassModel::ClassNode* node = d->findNode( type ) ) {
 //         node->updating = true;

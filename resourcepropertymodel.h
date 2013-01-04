@@ -27,7 +27,7 @@
 
 
 
-namespace Nepomuk {
+namespace Nepomuk2 {
     class Resource;
     namespace Types {
     }

@@ -23,13 +23,13 @@
 
 #include <QtGui/QWidget>
 
-#include <Nepomuk/Resource>
-#include <Nepomuk/Types/Class>
+#include <Nepomuk2/Resource>
+#include <Nepomuk2/Types/Class>
 
 #include "ui_resourcebrowserwidget.h"
 
 class QSortFilterProxyModel;
-namespace Nepomuk {
+namespace Nepomuk2 {
     namespace Utils {
         class ClassModel;
     }
@@ -43,15 +43,15 @@ public:
     ResourceBrowserWidget( QWidget* parent = 0 );
     ~ResourceBrowserWidget();
 
-    QList<Nepomuk::Resource> selectedResources() const;
-    Nepomuk::Types::Class selectedClass() const;
+    QList<Nepomuk2::Resource> selectedResources() const;
+    Nepomuk2::Types::Class selectedClass() const;
 
 Q_SIGNALS:
-    void resourcesSelected( const QList<Nepomuk::Resource>& res );
-    void resourceActivated( const Nepomuk::Resource& res );
+    void resourcesSelected( const QList<Nepomuk2::Resource>& res );
+    void resourceActivated( const Nepomuk2::Resource& res );
 
 public Q_SLOTS:
-    void setSelectedClass( const Nepomuk::Types::Class& type );
+    void setSelectedClass( const Nepomuk2::Types::Class& type );
     void createClass();
     void createProperty();
     void createResource();
@@ -64,7 +64,7 @@ private Q_SLOTS:
 private:
     void updateQuery( int offset );
 
-    Nepomuk::Utils::ClassModel* m_pimoModel;
+    Nepomuk2::Utils::ClassModel* m_pimoModel;
     QSortFilterProxyModel* m_pimoSortModel;
 };
 

@@ -24,12 +24,12 @@
 #include <QtGui/QWidget>
 #include <QtCore/QStack>
 
-#include <Nepomuk/Resource>
-#include <Nepomuk/Types/Class>
+#include <Nepomuk2/Resource>
+#include <Nepomuk2/Types/Class>
 
 #include "ui_resourceeditorwidget.h"
 
-namespace Nepomuk {
+namespace Nepomuk2 {
     class ResourcePropertyEditModel;
 }
 
@@ -41,13 +41,13 @@ public:
     ResourceEditorWidget( QWidget* parent = 0 );
     ~ResourceEditorWidget();
 
-    Nepomuk::Resource resource() const { return m_resource; }
+    Nepomuk2::Resource resource() const { return m_resource; }
 
 Q_SIGNALS:
-    void resourceActivated( const Nepomuk::Resource& res );
+    void resourceActivated( const Nepomuk2::Resource& res );
 
 public Q_SLOTS:
-    void setResource( const Nepomuk::Resource& res );
+    void setResource( const Nepomuk2::Resource& res );
 
 private Q_SLOTS:
     void slotPropertyContextMenu( const QPoint& pos );
@@ -56,12 +56,12 @@ private Q_SLOTS:
     void slotResourceHistoryForward();
 
 private:
-    void setResourceInternal( const Nepomuk::Resource& res );
+    void setResourceInternal( const Nepomuk2::Resource& res );
     void updateResourceHistoryButtonStates();
 
-    Nepomuk::ResourcePropertyEditModel* m_propertyModel;
-    Nepomuk::ResourcePropertyEditModel* m_backlinksModel;
-    Nepomuk::Resource m_resource;
+    Nepomuk2::ResourcePropertyEditModel* m_propertyModel;
+    Nepomuk2::ResourcePropertyEditModel* m_backlinksModel;
+    Nepomuk2::Resource m_resource;
 
     QStack<QUrl> m_backStack;
     QStack<QUrl> m_forwardStack;

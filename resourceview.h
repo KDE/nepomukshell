@@ -22,11 +22,11 @@
 #include <QtGui/QWidget>
 #include "ui_resourceview.h"
 
-#include <Nepomuk/Query/Query>
+#include <Nepomuk2/Query/Query>
 
 class QItemSelection;
 class QModelIndex;
-namespace Nepomuk {
+namespace Nepomuk2 {
     namespace Types {
         class Class;
     }
@@ -51,22 +51,22 @@ public:
     ResourceView( QWidget* parent = 0 );
     ~ResourceView();
 
-    QList<Nepomuk::Resource> selectedResources() const;
+    QList<Nepomuk2::Resource> selectedResources() const;
 
 public Q_SLOTS:
-    void setQuery( const Nepomuk::Query::Query& query );
+    void setQuery( const Nepomuk2::Query::Query& query );
 
     /**
      * Convenience method to quickly update the list
      * after creation of a resource without having to
      * reload everything
      */
-    void addResource( const Nepomuk::Resource& res );
+    void addResource( const Nepomuk2::Resource& res );
 
 Q_SIGNALS:
-    void selectionChanged( const QList<Nepomuk::Resource>& );
-    void resourceActivated( const Nepomuk::Resource& );
-    void resourceTypeActivated( const Nepomuk::Types::Class& );
+    void selectionChanged( const QList<Nepomuk2::Resource>& );
+    void resourceActivated( const Nepomuk2::Resource& );
+    void resourceTypeActivated( const Nepomuk2::Types::Class& );
 
 private Q_SLOTS:
     void pageBack();
@@ -82,9 +82,9 @@ private:
     bool atStart() const;
     bool atEnd() const;
 
-    Nepomuk::Query::Query m_currentQuery;
-    Nepomuk::Query::QueryServiceClient* m_queryClient;
-    Nepomuk::Utils::SimpleResourceModel* m_resourceModel;
+    Nepomuk2::Query::Query m_currentQuery;
+    Nepomuk2::Query::QueryServiceClient* m_queryClient;
+    Nepomuk2::Utils::SimpleResourceModel* m_resourceModel;
     int m_queryCount;
     int m_queryPage;
 };
