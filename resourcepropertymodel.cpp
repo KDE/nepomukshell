@@ -153,7 +153,7 @@ int Nepomuk2::ResourcePropertyEditModel::rowCount( const QModelIndex& index ) co
 
 QVariant Nepomuk2::ResourcePropertyEditModel::data( const QModelIndex& index, int role ) const
 {
-    if ( index.isValid() and index.row() < d->m_properties.count() ) {
+    if ( index.isValid() && index.row() < d->m_properties.count() ) {
         const Nepomuk2::Types::Property property = d->m_properties[index.row()].first.predicate().uri();
         const Soprano::Node value = nodeForIndex( index );
         const QDateTime date = d->m_properties[index.row()].second;
