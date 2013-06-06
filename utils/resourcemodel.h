@@ -54,7 +54,7 @@ namespace Nepomuk2 {
          *
          * \since 4.6
          */
-        class NEPOMUKUTILS_EXPORT ResourceModel : public QAbstractItemModel
+        class ResourceModel : public QAbstractItemModel
         {
             Q_OBJECT
 

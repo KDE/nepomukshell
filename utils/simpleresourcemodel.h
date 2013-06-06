@@ -44,7 +44,7 @@ namespace Nepomuk2 {
          *
          * \since 4.6
          */
-        class NEPOMUKUTILS_EXPORT SimpleResourceModel : public ResourceModel
+        class SimpleResourceModel : public ResourceModel
         {
             Q_OBJECT
 
